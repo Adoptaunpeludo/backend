@@ -1,4 +1,5 @@
 import express, { Router } from 'express';
+import { NotFoundMiddleware } from './middlewares/not-found.middleware';
 
 interface Options {
   port: number;
@@ -31,6 +32,9 @@ export class Server {
 
     //* Routes
     this.app.use(this.routes);
+
+    //* NotFound Middleware
+    this.app.use(NotFoundMiddleware.init);
 
     this.serverListener = this.app.listen(this.port, () => {
       console.log(`Server running on port ${this.port}`);

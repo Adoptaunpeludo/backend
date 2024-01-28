@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Response, Router } from 'express';
 
 export class AppRoutes {
   static get routes(): Router {
