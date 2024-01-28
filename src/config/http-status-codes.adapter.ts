@@ -20,4 +20,8 @@ export class HttpCodes {
   static get FOBIDDEN(): number {
     return StatusCodes.FORBIDDEN;
   }
+
+  static get INTERNAL_SERVER_ERROR(): number {
+    return StatusCodes.INTERNAL_SERVER_ERROR;
+  }
 }

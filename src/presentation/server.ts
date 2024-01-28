@@ -1,6 +1,7 @@
 import 'express-async-errors';
 import express, { Router } from 'express';
 import { NotFoundMiddleware } from './middlewares/not-found.middleware';
+import { ErrorHandlerMiddleware } from './middlewares/error-handler.middleware';
 
 interface Options {
   port: number;
@@ -36,6 +37,9 @@ export class Server {
 
     //* NotFound Middleware
     this.app.use(NotFoundMiddleware.init);
+
+    //* Error Handler Middleware
+    this.app.use(ErrorHandlerMiddleware.handle);
 
     this.serverListener = this.app.listen(this.port, () => {
       console.log(`Server running on port ${this.port}`);
