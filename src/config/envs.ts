@@ -9,5 +9,5 @@ export const envs = {
   DB_NAME: get('DB_NAME').required().asString(),
   DB_HOST: get('DB_HOST').required().asString(),
   DB_PORT: get('DB_PORT').required().asPortNumber(),
-  DB_USERNAME: get('DB_USER').required().asString(),
+  DB_USERNAME: get('DB_USERNAME').required().asString(),
 };
