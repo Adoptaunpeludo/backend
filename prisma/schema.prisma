@@ -10,29 +10,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  username  String
-  email     String
-  password  String
-  adopter   Adopter? @relation(fields: [adopterId], references: [id])
-  shelter   Shelter? @relation(fields: [shelterId], references: [id])
-  adopterId Int?
-  shelterId Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Users {
+  UserID    Int      @id @default(autoincrement())
+  Email     String   @unique
+  Username  String
+  Password  String
+  Direccion String?
+  Telefono  String?
+  Adopter   Adopter?
+  Shelter   Shelter?
 }
 
 model Adopter {
-  id     Int    @id @default(autoincrement())
-  dni    String @unique
-  userId Int
-  User   User[]
+  AdopterID Int    @id @default(autoincrement())
+  UserID    Int    @unique
+  Nombre    String
+  Apellidos String
+  DNI       String
+  User      Users  @relation(fields: [UserID], references: [UserID])
 }
 
 model Shelter {
-  id     Int    @id @default(autoincrement())
-  cif    String @unique
-  userId Int
-  User   User[]
+  ShelterID Int    @id @default(autoincrement())
+  UserID    Int    @unique
+  CIF       String
+  Nombre    String
+  User      Users  @relation(fields: [UserID], references: [UserID])
 }
