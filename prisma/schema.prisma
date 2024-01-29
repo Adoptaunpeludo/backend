@@ -11,29 +11,29 @@ datasource db {
 }
 
 model Users {
-  UserID    Int      @id @default(autoincrement())
-  Email     String   @unique
-  Username  String
-  Password  String
-  Direccion String?
-  Telefono  String?
-  Adopter   Adopter?
-  Shelter   Shelter?
+  userID       Int      @id @default(autoincrement())
+  email        String   @unique
+  username     String
+  password     String
+  address      String?
+  phone_number String?
+  adopter      Adopter?
+  shelter      Shelter?
 }
 
 model Adopter {
-  AdopterID Int    @id @default(autoincrement())
-  UserID    Int    @unique
-  Nombre    String
-  Apellidos String
-  DNI       String
-  User      Users  @relation(fields: [UserID], references: [UserID])
+  adopterID   Int    @id @default(autoincrement())
+  userID      Int    @unique
+  name        String
+  second_name String
+  dni         String
+  user        Users  @relation(fields: [userID], references: [userID])
 }
 
 model Shelter {
-  ShelterID Int    @id @default(autoincrement())
-  UserID    Int    @unique
-  CIF       String
-  Nombre    String
-  User      Users  @relation(fields: [UserID], references: [UserID])
+  shelterID Int    @id @default(autoincrement())
+  userID    Int    @unique
+  cif       String
+  name      String
+  user      Users  @relation(fields: [userID], references: [userID])
 }
