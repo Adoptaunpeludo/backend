@@ -10,30 +10,41 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model ContactInfo {
+  userID       String @id
+  address      String
+  phone_number String
+  user         Users? @relation(fields: [userID], references: [userID], onDelete: Cascade)
+}
+
 model Users {
-  userID       Int      @id @default(autoincrement())
-  email        String   @unique
-  username     String
-  password     String
-  address      String?
-  phone_number String?
-  adopter      Adopter?
-  shelter      Shelter?
+  userID      String       @id @default(uuid())
+  email       String       @unique
+  password    String
+  adopter     Adopters?
+  shelter     Shelters?
+  contactInfo ContactInfo?
+  Admin       Admins?
 }
 
-model Adopter {
-  adopterID   Int    @id @default(autoincrement())
-  userID      Int    @unique
-  name        String
-  second_name String
-  dni         String
-  user        Users  @relation(fields: [userID], references: [userID])
+model Adopters {
+  adopterID  String @id
+  first_name String
+  last_name  String
+  role       String @default("adopter")
+  user       Users? @relation(fields: [adopterID], references: [userID], onDelete: Cascade)
 }
 
-model Shelter {
-  shelterID Int    @id @default(autoincrement())
-  userID    Int    @unique
-  cif       String
+model Shelters {
+  shelterID String @id
   name      String
-  user      Users  @relation(fields: [userID], references: [userID])
+  role      String @default("shelter")
+  user      Users? @relation(fields: [shelterID], references: [userID], onDelete: Cascade)
+}
+
+model Admins {
+  adminID String @id
+  name    String
+  role    String @default("admin")
+  user    Users? @relation(fields: [adminID], references: [userID], onDelete: Cascade)
 }

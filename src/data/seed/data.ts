@@ -1,7 +1,6 @@
 export const seedData = [
   // Adopters
   {
-    type: 'adopter',
     email: 'adopter1@example.com',
     username: 'adopter1',
     password: 'password1',
@@ -12,7 +11,6 @@ export const seedData = [
     dni: '12345678A',
   },
   {
-    type: 'adopter',
     email: 'adopter2@example.com',
     username: 'adopter2',
     password: 'password2',
@@ -26,7 +24,6 @@ export const seedData = [
 
   // Shelters
   {
-    type: 'shelter',
     email: 'shelter1@example.com',
     username: 'shelter1',
     password: 'password1',
@@ -36,7 +33,6 @@ export const seedData = [
     nombre: 'Shelter ABC',
   },
   {
-    type: 'shelter',
     email: 'shelter2@example.com',
     username: 'shelter2',
     password: 'password2',
