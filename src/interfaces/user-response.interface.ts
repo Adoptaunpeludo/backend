@@ -14,10 +14,10 @@ export interface UserResponse {
   createdAt: Date;
   updatedAt: Date;
   avatar: string;
-  admin: Admin | null;
-  adopter: Adopter | null;
-  contactInfo: ContactInfo | null;
-  shelter: Shelter | null;
+  admin?: Admin | null;
+  adopter?: Adopter | null;
+  contactInfo?: ContactInfo | null;
+  shelter?: Shelter | null;
 }
 
 export interface Admin {

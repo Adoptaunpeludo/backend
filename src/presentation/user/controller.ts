@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { prisma } from '../../data/postgres';
 import { UserEntity } from '../../domain/entities/user.entity';
+import { NotFoundError } from '../../domain/errors';
 
 export class UserController {
   constructor() {}
@@ -31,7 +32,7 @@ export class UserController {
 
   getUser = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
-      where: { email: 'adopter@example.com' },
+      where: { email: 'adopter@example.co' },
       include: {
         adopter: true,
         contactInfo: {
@@ -42,6 +43,10 @@ export class UserController {
       },
     });
 
-    res.status(HttpCodes.OK).json({ user });
+    if (!user) throw new NotFoundError('User not found');
+
+    const userEntity = UserEntity.fromObject(user);
+
+    res.status(HttpCodes.OK).json(userEntity);
   };
 }
