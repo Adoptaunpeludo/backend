@@ -1,10 +1,9 @@
 import { createInterface } from 'readline';
 import { prisma } from '../postgres';
-import { seedData } from './data';
+import { citiesData, seedData } from './data';
 
 const confirmationQuestion = (text: string) => {
   return new Promise((resolve) => {
-    // conectar readline con la consola
     const ifc = createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -40,48 +39,70 @@ const confirmationQuestion = (text: string) => {
     'Are you sure do you want to wipe and repopulate the database? (yes/no): '
   );
 
-  if (!confirmation) process.exit();
+  if (!confirmation) {
+    await prisma.$disconnect();
+    process.exit();
+  }
 
   // await prisma.contactInfo.deleteMany();
   // await prisma.adopter.deleteMany();
   // await prisma.shelter.deleteMany();
   await prisma.users.deleteMany();
 
-  // await Promise.all(
-  //   seedData.map(async (userData) => {
-  //     const createdUser = await prisma.users.create({
-  //       data: {
-  //         email: userData.email,
-  //         username: userData.username,
-  //         password: userData.password,
-  //         contactInfo: {
-  //           create: {
-  //             address: userData?.direccion,
-  //             phone_number: userData?.telefono,
-  //           },
-  //         },
-  //         adopter: userData?.dni
-  //           ? {
-  //               create: {
-  //                 name: userData.nombre,
-  //                 second_name: userData.apellidos!,
-  //                 dni: userData.dni!,
-  //               },
-  //             }
-  //           : undefined,
-  //         shelter: userData?.cif
-  //           ? {
-  //               create: {
-  //                 cif: userData.cif!,
-  //                 name: userData.nombre,
-  //               },
-  //             }
-  //           : undefined,
-  //       },
-  //     });
-  //     console.log(`User created: ${JSON.stringify(createdUser)}`);
-  //   })
-  // );
+  const cities = await prisma.cities.findMany();
+  if (cities.length === 0) {
+    const citiesNames = citiesData.map((city) => ({
+      name: city.label,
+    }));
+
+    await prisma.cities.createMany({ data: citiesNames });
+  }
+
+  await Promise.all(
+    seedData.map(async (userData) => {
+      const createdUser = await prisma.users.create({
+        data: {
+          email: userData.email,
+          password: userData.password,
+          contactInfo: {
+            create: {
+              phone_number: userData.contactInfo.phone_number,
+              cityID: userData.contactInfo.cityID,
+            },
+          },
+          adopter:
+            userData.role === 'adopter'
+              ? {
+                  create: {
+                    first_name: userData.first_name!,
+                    last_name: userData.last_name!,
+                    role: userData.role,
+                  },
+                }
+              : undefined,
+          shelter:
+            userData.role === 'shelter'
+              ? {
+                  create: {
+                    name: userData.name!,
+                    role: userData.role,
+                  },
+                }
+              : undefined,
+          admin:
+            userData.role === 'admin'
+              ? {
+                  create: {
+                    name: userData.name!,
+                    role: userData.role,
+                  },
+                }
+              : undefined,
+        },
+      });
+      console.log(`User created: ${JSON.stringify(createdUser)}`);
+    })
+  );
 
   await prisma.$disconnect();
 })();

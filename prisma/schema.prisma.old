@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Cities {
+  id          Int           @id @default(autoincrement())
+  name        String
+  contactInfo ContactInfo[]
+}
+
+model ContactInfo {
+  userID       String  @id
+  phone_number String
+  user         Users?  @relation(fields: [userID], references: [userID], onDelete: Cascade)
+  city         Cities? @relation(fields: [cityID], references: [id], onUpdate: Cascade)
+  cityID       Int
+}
+
+model Users {
+  userID      String       @id @default(uuid())
+  email       String       @unique
+  password    String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
+  adopter     Adopters?
+  shelter     Shelters?
+  contactInfo ContactInfo?
+  admin       Admins?
+}
+
+model Adopters {
+  adopterID  String @id
+  first_name String
+  last_name  String
+  role       String @default("adopter")
+  user       Users? @relation(fields: [adopterID], references: [userID], onDelete: Cascade)
+}
+
+model Shelters {
+  shelterID String @id
+  name      String
+  role      String @default("shelter")
+  user      Users? @relation(fields: [shelterID], references: [userID], onDelete: Cascade)
+}
+
+model Admins {
+  adminID String @id
+  name    String
+  role    String @default("admin")
+  user    Users? @relation(fields: [adminID], references: [userID], onDelete: Cascade)
+}

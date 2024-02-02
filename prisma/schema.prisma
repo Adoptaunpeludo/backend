@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,41 +7,139 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model ContactInfo {
-  userID       String @id
-  address      String
-  phone_number String
-  user         Users? @relation(fields: [userID], references: [userID], onDelete: Cascade)
+enum user_roles {
+  adopter
+  shelter
+  admin
 }
 
-model Users {
-  userID      String       @id @default(uuid())
-  email       String       @unique
-  password    String
-  adopter     Adopters?
-  shelter     Shelters?
-  contactInfo ContactInfo?
-  Admin       Admins?
+enum genter_enum {
+  male
+  female
 }
 
-model Adopters {
-  adopterID  String @id
+enum adoption_publish_status {
+  pending
+  rejected
+  published
+}
+
+enum social_media_enum {
+  facebook
+  xtweet
+  instagram
+}
+
+enum animal_size {
+  small
+  medium
+  big
+  very_big
+}
+
+model User {
+  id         String       @id @default(uuid())
+  email      String       @unique
+  password   String
+  username   String
+  created_at DateTime     @default(now())
+  updated_at DateTime     @default(now())
+  avatar     Image[]
+  adpoter    Adopter?
+  shelter    Shelter?
+  admin      Admin?
+  contact    ContactInfo?
+
+  @@index([username])
+}
+
+model Adopter {
+  id         String     @id
   first_name String
-  last_name  String
-  role       String @default("adopter")
-  user       Users? @relation(fields: [adopterID], references: [userID], onDelete: Cascade)
+  last_name  String     @default("")
+  role       user_roles @default(adopter)
+  user       User       @relation(fields: [id], references: [id])
+  Animal     Animal[]
 }
 
-model Shelters {
-  shelterID String @id
-  name      String
-  role      String @default("shelter")
-  user      Users? @relation(fields: [shelterID], references: [userID], onDelete: Cascade)
+model Shelter {
+  id           String        @id
+  name         String
+  description  String        @default("")
+  role         user_roles    @default(shelter)
+  user         User          @relation(fields: [id], references: [id])
+  social_media SocialMedia[]
+  animals      Animal[]
 }
 
-model Admins {
-  adminID String @id
-  name    String
-  role    String @default("admin")
-  user    Users? @relation(fields: [adminID], references: [userID], onDelete: Cascade)
+model Admin {
+  id   String     @id
+  name String
+  role user_roles @default(admin)
+  user User       @relation(fields: [id], references: [id])
+}
+
+model ContactInfo {
+  id           String  @id
+  phone_number String?
+  address      String?
+  city_id      Int
+  user         User?   @relation(fields: [id], references: [id])
+  city         City    @relation(fields: [city_id], references: [id])
+}
+
+model SocialMedia {
+  id         Int               @id @default(autoincrement())
+  name       social_media_enum
+  url        String
+  shelter_id String
+  shelter    Shelter?          @relation(fields: [shelter_id], references: [id])
+}
+
+model Image {
+  id        Int    @id @default(autoincrement())
+  url       String
+  user_id   String
+  user      User?  @relation(fields: [user_id], references: [id])
+  animal_id String
+  animal    Animal @relation(fields: [animal_id], references: [id])
+}
+
+model City {
+  id           Int           @id @default(autoincrement())
+  name         String
+  contact_info ContactInfo[]
+  animal       Animal[]
+}
+
+model Animal {
+  id             String                  @id @default(uuid())
+  gender         genter_enum
+  name           String
+  slug           String                  @unique
+  age            Float
+  description    String                  @default("")
+  birthdate      DateTime
+  breed          String
+  size           animal_size
+  publish_status adoption_publish_status @default(pending)
+  adopted        Boolean                 @default(false)
+  created_at     DateTime                @default(now())
+  updated_at     DateTime                @default(now())
+
+  adopted_by String
+  created_by String
+  city_id    Int
+
+  images  Image[]
+  adopter Adopter? @relation(fields: [adopted_by], references: [id])
+  shelter Shelter  @relation(fields: [created_by], references: [id])
+  city    City     @relation(fields: [city_id], references: [id])
+
+  @@index([gender])
+  @@index([name])
+  @@index([age])
+  @@index([birthdate])
+  @@index([size])
+  @@index([created_by])
 }
