@@ -2,7 +2,7 @@ export class UserEntity {
   constructor(
     public readonly email: string,
     public readonly username: string,
-    public readonly avatar: string,
+    public readonly avatar: [string],
     public readonly emailValidated: boolean,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
@@ -15,7 +15,7 @@ export class ShelterEntity extends UserEntity {
   constructor(
     email: string,
     username: string,
-    avatar: string,
+    avatar: [string],
     emailValidated: boolean,
     createdAt: Date,
     updatedAt: Date,
@@ -43,7 +43,7 @@ export class AdopterEntity extends UserEntity {
   constructor(
     email: string,
     username: string,
-    avatar: string,
+    avatar: [string],
     emailValidated: boolean,
     createdAt: Date,
     updatedAt: Date,
@@ -51,7 +51,8 @@ export class AdopterEntity extends UserEntity {
     public readonly last_name: string,
     public readonly role: string,
     phoneNumber?: string,
-    address?: string
+    address?: string,
+    city?: string
   ) {
     super(
       email,

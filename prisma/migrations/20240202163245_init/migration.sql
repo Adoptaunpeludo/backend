@@ -19,8 +19,10 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "username" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "emailValidated" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "avatar" TEXT NOT NULL DEFAULT 'avatar.png',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -28,8 +30,8 @@ CREATE TABLE "User" (
 -- CreateTable
 CREATE TABLE "Adopter" (
     "id" TEXT NOT NULL,
-    "first_name" TEXT NOT NULL,
-    "last_name" TEXT NOT NULL DEFAULT '',
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL DEFAULT '',
     "role" "user_roles" NOT NULL DEFAULT 'adopter',
 
     CONSTRAINT "Adopter_pkey" PRIMARY KEY ("id")
@@ -57,9 +59,9 @@ CREATE TABLE "Admin" (
 -- CreateTable
 CREATE TABLE "ContactInfo" (
     "id" TEXT NOT NULL,
-    "phone_number" TEXT,
+    "phoneNumber" TEXT,
     "address" TEXT,
-    "city_id" INTEGER NOT NULL,
+    "cityId" INTEGER NOT NULL,
 
     CONSTRAINT "ContactInfo_pkey" PRIMARY KEY ("id")
 );
@@ -69,19 +71,9 @@ CREATE TABLE "SocialMedia" (
     "id" SERIAL NOT NULL,
     "name" "social_media_enum" NOT NULL,
     "url" TEXT NOT NULL,
-    "shelter_id" TEXT NOT NULL,
+    "shelterId" TEXT NOT NULL,
 
     CONSTRAINT "SocialMedia_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Image" (
-    "id" SERIAL NOT NULL,
-    "url" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "animal_id" TEXT NOT NULL,
-
-    CONSTRAINT "Image_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -103,13 +95,14 @@ CREATE TABLE "Animal" (
     "birthdate" TIMESTAMP(3) NOT NULL,
     "breed" TEXT NOT NULL,
     "size" "animal_size" NOT NULL,
-    "publish_status" "adoption_publish_status" NOT NULL DEFAULT 'pending',
+    "publishStatus" "adoption_publish_status" NOT NULL DEFAULT 'pending',
     "adopted" BOOLEAN NOT NULL DEFAULT false,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "adopted_by" TEXT NOT NULL,
-    "created_by" TEXT NOT NULL,
-    "city_id" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "adoptedBy" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL,
+    "cityId" INTEGER NOT NULL,
+    "images" TEXT[],
 
     CONSTRAINT "Animal_pkey" PRIMARY KEY ("id")
 );
@@ -139,7 +132,7 @@ CREATE INDEX "Animal_birthdate_idx" ON "Animal"("birthdate");
 CREATE INDEX "Animal_size_idx" ON "Animal"("size");
 
 -- CreateIndex
-CREATE INDEX "Animal_created_by_idx" ON "Animal"("created_by");
+CREATE INDEX "Animal_createdBy_idx" ON "Animal"("createdBy");
 
 -- AddForeignKey
 ALTER TABLE "Adopter" ADD CONSTRAINT "Adopter_id_fkey" FOREIGN KEY ("id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -154,22 +147,16 @@ ALTER TABLE "Admin" ADD CONSTRAINT "Admin_id_fkey" FOREIGN KEY ("id") REFERENCES
 ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_id_fkey" FOREIGN KEY ("id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_city_id_fkey" FOREIGN KEY ("city_id") REFERENCES "City"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ContactInfo" ADD CONSTRAINT "ContactInfo_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "City"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "SocialMedia" ADD CONSTRAINT "SocialMedia_shelter_id_fkey" FOREIGN KEY ("shelter_id") REFERENCES "Shelter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "SocialMedia" ADD CONSTRAINT "SocialMedia_shelterId_fkey" FOREIGN KEY ("shelterId") REFERENCES "Shelter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Animal" ADD CONSTRAINT "Animal_adoptedBy_fkey" FOREIGN KEY ("adoptedBy") REFERENCES "Adopter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Image" ADD CONSTRAINT "Image_animal_id_fkey" FOREIGN KEY ("animal_id") REFERENCES "Animal"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Animal" ADD CONSTRAINT "Animal_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "Shelter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Animal" ADD CONSTRAINT "Animal_adopted_by_fkey" FOREIGN KEY ("adopted_by") REFERENCES "Adopter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Animal" ADD CONSTRAINT "Animal_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "Shelter"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Animal" ADD CONSTRAINT "Animal_city_id_fkey" FOREIGN KEY ("city_id") REFERENCES "City"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Animal" ADD CONSTRAINT "Animal_cityId_fkey" FOREIGN KEY ("cityId") REFERENCES "City"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

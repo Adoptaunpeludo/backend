@@ -2,6 +2,9 @@ import { createInterface } from 'readline';
 import { prisma } from '../postgres';
 import { citiesData, seedData } from './data';
 
+type SocialMedia = 'facebook' | 'xtweet' | 'instagram';
+type UserRoles = 'admin' | 'adopter' | 'shelter';
+
 const confirmationQuestion = (text: string) => {
   return new Promise((resolve) => {
     const ifc = createInterface({
@@ -44,9 +47,11 @@ const confirmationQuestion = (text: string) => {
     process.exit();
   }
 
-  // await prisma.contactInfo.deleteMany();
-  // await prisma.adopter.deleteMany();
-  // await prisma.shelter.deleteMany();
+  await prisma.socialMedia.deleteMany();
+  await prisma.contactInfo.deleteMany();
+  await prisma.adopter.deleteMany();
+  await prisma.shelter.deleteMany();
+  await prisma.admin.deleteMany();
   await prisma.user.deleteMany();
 
   const cities = await prisma.city.findMany();
@@ -65,19 +70,20 @@ const confirmationQuestion = (text: string) => {
           email: userData.email,
           password: userData.password,
           username: 'test',
-          contact_info: {
+          role: userData.role as UserRoles,
+          contactInfo: {
             create: {
-              phone_number: userData.contactInfo.phone_number,
-              city_id: userData.contactInfo.cityID,
+              phoneNumber: userData.contactInfo.phone_number,
+              cityId: userData.contactInfo.cityID,
+              address: '13 rue del percebe',
             },
           },
           adopter:
             userData.role === 'adopter'
               ? {
                   create: {
-                    first_name: userData.first_name!,
-                    last_name: userData.last_name!,
-                    role: userData.role,
+                    firstName: userData.first_name!,
+                    lastName: userData.last_name!,
                   },
                 }
               : undefined,
@@ -86,7 +92,13 @@ const confirmationQuestion = (text: string) => {
               ? {
                   create: {
                     name: userData.name!,
-                    role: userData.role,
+
+                    socialMedia: {
+                      create: userData.socialMedia!.map((media) => ({
+                        name: media.name as SocialMedia,
+                        url: media.url,
+                      })),
+                    },
                   },
                 }
               : undefined,
@@ -95,7 +107,6 @@ const confirmationQuestion = (text: string) => {
               ? {
                   create: {
                     name: userData.name!,
-                    role: userData.role,
                   },
                 }
               : undefined,

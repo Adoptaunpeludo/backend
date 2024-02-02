@@ -2,48 +2,77 @@ export const seedData = [
   {
     email: 'shelter1@example.com',
     password: 'password1',
-    shelter: {
-      name: 'Shelter1',
-      role: 'shelter',
-    },
+    image: 'shelter1.png',
+    role: 'shelter',
+    name: 'Shelter2',
     contactInfo: {
       phone_number: '123456789',
+      address: '13 rue del percebe',
       cityID: 1,
     },
+    socialMedia: [
+      {
+        name: 'facebook',
+        url: 'http://facebook.com/shelter',
+      },
+      {
+        name: 'xtweet',
+        url: 'http://twitter.com/shelter',
+      },
+      {
+        name: 'instagram',
+        url: 'http://instagram.com/shelter',
+      },
+    ],
   },
   {
     email: 'shelter2@example.com',
     password: 'password2',
-
+    image: 'shelter2.png',
     name: 'Shelter2',
     role: 'shelter',
-
     contactInfo: {
       phone_number: '987654321',
+      address: '13 rue del percebe',
       cityID: 1,
     },
+    socialMedia: [
+      {
+        name: 'facebook',
+        url: 'http://facebook.com/shelter',
+      },
+      {
+        name: 'xtweet',
+        url: 'http://twitter.com/shelter',
+      },
+      {
+        name: 'instagram',
+        url: 'http://instagram.com/shelter',
+      },
+    ],
   },
   {
     email: 'admin@example.com',
     password: 'adminpassword',
-
+    image: 'admin.png',
     name: 'AdminName',
     role: 'admin',
-
     contactInfo: {
       phone_number: '111222333',
+      address: '13 rue del percebe',
       cityID: 1,
     },
   },
   {
     email: 'adopter@example.com',
     password: 'adopterpassword',
+    image: 'adopter.png',
     first_name: 'AdopterFirstName',
     last_name: 'AdopterLastName',
     role: 'adopter',
-
     contactInfo: {
       phone_number: '555666777',
+      address: '13 rue del percebe',
       cityID: 1,
     },
   },

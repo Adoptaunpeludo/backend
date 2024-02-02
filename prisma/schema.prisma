@@ -38,109 +38,98 @@ enum animal_size {
 }
 
 model User {
-  id              String       @id @default(uuid())
-  email           String       @unique
-  password        String
-  username        String
-  email_validated Boolean      @default(false)
-  created_at      DateTime     @default(now())
-  updated_at      DateTime     @default(now())
-  avatar          Image[]
-  adopter         Adopter?
-  shelter         Shelter?
-  admin           Admin?
-  contact_info    ContactInfo?
+  id             String       @id @default(uuid())
+  email          String       @unique
+  password       String
+  username       String
+  emailValidated Boolean      @default(false)
+  role           user_roles
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @default(now())
+  avatar         String       @default("avatar.png")
+  adopter        Adopter?
+  shelter        Shelter?
+  admin          Admin?
+  contactInfo    ContactInfo?
 
   @@index([username])
 }
 
 model Adopter {
-  id         String     @id
-  first_name String
-  last_name  String     @default("")
-  role       user_roles @default(adopter)
-  user       User       @relation(fields: [id], references: [id])
-  animal     Animal[]
+  id        String   @id
+  firstName String
+  lastName  String   @default("")
+  user      User     @relation(fields: [id], references: [id])
+  animal    Animal[]
 }
 
 model Shelter {
-  id           String        @id
-  name         String
-  description  String        @default("")
-  role         user_roles    @default(shelter)
-  user         User          @relation(fields: [id], references: [id])
-  social_media SocialMedia[]
-  animals      Animal[]
+  id          String        @id
+  name        String
+  description String        @default("")
+  user        User          @relation(fields: [id], references: [id])
+  socialMedia SocialMedia[]
+  animals     Animal[]
 }
 
 model Admin {
-  id   String     @id
+  id   String @id
   name String
-  role user_roles @default(admin)
-  user User       @relation(fields: [id], references: [id])
+  user User   @relation(fields: [id], references: [id])
 }
 
 model ContactInfo {
-  id           String  @id
-  phone_number String?
-  address      String?
-  city_id      Int
-  user         User?   @relation(fields: [id], references: [id])
-  city         City    @relation(fields: [city_id], references: [id])
+  id          String  @id
+  phoneNumber String?
+  address     String?
+  cityId      Int
+  user        User?   @relation(fields: [id], references: [id])
+  city        City    @relation(fields: [cityId], references: [id])
 }
 
 model SocialMedia {
-  id         Int               @id @default(autoincrement())
-  name       social_media_enum
-  url        String
-  shelter_id String
-  shelter    Shelter?          @relation(fields: [shelter_id], references: [id])
-}
-
-model Image {
-  id        Int    @id @default(autoincrement())
+  id        Int               @id @default(autoincrement())
+  name      social_media_enum
   url       String
-  user_id   String
-  user      User?  @relation(fields: [user_id], references: [id])
-  animal_id String
-  animal    Animal @relation(fields: [animal_id], references: [id])
+  shelterId String
+  shelter   Shelter?          @relation(fields: [shelterId], references: [id])
 }
 
 model City {
-  id           Int           @id @default(autoincrement())
-  name         String
-  contact_info ContactInfo[]
-  animal       Animal[]
+  id          Int           @id @default(autoincrement())
+  name        String
+  contactInfo ContactInfo[]
+  animal      Animal[]
 }
 
 model Animal {
-  id             String                  @id @default(uuid())
-  gender         genter_enum
-  name           String
-  slug           String                  @unique
-  age            Float
-  description    String                  @default("")
-  birthdate      DateTime
-  breed          String
-  size           animal_size
-  publish_status adoption_publish_status @default(pending)
-  adopted        Boolean                 @default(false)
-  created_at     DateTime                @default(now())
-  updated_at     DateTime                @default(now())
+  id            String                  @id @default(uuid())
+  gender        genter_enum
+  name          String
+  slug          String                  @unique
+  age           Float
+  description   String                  @default("")
+  birthdate     DateTime
+  breed         String
+  size          animal_size
+  publishStatus adoption_publish_status @default(pending)
+  adopted       Boolean                 @default(false)
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @default(now())
 
-  adopted_by String
-  created_by String
-  city_id    Int
+  adoptedBy String
+  createdBy String
+  cityId    Int
 
-  images  Image[]
-  adopter Adopter? @relation(fields: [adopted_by], references: [id])
-  shelter Shelter  @relation(fields: [created_by], references: [id])
-  city    City     @relation(fields: [city_id], references: [id])
+  adopter Adopter? @relation(fields: [adoptedBy], references: [id])
+  shelter Shelter  @relation(fields: [createdBy], references: [id])
+  city    City     @relation(fields: [cityId], references: [id])
+  images  String[]
 
   @@index([gender])
   @@index([name])
   @@index([age])
   @@index([birthdate])
   @@index([size])
-  @@index([created_by])
+  @@index([createdBy])
 }
