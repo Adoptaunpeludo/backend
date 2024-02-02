@@ -47,27 +47,28 @@ const confirmationQuestion = (text: string) => {
   // await prisma.contactInfo.deleteMany();
   // await prisma.adopter.deleteMany();
   // await prisma.shelter.deleteMany();
-  await prisma.users.deleteMany();
+  await prisma.user.deleteMany();
 
-  const cities = await prisma.cities.findMany();
+  const cities = await prisma.city.findMany();
   if (cities.length === 0) {
     const citiesNames = citiesData.map((city) => ({
       name: city.label,
     }));
 
-    await prisma.cities.createMany({ data: citiesNames });
+    await prisma.city.createMany({ data: citiesNames });
   }
 
   await Promise.all(
     seedData.map(async (userData) => {
-      const createdUser = await prisma.users.create({
+      const createdUser = await prisma.user.create({
         data: {
           email: userData.email,
           password: userData.password,
-          contactInfo: {
+          username: 'test',
+          contact_info: {
             create: {
               phone_number: userData.contactInfo.phone_number,
-              cityID: userData.contactInfo.cityID,
+              city_id: userData.contactInfo.cityID,
             },
           },
           adopter:

@@ -38,17 +38,18 @@ enum animal_size {
 }
 
 model User {
-  id         String       @id @default(uuid())
-  email      String       @unique
-  password   String
-  username   String
-  created_at DateTime     @default(now())
-  updated_at DateTime     @default(now())
-  avatar     Image[]
-  adpoter    Adopter?
-  shelter    Shelter?
-  admin      Admin?
-  contact    ContactInfo?
+  id              String       @id @default(uuid())
+  email           String       @unique
+  password        String
+  username        String
+  email_validated Boolean      @default(false)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @default(now())
+  avatar          Image[]
+  adopter         Adopter?
+  shelter         Shelter?
+  admin           Admin?
+  contact_info    ContactInfo?
 
   @@index([username])
 }
@@ -59,7 +60,7 @@ model Adopter {
   last_name  String     @default("")
   role       user_roles @default(adopter)
   user       User       @relation(fields: [id], references: [id])
-  Animal     Animal[]
+  animal     Animal[]
 }
 
 model Shelter {

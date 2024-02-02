@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 
 export class AuthController {
+  //* TODO: DI
   constructor() {}
 
-  signup = (req: Request, res: Response) => {
+  register = (req: Request, res: Response) => {
     res.json('Signup');
   };
 
