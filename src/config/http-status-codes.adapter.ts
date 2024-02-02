@@ -5,6 +5,10 @@ export class HttpCodes {
     return StatusCodes.OK;
   }
 
+  static get CREATED(): number {
+    return StatusCodes.CREATED;
+  }
+
   static get NOT_FOUND(): number {
     return StatusCodes.NOT_FOUND;
   }

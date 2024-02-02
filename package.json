@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/Adoptaunpeludo/backend#readme",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.8",
     "prisma": "^5.8.1",
@@ -30,6 +31,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.9.1",
+    "bcryptjs": "^2.4.3",
     "class-sanitizer": "^1.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",

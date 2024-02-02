@@ -1,5 +1,12 @@
 import { Trim } from 'class-sanitizer';
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
+import { UserRoles } from '../../interfaces/user-response.interface';
+
+enum UserTypes {
+  ADMIN = 'admin',
+  SHELTER = 'shelter',
+  ADOPTER = 'adopter',
+}
 export class RegisterUserDto {
   @IsString()
   @Trim()
@@ -8,9 +15,13 @@ export class RegisterUserDto {
 
   @IsEmail({}, { message: 'email should be a valid email address' })
   @Trim()
-  email?: string;
+  email!: string;
 
   @IsString()
   @MinLength(8, { message: 'password should be minimum of 8 characters' })
-  password?: string;
+  password!: string;
+
+  @IsString()
+  @IsEnum(UserTypes)
+  role!: UserRoles;
 }
