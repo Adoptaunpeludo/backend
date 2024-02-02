@@ -4,7 +4,7 @@ import { HttpCodes } from '../../config/http-status-codes.adapter';
 
 export class ErrorHandlerMiddleware {
   static handle(err: Error, _req: Request, res: Response, _next: NextFunction) {
-    console.log(err);
+    console.log({ err });
 
     let message, statusCode;
 

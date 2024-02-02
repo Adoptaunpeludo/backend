@@ -1,10 +1,16 @@
 import { prisma } from '../../data/postgres';
-import { RegisterUserDto } from '../../domain/dtos/register-user.dto';
-import { BadRequestError } from '../../domain/errors';
-import { BcryptAdapter } from '../../config/bcrypt.adapter';
+import {
+  BadRequestError,
+  CustomAPIError,
+  LoginUserDto,
+  RegisterUserDto,
+  UnauthorizedError,
+} from '../../domain';
+import { BcryptAdapter } from '../../config';
+import { JWTAdapter } from '../../config/jwt.adapter';
 
 export class AuthService {
-  constructor() {}
+  constructor(private readonly jwt: JWTAdapter) {}
 
   public async registerUser(registerUserDto: RegisterUserDto) {
     const existUser = await prisma.user.findUnique({
@@ -28,5 +34,33 @@ export class AuthService {
     });
 
     return createdUser;
+  }
+
+  public async loginUser(loginUserDto: LoginUserDto) {
+    const user = await prisma.user.findUnique({
+      where: { email: loginUserDto.email },
+    });
+
+    if (!user) throw new UnauthorizedError('Incorrect email or password');
+
+    const isMatch = BcryptAdapter.compare(loginUserDto.password, user.password);
+
+    if (!isMatch) throw new UnauthorizedError('Incorrect email or password');
+
+    const token = this.jwt.generateToken({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.username,
+    });
+
+    if (!token)
+      throw new CustomAPIError(
+        'Internal Server',
+        'JWT token error, check server logs',
+        500
+      );
+
+    return token;
   }
 }

@@ -10,4 +10,7 @@ export const envs = {
   DB_HOST: get('DB_HOST').required().asString(),
   DB_PORT: get('DB_PORT').required().asPortNumber(),
   DB_USERNAME: get('DB_USERNAME').required().asString(),
+
+  //* JWT
+  JWT_SEED: get('JWT_SEED').required().asString(),
 };
