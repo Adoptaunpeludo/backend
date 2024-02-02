@@ -5,7 +5,7 @@ export class AuthController {
   constructor() {}
 
   register = (req: Request, res: Response) => {
-    res.json('Signup');
+    res.json(req.body);
   };
 
   login = (req: Request, res: Response) => {
