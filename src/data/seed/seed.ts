@@ -1,9 +1,10 @@
 import { createInterface } from 'readline';
 import { prisma } from '../postgres';
 import { citiesData, seedData } from './data';
-
-type SocialMedia = 'facebook' | 'xtweet' | 'instagram';
-type UserRoles = 'admin' | 'adopter' | 'shelter';
+import {
+  AllowedMedia,
+  UserRoles,
+} from '../../interfaces/user-response.interface';
 
 const confirmationQuestion = (text: string) => {
   return new Promise((resolve) => {
@@ -95,7 +96,7 @@ const confirmationQuestion = (text: string) => {
 
                     socialMedia: {
                       create: userData.socialMedia!.map((media) => ({
-                        name: media.name as SocialMedia,
+                        name: media.name as AllowedMedia,
                         url: media.url,
                       })),
                     },

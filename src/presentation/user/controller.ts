@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { prisma } from '../../data/postgres';
+import { UserEntity } from '../../domain/entities/user.entity';
 
 export class UserController {
   constructor() {}
@@ -10,7 +11,11 @@ export class UserController {
       include: {
         admin: true,
         adopter: true,
-        contactInfo: true,
+        contactInfo: {
+          include: {
+            city: true,
+          },
+        },
         shelter: {
           include: {
             socialMedia: true,
@@ -19,7 +24,9 @@ export class UserController {
       },
     });
 
-    res.status(HttpCodes.OK).json({ users });
+    const userEntities = users.map((user) => UserEntity.fromObject(user));
+
+    res.status(HttpCodes.OK).json(userEntities);
   };
 
   getUser = async (req: Request, res: Response) => {

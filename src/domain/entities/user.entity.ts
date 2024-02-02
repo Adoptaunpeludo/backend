@@ -1,68 +1,51 @@
+import { UserResponse } from '../../interfaces/user-response.interface';
+
 export class UserEntity {
-  constructor(
-    public readonly email: string,
-    public readonly username: string,
-    public readonly avatar: [string],
-    public readonly emailValidated: boolean,
-    public readonly createdAt: Date,
-    public readonly updatedAt: Date,
-    public readonly phoneNumber?: string,
-    public readonly address?: string
-  ) {}
-}
+  static fromObject(userResponse: UserResponse) {
+    let userEntity = {};
 
-export class ShelterEntity extends UserEntity {
-  constructor(
-    email: string,
-    username: string,
-    avatar: [string],
-    emailValidated: boolean,
-    createdAt: Date,
-    updatedAt: Date,
-    public readonly name: string,
-    public readonly description: string,
-    public readonly socialMedia: string[],
-    public readonly role: string,
-    phoneNumber?: string,
-    address?: string
-  ) {
-    super(
-      email,
-      username,
-      avatar,
-      emailValidated,
-      createdAt,
-      updatedAt,
-      phoneNumber,
-      address
-    );
-  }
-}
+    const user = {
+      id: userResponse.id,
+      email: userResponse.email,
+      username: userResponse.username || '',
+      emailValidated: userResponse.emailValidated,
+      role: userResponse.role,
+      createdAt: userResponse.createdAt,
+      updatedAt: userResponse.updatedAt,
+      avatar: userResponse.avatar,
+      phoneNumber: userResponse.contactInfo?.phoneNumber || '',
+      address: userResponse.contactInfo?.address || '',
+      city: userResponse.contactInfo?.city.name || null,
+    };
 
-export class AdopterEntity extends UserEntity {
-  constructor(
-    email: string,
-    username: string,
-    avatar: [string],
-    emailValidated: boolean,
-    createdAt: Date,
-    updatedAt: Date,
-    public readonly first_name: string,
-    public readonly last_name: string,
-    public readonly role: string,
-    phoneNumber?: string,
-    address?: string,
-    city?: string
-  ) {
-    super(
-      email,
-      username,
-      avatar,
-      emailValidated,
-      createdAt,
-      updatedAt,
-      phoneNumber,
-      address
-    );
+    switch (userResponse.role) {
+      case 'shelter':
+        userEntity = {
+          ...user,
+          name: userResponse.shelter?.name,
+          description: userResponse.shelter?.description,
+          socialMedia:
+            userResponse.shelter?.socialMedia.map((media) => ({
+              name: media.name,
+              url: media.url,
+            })) || [],
+        };
+        break;
+      case 'adopter':
+        userEntity = {
+          ...user,
+          firstName: userResponse.adopter?.firstName,
+          lastName: userResponse.adopter?.lastName,
+        };
+        break;
+      case 'admin':
+        userEntity = {
+          ...user,
+          name: userResponse.admin?.name,
+        };
+        break;
+    }
+
+    return userEntity;
   }
 }
