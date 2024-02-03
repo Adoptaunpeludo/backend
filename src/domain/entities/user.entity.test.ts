@@ -180,4 +180,120 @@ describe('user.entity.ts', () => {
       lastName: adopterRaw.adopter?.lastName,
     });
   });
+
+  test('should correctly map a user response object to a user entity object for a user with null values', () => {
+    const userResponse: UserResponse = {
+      id: '4',
+      email: 'test4@example.com',
+      password: 'password',
+      username: 'testuser4',
+      emailValidated: true,
+      role: 'shelter',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      avatar: 'avatar4.jpg',
+      shelter: null,
+    };
+
+    const expectedUserEntity = {
+      id: '4',
+      email: 'test4@example.com',
+      username: 'testuser4',
+      emailValidated: true,
+      role: 'shelter',
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+      avatar: 'avatar4.jpg',
+      phoneNumber: '',
+      address: '',
+      city: null,
+      name: undefined,
+      description: undefined,
+      socialMedia: [],
+    };
+
+    const userEntity = UserEntity.fromObject(userResponse);
+
+    expect(userEntity).toEqual(expectedUserEntity);
+  });
+
+  it('should correctly map a user response object to a user entity object for a user with undefined values', () => {
+    const userResponse: UserResponse = {
+      id: '5',
+      email: 'test5@example.com',
+      password: 'password',
+      username: 'testuser5',
+      emailValidated: true,
+      role: 'shelter',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      avatar: 'avatar5.jpg',
+    };
+
+    const expectedUserEntity = {
+      id: '5',
+      email: 'test5@example.com',
+      username: 'testuser5',
+      emailValidated: true,
+      role: 'shelter',
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+      avatar: 'avatar5.jpg',
+      phoneNumber: '',
+      address: '',
+      city: null,
+      name: undefined,
+      description: undefined,
+      socialMedia: [],
+    };
+
+    const userEntity = UserEntity.fromObject(userResponse);
+
+    expect(userEntity).toEqual(expectedUserEntity);
+  });
+
+  it('should correctly map a user response object to a user entity object for a user with empty strings', () => {
+    const userResponse: UserResponse = {
+      id: '6',
+      email: 'test6@example.com',
+      password: 'password',
+      username: '',
+      emailValidated: true,
+      role: 'shelter',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      avatar: 'avatar6.jpg',
+      contactInfo: {
+        id: '',
+        phoneNumber: '',
+        address: '',
+        cityId: 1,
+        city: {
+          id: 1,
+          name: '',
+        },
+      },
+    };
+
+    const expectedUserEntity = {
+      id: '6',
+      email: 'test6@example.com',
+      username: '',
+      emailValidated: true,
+      role: 'shelter',
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+      avatar: 'avatar6.jpg',
+      phoneNumber: '',
+      address: '',
+      city: null,
+      name: undefined,
+      description: undefined,
+      socialMedia: [],
+    };
+
+    const userEntity = UserEntity.fromObject(userResponse);
+
+    expect(userEntity).toEqual(expectedUserEntity);
+  });
 });

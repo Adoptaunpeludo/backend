@@ -34,14 +34,14 @@ export class UserEntity {
       case 'adopter':
         userEntity = {
           ...user,
-          firstName: userResponse.adopter?.firstName,
-          lastName: userResponse.adopter?.lastName,
+          firstName: userResponse.adopter!.firstName,
+          lastName: userResponse.adopter!.lastName,
         };
         break;
       case 'admin':
         userEntity = {
           ...user,
-          name: userResponse.admin?.name,
+          name: userResponse.admin!.name,
         };
         break;
     }
