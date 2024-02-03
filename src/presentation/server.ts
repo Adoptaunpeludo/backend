@@ -2,6 +2,8 @@ import 'express-async-errors';
 import express, { Router } from 'express';
 import { NotFoundMiddleware } from './middlewares/not-found.middleware';
 import { ErrorHandlerMiddleware } from './middlewares/error-handler.middleware';
+import cookieParser from 'cookie-parser';
+import { envs } from '../config';
 
 interface Options {
   port: number;
@@ -28,6 +30,7 @@ export class Server {
     //* Middlewares
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
+    this.app.use(cookieParser(envs.JWT_SEED));
 
     //* Public Folder
     this.app.use(express.static(this.publicPath));
