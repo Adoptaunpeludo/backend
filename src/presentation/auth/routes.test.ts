@@ -80,6 +80,19 @@ describe('Api auth routes testing', () => {
         message: `Email ${user.email} already exists, try another one`,
       });
     });
+
+    test('Should return an error if malformed or not present email or password', async () => {
+      const { body } = await request(testServer.app)
+        .post(signupRoute)
+        .send({})
+        .expect(400);
+
+      expect(body).toEqual({
+        name: 'Bad Request',
+        message:
+          'username should be minimum of 5 characters,username must be a string, email should be a valid email address, password should be minimum of 8 characters,password must be a string, role must be one of the following values: admin, shelter, adopter,role must be a string',
+      });
+    });
   });
 
   describe('Login routes test api/auth/login', () => {
