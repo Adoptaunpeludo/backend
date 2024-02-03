@@ -27,6 +27,6 @@ export class AuthController {
   };
 
   validateEmail = (req: Request, res: Response) => {
-    res.json('ValidateEmail');
+    res.json(req.params);
   };
 }
