@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { UserRoles } from '../interfaces/user-response.interface';
 
-interface JWTAdapterPayload {
+export interface JWTAdapterPayload {
   id: string;
   name: string;
   email: string;
@@ -11,12 +11,15 @@ interface JWTAdapterPayload {
 export class JWTAdapter {
   constructor(private readonly seed: string) {}
 
-  public generateToken(payload: JWTAdapterPayload, duration: string = '2h') {
+  public generateToken(
+    payload: JWTAdapterPayload,
+    duration: string = '2h'
+  ): Promise<string | null> {
     return new Promise((resolve) => {
       jwt.sign(payload, this.seed, { expiresIn: duration }, (err, token) => {
         if (err) return resolve(null);
 
-        resolve(token);
+        if (token) resolve(token);
       });
     });
   }
