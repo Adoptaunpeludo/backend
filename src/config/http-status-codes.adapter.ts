@@ -21,7 +21,7 @@ export class HttpCodes {
     return StatusCodes.UNAUTHORIZED;
   }
 
-  static get FOBIDDEN(): number {
+  static get FORBIDDEN(): number {
     return StatusCodes.FORBIDDEN;
   }
 
