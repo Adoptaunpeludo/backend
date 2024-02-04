@@ -20,8 +20,10 @@ export class AuthService {
   ) {}
 
   public async registerUser(registerUserDto: RegisterUserDto) {
+    const { email } = registerUserDto;
+
     const existUser = await prisma.user.findUnique({
-      where: { email: registerUserDto.email },
+      where: { email },
     });
 
     if (existUser)
@@ -31,12 +33,7 @@ export class AuthService {
 
     const hashedPassword = BcryptAdapter.hash(registerUserDto.password);
 
-    const verificationToken = await this.jwt.generateToken(
-      {
-        email: registerUserDto.email,
-      },
-      '15m'
-    );
+    const verificationToken = await this.jwt.generateToken({ email }, '15m');
 
     if (!verificationToken)
       throw new CustomAPIError(
@@ -57,7 +54,11 @@ export class AuthService {
 
     // Rollback in case there is an error sending the validation email
     try {
-      await this.sendEmailValidationLink(createdUser.email, verificationToken);
+      await this.sendEmailValidationLink(
+        createdUser.email,
+        verificationToken,
+        'email'
+      );
     } catch (error) {
       await prisma.user.delete({ where: { email: createdUser.email } });
       throw error;
@@ -77,6 +78,9 @@ export class AuthService {
 
     if (!isMatch) throw new UnauthorizedError('Incorrect email or password');
 
+    if (!user.emailValidated)
+      throw new UnauthenticatedError('Please first verify your email');
+
     const token = this.jwt.generateToken({
       id: user.id,
       role: user.role,
@@ -94,24 +98,38 @@ export class AuthService {
     return token;
   }
 
-  private sendEmailValidationLink = async (email: string, token: string) => {
-    //* TODO: Decrease token duration
+  private generateEmailContent(type: string, token: string) {
+    const endPoint = type === 'email' ? 'validate-email' : 'forgot-password';
+    const title = type === 'email' ? 'Valida tu Email' : 'Cambia tu password';
+    const action =
+      type === 'email' ? 'validar tu email' : 'cambiar tu password';
 
+    const link = `${this.webServiceUrl}/auth/${endPoint}?token=${token}`;
+
+    const html = `
+        <h1>${title}</h1>
+        <p>Por favor haz click en el siguiente link para ${action}</p>
+        <a href="${link}">${title}</a>
+    `;
+
+    return { html, title };
+  }
+
+  private sendEmailValidationLink = async (
+    email: string,
+    token: string,
+    type: string
+  ) => {
     if (!token)
       throw new InternalServerError(
         'Error while generating JWT token, check server logs'
       );
 
-    const link = `${this.webServiceUrl}/auth/validate-email/${token}`;
-    const html = `
-        <h1>Valida tu email</h1>
-        <p>Por favor haz click en el siguiente link para validar tu email</p>
-        <a href="${link}">Validar el email: ${email}</a>
-    `;
+    const { html, title } = this.generateEmailContent(type, token);
 
     const options = {
       to: email,
-      subject: 'Validación de email',
+      subject: title,
       htmlBody: html,
     };
 
@@ -132,14 +150,14 @@ export class AuthService {
 
     if (!email)
       throw new InternalServerError(
-        'Wrong email from JWT payload, check server logs'
+        'Wrong email from JWT token, check server logs'
       );
 
-    const verifyUser = await prisma.user.findUnique({
-      where: { email: payload.email },
+    const verifyUserToken = await prisma.user.findUnique({
+      where: { email },
     });
 
-    if (verifyUser?.verificationToken !== token)
+    if (verifyUserToken?.verificationToken !== token)
       throw new UnauthenticatedError('Invalid token');
 
     const user = await prisma.user.update({
@@ -157,5 +175,32 @@ export class AuthService {
       throw new InternalServerError(
         'Email not exist from JWT payload, check server logs'
       );
+  }
+
+  public async forgotPassword(email: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) throw new BadRequestError(`User with email: ${email} not found`);
+
+    const passwordToken = await this.jwt.generateToken({ email }, '15m');
+
+    if (!passwordToken)
+      throw new CustomAPIError(
+        'Internal Server',
+        'JWT token error, check server logs',
+        500
+      );
+
+    await prisma.user.update({ data: { passwordToken }, where: { email } });
+
+    try {
+      await this.sendEmailValidationLink(email, passwordToken, 'password');
+    } catch (error) {
+      await prisma.user.update({
+        data: { passwordToken: '' },
+        where: { email },
+      });
+      throw error;
+    }
   }
 }

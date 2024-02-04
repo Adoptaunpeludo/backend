@@ -43,7 +43,8 @@ model User {
   password          String
   username          String
   emailValidated    Boolean      @default(false)
-  verificationToken String
+  verificationToken String       @default("")
+  passwordToken     String       @default("")
   verified          DateTime?
   role              user_roles
   createdAt         DateTime     @default(now())

@@ -33,11 +33,21 @@ export class AuthController {
     res.status(HttpCodes.OK).json({ message: 'User successfully logged in.' });
   };
 
-  validateEmail = async (req: Request, res: Response) => {
+  verifyEmail = async (req: Request, res: Response) => {
     const { token } = req.params;
 
     await this.authService.verifyEmail(token);
 
     res.status(HttpCodes.OK).json({ message: 'Email validated' });
+  };
+
+  forgotPassword = async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    await this.authService.forgotPassword(email);
+
+    res
+      .status(HttpCodes.OK)
+      .json({ message: 'Reset password email sent successfully' });
   };
 }

@@ -4,6 +4,7 @@ import { ValidationMiddleware } from '../middlewares';
 import { AuthService, EmailService } from '../services';
 import { JWTAdapter, envs } from '../../config';
 import { LoginUserDto, RegisterUserDto } from '../../domain';
+import { ForgotPasswordDto } from '../../domain/dtos';
 
 export class AuthRoutes {
   static get routes() {
@@ -23,12 +24,20 @@ export class AuthRoutes {
       ValidationMiddleware.validate(LoginUserDto),
       authController.login
     );
+
     router.post(
       '/register',
       ValidationMiddleware.validate(RegisterUserDto),
       authController.register
     );
-    router.get('/validate-email/:token', authController.validateEmail);
+
+    router.post(
+      '/forgot-password/',
+      ValidationMiddleware.validate(ForgotPasswordDto),
+      authController.forgotPassword
+    );
+
+    router.get('/validate-email/:token', authController.verifyEmail);
 
     return router;
   }
