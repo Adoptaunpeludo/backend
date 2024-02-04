@@ -98,13 +98,13 @@ export class AuthService {
     return token;
   }
 
-  private generateEmailContent(type: string, token: string) {
-    const endPoint = type === 'email' ? 'validate-email' : 'forgot-password';
+  private generateEmailContent(type: string, token: string, email: string) {
+    const endPoint = type === 'email' ? 'verify-email' : 'reset-password';
     const title = type === 'email' ? 'Valida tu Email' : 'Cambia tu password';
     const action =
       type === 'email' ? 'validar tu email' : 'cambiar tu password';
 
-    const link = `${this.webServiceUrl}/auth/${endPoint}?token=${token}`;
+    const link = `${this.webServiceUrl}/user/${endPoint}?token=${token}&email=${email}`;
 
     const html = `
         <h1>${title}</h1>
@@ -125,7 +125,7 @@ export class AuthService {
         'Error while generating JWT token, check server logs'
       );
 
-    const { html, title } = this.generateEmailContent(type, token);
+    const { html, title } = this.generateEmailContent(type, token, email);
 
     const options = {
       to: email,
@@ -144,7 +144,7 @@ export class AuthService {
   public async verifyEmail(token: string) {
     const payload = await this.jwt.validateToken(token);
 
-    if (!payload) throw new UnauthorizedError('Invalid token');
+    if (!payload) throw new UnauthorizedError('Invalid token validation');
 
     const { email } = payload;
 
@@ -158,7 +158,7 @@ export class AuthService {
     });
 
     if (verifyUserToken?.verificationToken !== token)
-      throw new UnauthenticatedError('Invalid token');
+      throw new UnauthenticatedError('Invalid token check');
 
     const user = await prisma.user.update({
       where: {
@@ -166,7 +166,6 @@ export class AuthService {
       },
       data: {
         emailValidated: true,
-        verificationToken: '',
         verified: new Date(),
       },
     });
@@ -202,5 +201,37 @@ export class AuthService {
       });
       throw error;
     }
+  }
+
+  public async resetPassword(password: string, token: string) {
+    const payload = await this.jwt.validateToken(token);
+
+    if (!payload) throw new UnauthorizedError('Invalid token validation');
+
+    const { email } = payload;
+
+    if (!email)
+      throw new InternalServerError(
+        'Wrong email from JWT token, check server logs'
+      );
+
+    const verifyUserToken = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (verifyUserToken?.passwordToken !== token)
+      throw new UnauthenticatedError('Invalid token check');
+
+    const hash = BcryptAdapter.hash(password);
+
+    const user = await prisma.user.update({
+      data: { password: hash, passwordToken: '' },
+      where: { email },
+    });
+
+    if (!user)
+      throw new InternalServerError(
+        'Email not exist from JWT payload, check server logs'
+      );
   }
 }

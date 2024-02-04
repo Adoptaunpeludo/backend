@@ -16,7 +16,9 @@ export class AuthController {
 
     const user = await this.authService.registerUser(req.body!);
 
-    res.status(HttpCodes.CREATED).json(user);
+    res.status(HttpCodes.CREATED).json({
+      message: 'Susccess!, Please check your email to verify your account',
+    });
   };
 
   login = async (req: Request, res: Response) => {
@@ -31,6 +33,15 @@ export class AuthController {
     });
 
     res.status(HttpCodes.OK).json({ message: 'User successfully logged in.' });
+  };
+
+  logout = async (req: Request, res: Response) => {
+    res.cookie('token', 'logout', {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
+
+    res.sendStatus(HttpCodes.OK);
   };
 
   verifyEmail = async (req: Request, res: Response) => {
@@ -49,5 +60,14 @@ export class AuthController {
     res
       .status(HttpCodes.OK)
       .json({ message: 'Reset password email sent successfully' });
+  };
+
+  resetPassword = async (req: Request, res: Response) => {
+    const { password } = req.body;
+    const { token } = req.params;
+
+    await this.authService.resetPassword(password, token);
+
+    res.status(HttpCodes.OK).json({ message: 'Password reset' });
   };
 }
