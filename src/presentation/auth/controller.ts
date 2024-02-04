@@ -1,11 +1,19 @@
 import { Request, Response } from 'express';
 import { AuthService } from '../services';
 import { HttpCodes, envs } from '../../config/';
+import { BadRequestError } from '../../domain';
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   register = async (req: Request, res: Response) => {
+    const { role } = req.body;
+
+    if (role !== 'adopter' && role !== 'shelter')
+      throw new BadRequestError(
+        `Invalid role ${role}, must be "adopter" or "shelter"`
+      );
+
     const user = await this.authService.registerUser(req.body!);
 
     res.status(HttpCodes.CREATED).json(user);
