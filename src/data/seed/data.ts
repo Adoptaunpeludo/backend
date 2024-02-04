@@ -1,7 +1,9 @@
+import { BcryptAdapter } from '../../config';
+
 export const seedData = [
   {
     email: 'shelter1@example.com',
-    password: 'password1',
+    password: BcryptAdapter.hash('12345678'),
     image: 'shelter1.png',
     role: 'shelter',
     name: 'Shelter2',
@@ -27,7 +29,7 @@ export const seedData = [
   },
   {
     email: 'shelter2@example.com',
-    password: 'password2',
+    password: BcryptAdapter.hash('12345678'),
     image: 'shelter2.png',
     name: 'Shelter2',
     role: 'shelter',
@@ -53,7 +55,7 @@ export const seedData = [
   },
   {
     email: 'admin@example.com',
-    password: 'adminpassword',
+    password: BcryptAdapter.hash('12345678'),
     image: 'admin.png',
     name: 'AdminName',
     role: 'admin',
@@ -65,7 +67,7 @@ export const seedData = [
   },
   {
     email: 'adopter@example.com',
-    password: 'adopterpassword',
+    password: BcryptAdapter.hash('12345678'),
     image: 'adopter.png',
     first_name: 'AdopterFirstName',
     last_name: 'AdopterLastName',

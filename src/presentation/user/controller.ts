@@ -32,21 +32,23 @@ export class UserController {
 
   getUser = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({
-      where: { email: 'adopter@example.co' },
+      where: { email: req.body.user.email },
       include: {
-        adopter: true,
+        [req.body.user.role]: true,
         contactInfo: {
           include: {
             city: true,
           },
         },
+        shelter: {
+          include: {
+            socialMedia: true,
+          },
+        },
       },
     });
-
     if (!user) throw new NotFoundError('User not found');
-
     const userEntity = UserEntity.fromObject(user);
-
     res.status(HttpCodes.OK).json(userEntity);
   };
 }
