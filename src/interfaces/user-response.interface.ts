@@ -11,6 +11,7 @@ export interface UserResponse {
   username: string;
   emailValidated: boolean;
   role: UserRoles;
+  verified: Date | null;
   createdAt: Date;
   updatedAt: Date;
   avatar: string;

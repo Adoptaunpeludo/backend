@@ -10,6 +10,7 @@ export class UserEntity {
       username: userResponse.username || '',
       emailValidated: userResponse.emailValidated,
       role: userResponse.role,
+      verified: userResponse.verified,
       createdAt: userResponse.createdAt,
       updatedAt: userResponse.updatedAt,
       avatar: userResponse.avatar,

@@ -36,7 +36,7 @@ export class AuthController {
   validateEmail = async (req: Request, res: Response) => {
     const { token } = req.params;
 
-    await this.authService.validateEmail(token);
+    await this.authService.verifyEmail(token);
 
     res.status(HttpCodes.OK).json({ message: 'Email validated' });
   };

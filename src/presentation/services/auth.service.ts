@@ -1,4 +1,5 @@
 import { prisma } from '../../data/postgres';
+import crypto from 'crypto';
 import {
   BadRequestError,
   CustomAPIError,
@@ -9,7 +10,7 @@ import {
 import { BcryptAdapter, JWTAdapter } from '../../config';
 
 import { EmailService } from './email.service';
-import { InternalServerError } from '../../domain/errors';
+import { InternalServerError, UnauthenticatedError } from '../../domain/errors';
 
 export class AuthService {
   constructor(
@@ -30,18 +31,33 @@ export class AuthService {
 
     const hashedPassword = BcryptAdapter.hash(registerUserDto.password);
 
+    const verificationToken = await this.jwt.generateToken(
+      {
+        email: registerUserDto.email,
+      },
+      '15m'
+    );
+
+    if (!verificationToken)
+      throw new CustomAPIError(
+        'Internal Server',
+        'JWT token error, check server logs',
+        500
+      );
+
     const createdUser = await prisma.user.create({
       data: {
         email: registerUserDto.email,
         password: hashedPassword,
         username: registerUserDto.username || '',
         role: registerUserDto.role,
+        verificationToken,
       },
     });
 
     // Rollback in case there is an error sending the validation email
     try {
-      await this.sendEmailValidationLink(createdUser.email);
+      await this.sendEmailValidationLink(createdUser.email, verificationToken);
     } catch (error) {
       await prisma.user.delete({ where: { email: createdUser.email } });
       throw error;
@@ -78,9 +94,9 @@ export class AuthService {
     return token;
   }
 
-  private sendEmailValidationLink = async (email: string) => {
+  private sendEmailValidationLink = async (email: string, token: string) => {
     //* TODO: Decrease token duration
-    const token = await this.jwt.generateToken({ email });
+
     if (!token)
       throw new InternalServerError(
         'Error while generating JWT token, check server logs'
@@ -107,7 +123,7 @@ export class AuthService {
     return true;
   };
 
-  public async validateEmail(token: string) {
+  public async verifyEmail(token: string) {
     const payload = await this.jwt.validateToken(token);
 
     if (!payload) throw new UnauthorizedError('Invalid token');
@@ -119,18 +135,27 @@ export class AuthService {
         'Wrong email from JWT payload, check server logs'
       );
 
+    const verifyUser = await prisma.user.findUnique({
+      where: { email: payload.email },
+    });
+
+    if (verifyUser?.verificationToken !== token)
+      throw new UnauthenticatedError('Invalid token');
+
     const user = await prisma.user.update({
       where: {
         email,
       },
       data: {
         emailValidated: true,
+        verificationToken: '',
+        verified: new Date(),
       },
     });
 
     if (!user)
       throw new InternalServerError(
-        'Email not exist form JWT payload, check server logs'
+        'Email not exist from JWT payload, check server logs'
       );
   }
 }
