@@ -11,13 +11,15 @@ export class UserRoutes {
     const jwt = new JWTAdapter(envs.JWT_SEED);
     const authMiddleware = new AuthMiddleware(jwt);
 
-    router.get('/me', userController.getUser);
+    router.get('/me', authMiddleware.authenticateUser, userController.getUser);
     router.get(
       '/',
       authMiddleware.authenticateUser,
       authMiddleware.authorizePermissions('admin'),
       userController.getAllUsers
     );
+
+    router.delete('/:email', userController.deleteUser);
 
     return router;
   }

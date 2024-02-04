@@ -26,6 +26,7 @@ export class AuthMiddleware {
         .json({ message: 'Invalid authentication' });
 
     req.body.user = payload;
+
     next();
   };
 

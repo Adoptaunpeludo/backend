@@ -25,7 +25,11 @@ export class AuthController {
     res.status(HttpCodes.OK).json({ message: 'User successfully logged in.' });
   };
 
-  validateEmail = (req: Request, res: Response) => {
-    res.json(req.params);
+  validateEmail = async (req: Request, res: Response) => {
+    const { token } = req.params;
+
+    await this.authService.validateEmail(token);
+
+    res.status(HttpCodes.OK).json({ message: 'Email validated' });
   };
 }

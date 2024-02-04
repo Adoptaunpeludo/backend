@@ -39,7 +39,13 @@ export class AuthService {
       },
     });
 
-    await this.sendEmailValidationLink(createdUser.email);
+    // Rollback in case there is an error sending the validation email
+    try {
+      await this.sendEmailValidationLink(createdUser.email);
+    } catch (error) {
+      await prisma.user.delete({ where: { email: createdUser.email } });
+      throw error;
+    }
 
     return createdUser;
   }
@@ -73,6 +79,7 @@ export class AuthService {
   }
 
   private sendEmailValidationLink = async (email: string) => {
+    //* TODO: Decrease token duration
     const token = await this.jwt.generateToken({ email });
     if (!token)
       throw new InternalServerError(
@@ -99,4 +106,31 @@ export class AuthService {
 
     return true;
   };
+
+  public async validateEmail(token: string) {
+    const payload = await this.jwt.validateToken(token);
+
+    if (!payload) throw new UnauthorizedError('Invalid token');
+
+    const { email } = payload;
+
+    if (!email)
+      throw new InternalServerError(
+        'Wrong email from JWT payload, check server logs'
+      );
+
+    const user = await prisma.user.update({
+      where: {
+        email,
+      },
+      data: {
+        emailValidated: true,
+      },
+    });
+
+    if (!user)
+      throw new InternalServerError(
+        'Email not exist form JWT payload, check server logs'
+      );
+  }
 }

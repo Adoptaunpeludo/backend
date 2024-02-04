@@ -15,20 +15,20 @@ export class AuthRoutes {
       envs.MAILER_EMAIL,
       envs.MAILER_SECRET_KEY
     );
-    const service = new AuthService(jwt, emailService, envs.WEBSERVICE_URL);
-    const controller = new AuthController(service);
+    const authService = new AuthService(jwt, emailService, envs.WEBSERVICE_URL);
+    const authController = new AuthController(authService);
 
     router.post(
       '/login',
       ValidationMiddleware.validate(LoginUserDto),
-      controller.login
+      authController.login
     );
     router.post(
       '/register',
       ValidationMiddleware.validate(RegisterUserDto),
-      controller.register
+      authController.register
     );
-    router.get('/validate-email/:token', controller.validateEmail);
+    router.get('/validate-email/:token', authController.validateEmail);
 
     return router;
   }

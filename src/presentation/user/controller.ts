@@ -51,4 +51,12 @@ export class UserController {
     const userEntity = UserEntity.fromObject(user);
     res.status(HttpCodes.OK).json(userEntity);
   };
+
+  deleteUser = async (req: Request, res: Response) => {
+    const { email } = req.params;
+
+    await prisma.user.delete({ where: { email } });
+
+    res.status(HttpCodes.OK).json({ message: 'User deleted successfully' });
+  };
 }
