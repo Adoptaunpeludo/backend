@@ -1,5 +1,4 @@
 import { prisma } from '../../data/postgres';
-import crypto from 'crypto';
 import {
   BadRequestError,
   CustomAPIError,
@@ -8,7 +7,6 @@ import {
   UnauthorizedError,
 } from '../../domain';
 import { BcryptAdapter, JWTAdapter } from '../../config';
-
 import { EmailService } from './email.service';
 import { InternalServerError, UnauthenticatedError } from '../../domain/errors';
 

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+
 import { UserRoles } from '../interfaces/user-response.interface';
 
 export interface JWTAdapterPayload {

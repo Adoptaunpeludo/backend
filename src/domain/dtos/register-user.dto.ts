@@ -1,5 +1,6 @@
 import { Trim } from 'class-sanitizer';
 import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
+
 import { UserRoles } from '../../interfaces/user-response.interface';
 
 enum UserTypes {

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+
 import { AuthService } from '../services';
 import { HttpCodes, envs } from '../../config/';
 import { BadRequestError } from '../../domain';

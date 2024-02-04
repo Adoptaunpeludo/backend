@@ -1,8 +1,9 @@
+import request from 'supertest';
+
 import { BcryptAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
 import { UserRoles } from '../../interfaces';
 import { testServer } from '../test-server';
-import request from 'supertest';
 
 const cleanDB = async () => {
   await prisma.$transaction([

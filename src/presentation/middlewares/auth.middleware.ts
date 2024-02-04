@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { HttpCodes, JWTAdapter } from '../../config';
 import { UserRoles } from '../../interfaces';
 import { UnauthorizedError } from '../../domain';
