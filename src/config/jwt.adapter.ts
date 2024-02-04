@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken';
 import { UserRoles } from '../interfaces/user-response.interface';
 
 export interface JWTAdapterPayload {
-  id: string;
-  name: string;
+  id?: string;
+  name?: string;
   email: string;
-  role: UserRoles;
+  role?: UserRoles;
 }
 
 export class JWTAdapter {
