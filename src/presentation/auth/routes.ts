@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import { AuthController } from './controller';
-import { ValidationMiddleware } from '../middlewares/validation.middleware';
-import { AuthService } from '../services/auth.service';
+import { ValidationMiddleware } from '../middlewares';
+import { AuthService, EmailService } from '../services';
 import { JWTAdapter, envs } from '../../config';
 import { LoginUserDto, RegisterUserDto } from '../../domain';
-import { EmailService } from '../services/email.service';
 
 export class AuthRoutes {
   static get routes() {

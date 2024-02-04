@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { HttpCodes } from '../../config/http-status-codes.adapter';
+import { HttpCodes } from '../../config';
 
 export class NotFoundMiddleware {
   static init(req: Request, res: Response) {

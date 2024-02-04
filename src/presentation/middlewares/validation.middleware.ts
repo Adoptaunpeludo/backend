@@ -1,8 +1,9 @@
+import { RequestHandler } from 'express';
 import { plainToInstance } from 'class-transformer';
 import { ValidationError, validate } from 'class-validator';
-import { RequestHandler } from 'express';
-import { BadRequestError } from '../../domain/errors';
 import { sanitize } from 'class-sanitizer';
+
+import { BadRequestError } from '../../domain/errors';
 
 export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {

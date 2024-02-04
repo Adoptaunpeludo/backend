@@ -1,7 +1,6 @@
 import 'express-async-errors';
 import express, { Router } from 'express';
-import { NotFoundMiddleware } from './middlewares/not-found.middleware';
-import { ErrorHandlerMiddleware } from './middlewares/error-handler.middleware';
+import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
 import cookieParser from 'cookie-parser';
 import { envs } from '../config';
 

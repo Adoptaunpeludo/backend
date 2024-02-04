@@ -6,10 +6,10 @@ import {
   RegisterUserDto,
   UnauthorizedError,
 } from '../../domain';
-import { BcryptAdapter } from '../../config';
-import { JWTAdapter } from '../../config/jwt.adapter';
+import { BcryptAdapter, JWTAdapter } from '../../config';
+
 import { EmailService } from './email.service';
-import { InternalServerError } from '../../domain/errors/internal-server.error';
+import { InternalServerError } from '../../domain/errors';
 
 export class AuthService {
   constructor(

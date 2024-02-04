@@ -1,6 +1,6 @@
 import { BcryptAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
-import { UserRoles } from '../../interfaces/user-response.interface';
+import { UserRoles } from '../../interfaces';
 import { testServer } from '../test-server';
 import request from 'supertest';
 

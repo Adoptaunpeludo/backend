@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
-import { AuthService } from '../services/auth.service';
-import { HttpCodes } from '../../config/http-status-codes.adapter';
-import { envs } from '../../config';
+import { AuthService } from '../services';
+import { HttpCodes, envs } from '../../config/';
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

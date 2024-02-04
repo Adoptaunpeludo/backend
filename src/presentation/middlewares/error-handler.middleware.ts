@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { CustomAPIError } from '../../domain/errors/custom-api.error';
-import { HttpCodes } from '../../config/http-status-codes.adapter';
+import { CustomAPIError } from '../../domain/errors';
+import { HttpCodes } from '../../config';
 
 export class ErrorHandlerMiddleware {
   static handle(err: Error, _req: Request, res: Response, _next: NextFunction) {
