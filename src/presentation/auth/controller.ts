@@ -15,7 +15,7 @@ export class AuthController {
         `Invalid role ${role}, must be "adopter" or "shelter"`
       );
 
-    const user = await this.authService.registerUser(req.body!);
+    await this.authService.registerUser(req.body!);
 
     res.status(HttpCodes.CREATED).json({
       message: 'Susccess!, Please check your email to verify your account',
@@ -36,7 +36,7 @@ export class AuthController {
     res.status(HttpCodes.OK).json({ message: 'User successfully logged in.' });
   };
 
-  logout = async (req: Request, res: Response) => {
+  logout = async (_req: Request, res: Response) => {
     res.cookie('token', 'logout', {
       httpOnly: true,
       expires: new Date(Date.now()),
