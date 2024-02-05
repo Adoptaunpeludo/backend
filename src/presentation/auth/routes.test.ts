@@ -4,6 +4,7 @@ import { BcryptAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
 import { UserRoles } from '../../interfaces';
 import { testServer } from '../test-server';
+import { get } from 'env-var';
 
 const cleanDB = async () => {
   await prisma.$transaction([
@@ -12,6 +13,7 @@ const cleanDB = async () => {
     prisma.adopter.deleteMany(),
     prisma.shelter.deleteMany(),
     prisma.admin.deleteMany(),
+    prisma.token.deleteMany(),
     prisma.user.deleteMany(),
   ]);
 };
@@ -26,12 +28,16 @@ interface User {
 describe('Api auth routes testing', () => {
   const signupRoute = '/api/auth/register';
   const loginRoute = '/api/auth/login';
-  const validateEmailRoute = '/api/auth/validate-email';
+  const validateEmailRoute = '/api/auth/verify-email';
+  const logoutRoute = '/api/auth/logout';
+  const forgotPasswordRoute = '/api/auth/forgot-password';
+  const resetPasswordRoute = '/api/auth/reset-password';
+
   const user: User = {
     username: 'test',
     email: 'test@test.com',
     password: 'testtest',
-    role: 'admin',
+    role: 'shelter',
   };
 
   beforeAll(async () => {
@@ -56,15 +62,7 @@ describe('Api auth routes testing', () => {
         .expect(201);
 
       expect(body).toEqual({
-        id: expect.any(String),
-        email: user.email,
-        password: expect.any(String),
-        username: user.username,
-        emailValidated: false,
-        role: user.role,
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-        avatar: 'avatar.png',
+        message: 'Success!, Please check your email to verify your account',
       });
     });
 
@@ -105,7 +103,9 @@ describe('Api auth routes testing', () => {
     test('Should return OK with correct credentials', async () => {
       const hash = BcryptAdapter.hash(user.password);
 
-      await prisma.user.create({ data: { ...user, password: hash } });
+      await prisma.user.create({
+        data: { ...user, emailValidated: true, password: hash },
+      });
 
       const { body } = await request(testServer.app)
         .post(loginRoute)
@@ -132,18 +132,93 @@ describe('Api auth routes testing', () => {
     });
   });
 
-  describe('Validate email routes test api/auth/validate-email/:token', () => {
-    test('Initial validate-email test', async () => {
-      const params = 'test';
-      const { body } = await request(testServer.app)
-        .get(`${validateEmailRoute}/${params}`)
+  describe('Validate logout route test api/auth/logout', () => {
+    test('logout route', async () => {
+      const hash = BcryptAdapter.hash(user.password);
+
+      await prisma.user.create({
+        data: { ...user, emailValidated: true, password: hash },
+      });
+
+      const loginResponse = await request(testServer.app)
+        .post(loginRoute)
+        .send({
+          email: 'test@test.com',
+          password: 'testtest',
+        });
+
+      const [accessToken, refreshToken] = loginResponse.headers['set-cookie'];
+
+      const response = await request(testServer.app)
+        .delete(logoutRoute)
+        .set('Cookie', accessToken)
+        .set('Cookie', refreshToken)
         .expect(200);
 
-      console.log({ body });
+      expect(response.headers['set-cookie'].at(-2)?.split(';').at(0)).toEqual(
+        'refreshToken=logout'
+      );
+      expect(response.headers['set-cookie'].at(-1)?.split(';').at(0)).toEqual(
+        'accessToken=logout'
+      );
+    });
+  });
 
-      // expect(body).toEqual({
-      //   token: params,
-      // });
+  describe('Validate email routes test api/auth/validate-email/:token', () => {
+    test('Should validate email', async () => {
+      await request(testServer.app).post(signupRoute).send(user).expect(201);
+
+      const me = await prisma.user.findMany();
+
+      const { body } = await request(testServer.app)
+        .post(`${validateEmailRoute}/${me[0].verificationToken}`)
+        .expect(200);
+
+      expect(body).toEqual({
+        message: 'Email validated',
+      });
+    });
+  });
+
+  describe('Validate forgot-password routes test api/auth/forgot-password', () => {
+    test('Initial validate-email test', async () => {
+      await request(testServer.app).post(signupRoute).send(user).expect(201);
+
+      const me = await prisma.user.findMany();
+
+      const { body } = await request(testServer.app)
+        .post(forgotPasswordRoute)
+        .send({ email: me[0].email })
+        .expect(200);
+
+      expect(body).toEqual({
+        message: 'Reset password email sent successfully',
+      });
+    });
+  });
+
+  describe('Validate reset-password routes test api/auth/reset-password', () => {
+    test('Initial validate-email test', async () => {
+      await request(testServer.app).post(signupRoute).send(user).expect(201);
+
+      let me = await prisma.user.findMany();
+
+      await request(testServer.app)
+        .post(forgotPasswordRoute)
+        .send({ email: me[0].email })
+        .expect(200);
+
+      me = await prisma.user.findMany();
+      console.log({ me });
+
+      const { body } = await request(testServer.app)
+        .post(`${resetPasswordRoute}/${me[0].passwordToken}`)
+        .send({ password: 'testtest' })
+        .expect(200);
+
+      expect(body).toEqual({
+        message: 'Password reset',
+      });
     });
   });
 });

@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { AuthService } from '../services';
 import { HttpCodes, envs } from '../../config/';
 import { BadRequestError } from '../../domain';
+import { AttachCookiesToResponse } from '../../utils/response.cookies';
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -18,26 +19,36 @@ export class AuthController {
     await this.authService.registerUser(req.body!);
 
     res.status(HttpCodes.CREATED).json({
-      message: 'Susccess!, Please check your email to verify your account',
+      message: 'Success!, Please check your email to verify your account',
     });
   };
 
   login = async (req: Request, res: Response) => {
-    const token = await this.authService.loginUser(req.body!);
+    const userAgent = req.headers['user-agent'];
+    const ip = req.ip;
 
-    const oneDay = 1000 * 60 * 24 * 60;
-    res.cookie('token', token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + oneDay),
-      secure: envs.NODE_ENV === 'production',
-      signed: true,
-    });
+    const { accessToken, refreshToken } = await this.authService.loginUser(
+      req.body!,
+      {
+        userAgent: userAgent || '',
+        ip: ip || '',
+      }
+    );
+
+    AttachCookiesToResponse.attach({ res, accessToken, refreshToken });
 
     res.status(HttpCodes.OK).json({ message: 'User successfully logged in.' });
   };
 
-  logout = async (_req: Request, res: Response) => {
-    res.cookie('token', 'logout', {
+  logout = async (req: Request, res: Response) => {
+    await this.authService.logout(req.body.user.id);
+
+    res.cookie('refreshToken', 'logout', {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
+
+    res.cookie('accessToken', 'logout', {
       httpOnly: true,
       expires: new Date(Date.now()),
     });

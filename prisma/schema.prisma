@@ -54,8 +54,17 @@ model User {
   shelter           Shelter?
   admin             Admin?
   contactInfo       ContactInfo?
+  Token             Token?
+}
 
-  @@index([username])
+model Token {
+  id           String  @id @default(uuid())
+  refreshToken String
+  ip           String
+  userAgent    String
+  isValid      Boolean @default(true)
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id])
 }
 
 model Adopter {

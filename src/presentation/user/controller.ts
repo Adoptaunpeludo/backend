@@ -47,8 +47,11 @@ export class UserController {
         },
       },
     });
+
     if (!user) throw new NotFoundError('User not found');
+
     const userEntity = UserEntity.fromObject(user);
+
     res.status(HttpCodes.OK).json(userEntity);
   };
 

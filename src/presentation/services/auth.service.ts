@@ -9,6 +9,14 @@ import {
 import { BcryptAdapter, JWTAdapter } from '../../config';
 import { EmailService } from './email.service';
 import { InternalServerError, UnauthenticatedError } from '../../domain/errors';
+import { CryptoAdapter } from '../../config/crypto.adapter';
+
+interface Options {
+  userAgent: string;
+  ip: string;
+}
+
+type TokenType = 'passwordToken' | 'verificationToken';
 
 export class AuthService {
   constructor(
@@ -65,7 +73,9 @@ export class AuthService {
     return createdUser;
   }
 
-  public async loginUser(loginUserDto: LoginUserDto) {
+  public async loginUser(loginUserDto: LoginUserDto, options: Options) {
+    const { userAgent, ip } = options;
+
     const user = await prisma.user.findUnique({
       where: { email: loginUserDto.email },
     });
@@ -79,21 +89,50 @@ export class AuthService {
     if (!user.emailValidated)
       throw new UnauthenticatedError('Please first verify your email');
 
-    const token = this.jwt.generateToken({
+    //* Refresh token
+    let token = '';
+
+    const tokenExist = await prisma.token.findUnique({
+      where: { userId: user.id },
+    });
+
+    if (tokenExist) {
+      const { isValid } = tokenExist;
+      if (!isValid) throw new UnauthenticatedError('Invalid Credentials');
+      token = tokenExist.refreshToken;
+    } else {
+      token = CryptoAdapter.randomBytes(40, 'hex');
+      const userToken = { refreshToken: token, ip, userAgent, userId: user.id };
+      await prisma.token.create({ data: userToken });
+    }
+
+    const accessToken = await this.jwt.generateToken({
       id: user.id,
       role: user.role,
       email: user.email,
       name: user.username,
     });
 
-    if (!token)
+    const refreshToken = await this.jwt.generateToken({
+      id: user.id,
+      role: user.role,
+      email: user.email,
+      name: user.username,
+      refreshToken: token,
+    });
+
+    if (!accessToken || !refreshToken)
       throw new CustomAPIError(
         'Internal Server',
         'JWT token error, check server logs',
         500
       );
 
-    return token;
+    return { accessToken, refreshToken };
+  }
+
+  public async logout(userId: string) {
+    await prisma.token.delete({ where: { userId } });
   }
 
   private generateEmailContent(type: string, token: string, email: string) {
@@ -139,7 +178,7 @@ export class AuthService {
     return true;
   }
 
-  private async verifyToken(token: string) {
+  private async verifyToken(token: string, type: TokenType) {
     const payload = await this.jwt.validateToken(token);
 
     if (!payload) throw new UnauthorizedError('Invalid token validation');
@@ -155,14 +194,14 @@ export class AuthService {
       where: { email },
     });
 
-    if (verifyUserToken?.passwordToken !== token)
+    if (verifyUserToken?.[type] !== token)
       throw new UnauthenticatedError('Invalid token check');
 
     return email;
   }
 
   public async verifyEmail(token: string) {
-    const email = await this.verifyToken(token);
+    const email = await this.verifyToken(token, 'verificationToken');
 
     const user = await prisma.user.update({
       where: {
@@ -208,7 +247,7 @@ export class AuthService {
   }
 
   public async resetPassword(password: string, token: string) {
-    const email = await this.verifyToken(token);
+    const email = await this.verifyToken(token, 'passwordToken');
 
     const hash = BcryptAdapter.hash(password);
 

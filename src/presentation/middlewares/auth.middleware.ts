@@ -2,7 +2,9 @@ import { NextFunction, Request, Response } from 'express';
 
 import { HttpCodes, JWTAdapter } from '../../config';
 import { UserRoles } from '../../interfaces';
-import { UnauthorizedError } from '../../domain';
+import { UnauthenticatedError, UnauthorizedError } from '../../domain';
+import { prisma } from '../../data/postgres';
+import { AttachCookiesToResponse } from '../../utils/response.cookies';
 
 export class AuthMiddleware {
   constructor(private readonly jwt: JWTAdapter) {}
@@ -12,22 +14,30 @@ export class AuthMiddleware {
     res: Response,
     next: NextFunction
   ) => {
-    const { token } = req.signedCookies;
+    const { refreshToken, accessToken } = req.signedCookies;
 
-    if (!token)
-      return res
-        .status(HttpCodes.UNAUTHORIZED)
-        .json({ message: 'Invalid authentication' });
+    if (accessToken) {
+      const payload = await this.jwt.validateToken(accessToken);
+      if (!payload) throw new UnauthorizedError('Invalid token validation');
+      const { id, email, name, role } = payload;
+      req.body.user = { id, email, name, role };
+      return next();
+    }
 
-    const payload = await this.jwt.validateToken(token);
+    const payload = await this.jwt.validateToken(refreshToken);
+    if (!payload) throw new UnauthorizedError('Invalid token validation');
 
-    if (!payload)
-      return res
-        .status(HttpCodes.UNAUTHORIZED)
-        .json({ message: 'Invalid authentication' });
+    const existingToken = await prisma.token.findUnique({
+      where: { userId: payload.id, refreshToken: payload.refreshToken },
+    });
 
-    req.body.user = payload;
+    if (!existingToken || !existingToken?.isValid)
+      throw new UnauthenticatedError('Authentication Invalid');
 
+    AttachCookiesToResponse.attach({ res, accessToken, refreshToken });
+    const { id, email, name, role } = payload;
+
+    req.body.user = { id, email, name, role };
     next();
   };
 
