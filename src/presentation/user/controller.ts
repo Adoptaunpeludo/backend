@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
-import { prisma } from '../../data/postgres';
 import { UserEntity } from '../../domain/entities/user.entity';
-import { NotFoundError } from '../../domain/errors';
 import { UserService } from '../services/user.service';
+import { AuthController } from '../auth/controller';
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -17,24 +16,9 @@ export class UserController {
   };
 
   getUser = async (req: Request, res: Response) => {
-    const user = await prisma.user.findUnique({
-      where: { email: req.body.user.email },
-      include: {
-        [req.body.user.role]: true,
-        contactInfo: {
-          include: {
-            city: true,
-          },
-        },
-        shelter: {
-          include: {
-            socialMedia: true,
-          },
-        },
-      },
-    });
+    const { email, role } = req.body.user;
 
-    if (!user) throw new NotFoundError('User not found');
+    const user = await this.userService.getCurrentUser(email, role);
 
     const userEntity = UserEntity.fromObject(user);
 
@@ -44,7 +28,17 @@ export class UserController {
   deleteUser = async (req: Request, res: Response) => {
     const { email } = req.params;
 
-    await prisma.user.delete({ where: { email } });
+    await this.userService.deleteUser(req.body.user, email);
+
+    res.cookie('refreshToken', 'logout', {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
+
+    res.cookie('accessToken', 'logout', {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    });
 
     res.status(HttpCodes.OK).json({ message: 'User deleted successfully' });
   };

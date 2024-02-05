@@ -37,6 +37,7 @@ enum animal_size {
   very_big
 }
 
+//* TODO ONDELETE CASCADE
 model User {
   id                String       @id @default(uuid())
   email             String       @unique

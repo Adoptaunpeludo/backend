@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { AuthService } from '../services';
 import { HttpCodes, envs } from '../../config/';
 import { BadRequestError } from '../../domain';
-import { AttachCookiesToResponse } from '../../utils/response.cookies';
+import { AttachCookiesToResponse } from '../../utils/response-cookies';
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -16,10 +16,11 @@ export class AuthController {
         `Invalid role ${role}, must be "adopter" or "shelter"`
       );
 
-    await this.authService.registerUser(req.body!);
+    const user = await this.authService.registerUser(req.body!);
 
     res.status(HttpCodes.CREATED).json({
       message: 'Success!, Please check your email to verify your account',
+      token: user.verificationToken,
     });
   };
 

@@ -2,18 +2,17 @@ import { Router } from 'express';
 import { UserController } from './controller';
 import { JWTAdapter, envs } from '../../config';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
-import { UserService } from '../services/user.service';
+import { AuthService, UserService } from '../services';
+import { AuthController } from '../auth/controller';
 
 export class UserRoutes {
   static get routes() {
     const router = Router();
 
-    const userService = new UserService();
-
-    const userController = new UserController(userService);
-
     const jwt = new JWTAdapter(envs.JWT_SEED);
     const authMiddleware = new AuthMiddleware(jwt);
+    const userService = new UserService();
+    const userController = new UserController(userService);
 
     router.get('/me', authMiddleware.authenticateUser, userController.getUser);
 
@@ -24,7 +23,11 @@ export class UserRoutes {
       userController.getAllUsers
     );
 
-    router.delete('/:email', userController.deleteUser);
+    router.delete(
+      '/:email',
+      authMiddleware.authenticateUser,
+      userController.deleteUser
+    );
 
     return router;
   }

@@ -21,8 +21,8 @@ type TokenType = 'passwordToken' | 'verificationToken';
 export class AuthService {
   constructor(
     private readonly jwt: JWTAdapter,
-    private readonly emailService: EmailService,
-    private readonly webServiceUrl: string
+    private readonly emailService?: EmailService,
+    private readonly webServiceUrl?: string
   ) {}
 
   public async registerUser(registerUserDto: RegisterUserDto) {
@@ -168,7 +168,7 @@ export class AuthService {
       htmlBody: html,
     };
 
-    const isSent = await this.emailService.sendEmail(options);
+    const isSent = await this.emailService!.sendEmail(options);
 
     if (!isSent)
       throw new InternalServerError('Error sending email, check server logs');
@@ -208,6 +208,7 @@ export class AuthService {
       data: {
         emailValidated: true,
         verified: new Date(),
+        verificationToken: '',
       },
     });
 
