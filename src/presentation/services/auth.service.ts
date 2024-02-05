@@ -245,6 +245,8 @@ export class AuthService {
       });
       throw error;
     }
+
+    return passwordToken;
   }
 
   public async resetPassword(password: string, token: string) {
