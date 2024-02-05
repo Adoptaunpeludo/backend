@@ -190,6 +190,7 @@ describe('Api auth routes testing', () => {
 
       expect(body).toEqual({
         message: 'Email validated',
+        token: expect.any(String),
       });
     });
   });
@@ -207,6 +208,7 @@ describe('Api auth routes testing', () => {
 
       expect(body).toEqual({
         message: 'Reset password email sent successfully',
+        token: expect.any(String),
       });
     });
   });

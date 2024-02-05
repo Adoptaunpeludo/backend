@@ -2,11 +2,15 @@ import { Router } from 'express';
 import { UserController } from './controller';
 import { JWTAdapter, envs } from '../../config';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
+import { UserService } from '../services/user.service';
 
 export class UserRoutes {
   static get routes() {
     const router = Router();
-    const userController = new UserController();
+
+    const userService = new UserService();
+
+    const userController = new UserController(userService);
 
     const jwt = new JWTAdapter(envs.JWT_SEED);
     const authMiddleware = new AuthMiddleware(jwt);
@@ -16,7 +20,7 @@ export class UserRoutes {
     router.get(
       '/',
       authMiddleware.authenticateUser,
-      authMiddleware.authorizePermissions('admin'),
+      // authMiddleware.authorizePermissions('admin'),
       userController.getAllUsers
     );
 

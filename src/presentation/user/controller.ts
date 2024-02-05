@@ -3,27 +3,13 @@ import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { prisma } from '../../data/postgres';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { NotFoundError } from '../../domain/errors';
+import { UserService } from '../services/user.service';
 
 export class UserController {
-  constructor() {}
+  constructor(private readonly userService: UserService) {}
 
   getAllUsers = async (req: Request, res: Response) => {
-    const users = await prisma.user.findMany({
-      include: {
-        admin: true,
-        adopter: true,
-        contactInfo: {
-          include: {
-            city: true,
-          },
-        },
-        shelter: {
-          include: {
-            socialMedia: true,
-          },
-        },
-      },
-    });
+    const users = await this.userService.getAllUsers();
 
     const userEntities = users.map((user) => UserEntity.fromObject(user));
 
