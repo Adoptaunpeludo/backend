@@ -38,21 +38,33 @@ enum animal_size {
 }
 
 model User {
-  id             String       @id @default(uuid())
-  email          String       @unique
-  password       String
-  username       String
-  emailValidated Boolean      @default(false)
-  role           user_roles
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @default(now())
-  avatar         String       @default("avatar.png")
-  adopter        Adopter?
-  shelter        Shelter?
-  admin          Admin?
-  contactInfo    ContactInfo?
+  id                String       @id @default(uuid())
+  email             String       @unique
+  password          String
+  username          String
+  emailValidated    Boolean      @default(false)
+  verificationToken String       @default("")
+  passwordToken     String       @default("")
+  verified          DateTime?
+  role              user_roles
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @default(now())
+  avatar            String       @default("avatar.png")
+  adopter           Adopter?
+  shelter           Shelter?
+  admin             Admin?
+  contactInfo       ContactInfo?
+  Token             Token?
+}
 
-  @@index([username])
+model Token {
+  id           String  @id @default(uuid())
+  refreshToken String
+  ip           String
+  userAgent    String
+  isValid      Boolean @default(true)
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id])
 }
 
 model Adopter {

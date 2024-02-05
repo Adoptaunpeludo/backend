@@ -1,7 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
+
 import { HttpCodes, JWTAdapter } from '../../config';
 import { UserRoles } from '../../interfaces';
-import { UnauthorizedError } from '../../domain';
+import { UnauthenticatedError, UnauthorizedError } from '../../domain';
+import { prisma } from '../../data/postgres';
+import { AttachCookiesToResponse } from '../../utils/response.cookies';
 
 export class AuthMiddleware {
   constructor(private readonly jwt: JWTAdapter) {}
@@ -11,22 +14,43 @@ export class AuthMiddleware {
     res: Response,
     next: NextFunction
   ) => {
-    const { token } = req.signedCookies;
+    const { refreshToken, accessToken } = req.signedCookies;
 
-    if (!token)
-      return res
-        .status(HttpCodes.UNAUTHORIZED)
-        .json({ message: 'Invalid authentication' });
+    if (accessToken) {
+      const payload = await this.jwt.validateToken(accessToken);
+      if (!payload) throw new UnauthorizedError('Invalid token validation');
 
-    const payload = await this.jwt.validateToken(token);
+      const { user } = payload;
 
-    if (!payload)
-      return res
-        .status(HttpCodes.UNAUTHORIZED)
-        .json({ message: 'Invalid authentication' });
+      req.body.user = user;
+      return next();
+    }
 
-    req.body.user = payload;
+    const payload = await this.jwt.validateToken(refreshToken);
+    if (!payload) throw new UnauthorizedError('Invalid token validation');
 
+    const existingToken = await prisma.token.findUnique({
+      where: { userId: payload.user.id, refreshToken: payload.refreshToken },
+    });
+
+    if (!existingToken || !existingToken?.isValid)
+      throw new UnauthenticatedError('Authentication Invalid');
+
+    const { user } = payload;
+
+    const accessTokenJWT = await this.jwt.generateToken({ user }, '15m');
+    const refreshTokenJWT = await this.jwt.generateToken(
+      { user, refreshToken: existingToken.refreshToken },
+      '1d'
+    );
+
+    AttachCookiesToResponse.attach({
+      res,
+      accessToken: accessTokenJWT!,
+      refreshToken: refreshTokenJWT!,
+    });
+
+    req.body.user = user;
     next();
   };
 

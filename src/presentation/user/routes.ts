@@ -12,6 +12,7 @@ export class UserRoutes {
     const authMiddleware = new AuthMiddleware(jwt);
 
     router.get('/me', authMiddleware.authenticateUser, userController.getUser);
+
     router.get(
       '/',
       authMiddleware.authenticateUser,

@@ -1,11 +1,16 @@
 import jwt from 'jsonwebtoken';
+
 import { UserRoles } from '../interfaces/user-response.interface';
 
 export interface JWTAdapterPayload {
-  id?: string;
-  name?: string;
-  email: string;
-  role?: UserRoles;
+  user: {
+    id?: string;
+    name?: string;
+    email: string;
+    role?: UserRoles;
+  };
+
+  refreshToken?: string;
 }
 
 export class JWTAdapter {
@@ -13,6 +18,7 @@ export class JWTAdapter {
 
   public generateToken(
     payload: JWTAdapterPayload,
+
     duration: string = '2h'
   ): Promise<string | null> {
     return new Promise((resolve) => {

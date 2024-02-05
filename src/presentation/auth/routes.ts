@@ -1,9 +1,11 @@
 import { Router } from 'express';
+
 import { AuthController } from './controller';
-import { ValidationMiddleware } from '../middlewares';
+import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
 import { AuthService, EmailService } from '../services';
 import { JWTAdapter, envs } from '../../config';
 import { LoginUserDto, RegisterUserDto } from '../../domain';
+import { ForgotPasswordDto, ResetPasswordDto } from '../../domain/dtos';
 
 export class AuthRoutes {
   static get routes() {
@@ -17,18 +19,39 @@ export class AuthRoutes {
     );
     const authService = new AuthService(jwt, emailService, envs.WEBSERVICE_URL);
     const authController = new AuthController(authService);
+    const authMiddleware = new AuthMiddleware(jwt);
 
     router.post(
       '/login',
       ValidationMiddleware.validate(LoginUserDto),
       authController.login
     );
+
+    router.delete(
+      '/logout',
+      authMiddleware.authenticateUser,
+      authController.logout
+    );
+
     router.post(
       '/register',
       ValidationMiddleware.validate(RegisterUserDto),
       authController.register
     );
-    router.get('/validate-email/:token', authController.validateEmail);
+
+    router.post(
+      '/forgot-password',
+      ValidationMiddleware.validate(ForgotPasswordDto),
+      authController.forgotPassword
+    );
+
+    router.post(
+      '/reset-password/:token',
+      ValidationMiddleware.validate(ResetPasswordDto),
+      authController.resetPassword
+    );
+
+    router.post('/verify-email/:token', authController.verifyEmail);
 
     return router;
   }

@@ -4,10 +4,7 @@ import JWT from 'jsonwebtoken';
 describe('jwt.adapter.ts', () => {
   const jwt = new JWTAdapter('secret');
   const payload: JWTAdapterPayload = {
-    id: '1',
-    name: 'test',
-    email: 'test@test.com',
-    role: 'admin',
+    user: { id: '1', name: 'test', email: 'test@test.com', role: 'admin' },
   };
   let token: string | null;
 

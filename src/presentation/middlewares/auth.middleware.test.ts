@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { AuthMiddleware } from './auth.middleware';
 import { HttpCodes, JWTAdapter } from '../../config';
+import { prisma } from '../../data/postgres';
+import { AttachCookiesToResponse } from '../../utils/response.cookies';
+import { UnauthorizedError } from '../../domain';
 
 interface Req extends Request {
   signedCookies: {
@@ -18,62 +21,125 @@ describe('auth.middleware.ts', () => {
   const next = jest.fn();
 
   const jwt = new JWTAdapter('secret');
+
   test('should extract token from signed cookies, validate it using JWTAdapter, add user payload to request body, and call next()', async () => {
-    jwt.validateToken = jest.fn().mockResolvedValue({ userId: '123' });
+    jwt.validateToken = jest.fn().mockResolvedValue({
+      user: {
+        id: '1',
+        email: 'test@example.com',
+        name: 'Test User',
+        role: 'adopter',
+      },
+    });
 
     const authMiddleware = new AuthMiddleware(jwt);
 
     const req = {
       signedCookies: {
-        token: 'validToken',
+        refreshToken: 'validRefreshToken',
+        accessToken: 'validAccessToken',
       },
       body: {},
     } as Request;
 
     await authMiddleware.authenticateUser(req, res, next);
 
-    expect(jwt.validateToken).toHaveBeenCalledWith(req.signedCookies.token);
-    expect(req.body.user).toEqual({ userId: '123' });
+    expect(jwt.validateToken).toHaveBeenCalledWith('validAccessToken');
+    expect(req.body.user).toEqual({
+      id: '1',
+      email: 'test@example.com',
+      name: 'Test User',
+      role: 'adopter',
+    });
     expect(next).toHaveBeenCalled();
   });
 
-  test('should return UNAUTHORIZED and an error message when no token is found in cookies', async () => {
-    jwt.validateToken = jest.fn();
-
-    const authMiddleware = new AuthMiddleware(jwt);
-
-    const req = {
-      signedCookies: {},
-    } as Request;
-
-    await authMiddleware.authenticateUser(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(HttpCodes.UNAUTHORIZED);
-    expect(res.json).toHaveBeenCalledWith({
-      message: 'Invalid authentication',
+  test('should attach new accessToken and refreshToken cookies to the response when only refreshToken cookie is present', async () => {
+    jwt.validateToken = jest.fn().mockResolvedValue({
+      user: {
+        id: '1',
+        email: 'test@example.com',
+        name: 'Test User',
+        role: 'adopter',
+      },
     });
-    expect(next).not.toHaveBeenCalled();
-  });
 
-  test('should return UNAUTHORIZED and an error message when the token validation fails', async () => {
-    jwt.validateToken = jest.fn().mockResolvedValue(null);
+    jwt.generateToken = jest.fn().mockResolvedValue('newToken');
 
     const authMiddleware = new AuthMiddleware(jwt);
+
+    AttachCookiesToResponse.attach = jest.fn();
 
     const req = {
       signedCookies: {
-        token: 'invalidToken',
+        refreshToken: 'validRefreshToken',
       },
       body: {},
     } as Request;
 
+    prisma.token.findUnique = jest.fn().mockResolvedValue({
+      isValid: true,
+    });
+
     await authMiddleware.authenticateUser(req, res, next);
 
-    expect(jwt.validateToken).toHaveBeenCalledWith('invalidToken');
-    expect(res.status).toHaveBeenCalledWith(HttpCodes.UNAUTHORIZED);
-    expect(res.json).toHaveBeenLastCalledWith({
-      message: 'Invalid authentication',
+    expect(jwt.validateToken).toHaveBeenCalledWith('validRefreshToken');
+
+    expect(AttachCookiesToResponse.attach).toHaveBeenCalledWith({
+      res,
+      accessToken: 'newToken',
+      refreshToken: 'newToken',
     });
+    expect(next).toHaveBeenCalled();
+  });
+
+  test('should authorize user with admin role to access resource', () => {
+    const req = {
+      body: {
+        user: {
+          role: 'admin',
+        },
+      },
+    } as Request;
+
+    const authMiddleware = new AuthMiddleware({} as JWTAdapter);
+
+    authMiddleware.authorizePermissions('admin')(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+  });
+
+  test('should authorize user with specified roles to access resource', () => {
+    const req = {
+      body: {
+        user: {
+          role: 'adopter',
+        },
+      },
+    } as Request;
+
+    const authMiddleware = new AuthMiddleware({} as JWTAdapter);
+
+    authMiddleware.authorizePermissions('admin', 'adopter')(req, res, next);
+
+    expect(next).toHaveBeenCalled();
+  });
+
+  test('should not authorize user with specified roles to access resource', () => {
+    const req = {
+      body: {
+        user: {
+          role: 'shelter',
+        },
+      },
+    } as Request;
+
+    const authMiddleware = new AuthMiddleware({} as JWTAdapter);
+
+    expect(() =>
+      authMiddleware.authorizePermissions('admin', 'adopter')(req, res, next)
+    ).toThrow(UnauthorizedError);
+
     expect(next).not.toHaveBeenCalled();
   });
 });
