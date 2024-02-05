@@ -1,20 +1,42 @@
-# Adoptaunpeludo Backend
 
-## Instalación
+# Adoptaunpeludo
 
-1. Clonar el repositorio y moverte a la carpeta
+## Instalacion
 
-```
-  git clone https://github.com/Adoptaunpeludo/backend.git
-  cd Adoptaunpeludo/banckend
-```
-
-2. Clonar .env.template a .env y configurar las variables de entorn
-
-3. Instalar las dependencias
+1. Clonar el repo, movernos al directorio e instalar las depencencias:
 
 ```
-  npm install
+git clone https://github.com/Adoptaunpeludo/backend.git
+cd backend
+npm i
 ```
 
-4. Ejecutar `npm run dev` para iniciar el proyecto en desarrollo
+2. Copiar o renombrar el archivo .env.template y configurar con datos propios
+
+```
+NODE_ENV=development
+
+PORT=3000
+
+DB_PASSWORD=1234
+DB_NAME=AUP-db
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+
+JWT_SEED=secret
+
+DATABASE_URL="postgresql://postgres:1234@localhost:5432/AUP-db"
+```
+
+3. Levantar base de datos postgresql con docker si es necesario
+
+```
+  docker compose up -d
+```
+
+4. Arrancar la aplicacion en desarrollo
+
+```
+  npm run dev
+```
