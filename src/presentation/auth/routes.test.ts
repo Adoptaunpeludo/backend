@@ -80,6 +80,20 @@ describe('Api auth routes testing', () => {
       });
     });
 
+    test('Should return Invalid role error', async () => {
+      const admin = { ...user, role: 'admin' };
+
+      const { body } = await request(testServer.app)
+        .post(signupRoute)
+        .send(admin)
+        .expect(400);
+
+      expect(body).toEqual({
+        name: 'Bad Request',
+        message: 'Invalid role admin, must be "adopter" or "shelter"',
+      });
+    });
+
     test('Should return an error if malformed or not present email or password', async () => {
       const { body } = await request(testServer.app)
         .post(signupRoute)
@@ -209,7 +223,6 @@ describe('Api auth routes testing', () => {
         .expect(200);
 
       me = await prisma.user.findMany();
-      console.log({ me });
 
       const { body } = await request(testServer.app)
         .post(`${resetPasswordRoute}/${me[0].passwordToken}`)

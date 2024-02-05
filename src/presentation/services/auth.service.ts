@@ -39,14 +39,13 @@ export class AuthService {
 
     const hashedPassword = BcryptAdapter.hash(registerUserDto.password);
 
-    const verificationToken = await this.jwt.generateToken({ email }, '15m');
+    const verificationToken = await this.jwt.generateToken(
+      { user: { email } },
+      '15m'
+    );
 
     if (!verificationToken)
-      throw new CustomAPIError(
-        'Internal Server',
-        'JWT token error, check server logs',
-        500
-      );
+      throw new InternalServerError('JWT token error, check server logs');
 
     const createdUser = await prisma.user.create({
       data: {
@@ -106,18 +105,17 @@ export class AuthService {
       await prisma.token.create({ data: userToken });
     }
 
-    const accessToken = await this.jwt.generateToken({
+    const userToken = {
       id: user.id,
       role: user.role,
       email: user.email,
       name: user.username,
-    });
+    };
+
+    const accessToken = await this.jwt.generateToken({ user: userToken });
 
     const refreshToken = await this.jwt.generateToken({
-      id: user.id,
-      role: user.role,
-      email: user.email,
-      name: user.username,
+      user: userToken,
       refreshToken: token,
     });
 
@@ -183,7 +181,7 @@ export class AuthService {
 
     if (!payload) throw new UnauthorizedError('Invalid token validation');
 
-    const { email } = payload;
+    const { email } = payload.user;
 
     if (!email)
       throw new InternalServerError(
@@ -224,7 +222,10 @@ export class AuthService {
 
     if (!user) throw new BadRequestError(`User with email: ${email} not found`);
 
-    const passwordToken = await this.jwt.generateToken({ email }, '15m');
+    const passwordToken = await this.jwt.generateToken(
+      { user: { email } },
+      '15m'
+    );
 
     if (!passwordToken)
       throw new CustomAPIError(

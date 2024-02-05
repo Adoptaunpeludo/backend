@@ -19,8 +19,10 @@ export class AuthMiddleware {
     if (accessToken) {
       const payload = await this.jwt.validateToken(accessToken);
       if (!payload) throw new UnauthorizedError('Invalid token validation');
-      const { id, email, name, role } = payload;
-      req.body.user = { id, email, name, role };
+
+      const { user } = payload;
+
+      req.body.user = user;
       return next();
     }
 
@@ -28,16 +30,27 @@ export class AuthMiddleware {
     if (!payload) throw new UnauthorizedError('Invalid token validation');
 
     const existingToken = await prisma.token.findUnique({
-      where: { userId: payload.id, refreshToken: payload.refreshToken },
+      where: { userId: payload.user.id, refreshToken: payload.refreshToken },
     });
 
     if (!existingToken || !existingToken?.isValid)
       throw new UnauthenticatedError('Authentication Invalid');
 
-    AttachCookiesToResponse.attach({ res, accessToken, refreshToken });
-    const { id, email, name, role } = payload;
+    const { user } = payload;
 
-    req.body.user = { id, email, name, role };
+    const accessTokenJWT = await this.jwt.generateToken({ user }, '15m');
+    const refreshTokenJWT = await this.jwt.generateToken(
+      { user, refreshToken: existingToken.refreshToken },
+      '1d'
+    );
+
+    AttachCookiesToResponse.attach({
+      res,
+      accessToken: accessTokenJWT!,
+      refreshToken: refreshTokenJWT!,
+    });
+
+    req.body.user = user;
     next();
   };
 
