@@ -126,7 +126,7 @@ describe('user.entity.ts', () => {
       avatar: shelterRaw.avatar,
       phoneNumber: shelterRaw.contactInfo?.phoneNumber,
       address: shelterRaw.contactInfo?.address,
-      city: shelterRaw.contactInfo?.city.name,
+      city: shelterRaw.contactInfo?.city?.name,
       name: shelterRaw.shelter?.name,
       description: shelterRaw.shelter?.description,
       socialMedia: [
@@ -161,7 +161,7 @@ describe('user.entity.ts', () => {
       avatar: adminRaw.avatar,
       phoneNumber: adminRaw.contactInfo?.phoneNumber,
       address: adminRaw.contactInfo?.address,
-      city: adminRaw.contactInfo?.city.name,
+      city: adminRaw.contactInfo?.city?.name,
       name: adminRaw.admin?.name,
     });
   });
@@ -181,7 +181,7 @@ describe('user.entity.ts', () => {
       avatar: adopterRaw.avatar,
       phoneNumber: adopterRaw.contactInfo?.phoneNumber,
       address: adopterRaw.contactInfo?.address,
-      city: adopterRaw.contactInfo?.city.name,
+      city: adopterRaw.contactInfo?.city?.name,
       firstName: adopterRaw.adopter?.firstName,
       lastName: adopterRaw.adopter?.lastName,
     });

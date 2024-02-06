@@ -33,8 +33,8 @@ export interface ContactInfo {
   id: string;
   phoneNumber: string | null;
   address: string | null;
-  cityId: number;
-  city: City;
+  cityId: number | null;
+  city: City | null;
 }
 
 export interface City {

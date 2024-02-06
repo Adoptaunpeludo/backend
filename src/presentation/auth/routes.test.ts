@@ -63,6 +63,7 @@ describe('Api auth routes testing', () => {
 
       expect(body).toEqual({
         message: 'Success!, Please check your email to verify your account',
+        token: expect.any(String),
       });
     });
 

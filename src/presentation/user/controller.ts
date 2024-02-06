@@ -3,6 +3,7 @@ import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserService } from '../services/user.service';
 import { AuthController } from '../auth/controller';
+import { prisma } from '../../data/postgres';
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -41,5 +42,16 @@ export class UserController {
     });
 
     res.status(HttpCodes.OK).json({ message: 'User deleted successfully' });
+  };
+
+  updateUser = async (req: Request, res: Response) => {
+    const { email } = req.params;
+    const { user, ...updates } = req.body;
+
+    const updatedUser = await this.userService.updateUser(updates, user, email);
+
+    res
+      .status(HttpCodes.OK)
+      .json({ message: 'User updated successfully', user: updatedUser });
   };
 }

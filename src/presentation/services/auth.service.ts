@@ -26,7 +26,7 @@ export class AuthService {
   ) {}
 
   public async registerUser(registerUserDto: RegisterUserDto) {
-    const { email } = registerUserDto;
+    const { email, role } = registerUserDto;
 
     const existUser = await prisma.user.findUnique({
       where: { email },
@@ -54,6 +54,31 @@ export class AuthService {
         username: registerUserDto.username || '',
         role: registerUserDto.role,
         verificationToken,
+        contactInfo: {
+          create: {
+            phoneNumber: '',
+            cityId: null,
+            address: '',
+          },
+        },
+        adopter:
+          role === 'adopter'
+            ? {
+                create: {
+                  firstName: '',
+                  lastName: '',
+                },
+              }
+            : undefined,
+        shelter:
+          role === 'shelter'
+            ? {
+                create: {
+                  name: '',
+                  socialMedia: undefined,
+                },
+              }
+            : undefined,
       },
     });
 

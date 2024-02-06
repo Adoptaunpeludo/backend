@@ -70,9 +70,9 @@ model Token {
 
 model Adopter {
   id        String   @id
-  firstName String
+  firstName String   @default("")
   lastName  String   @default("")
-  user      User     @relation(fields: [id], references: [id])
+  user      User     @relation(fields: [id], references: [id], onDelete: Cascade)
   animal    Animal[]
 }
 
@@ -80,7 +80,7 @@ model Shelter {
   id          String        @id
   name        String
   description String        @default("")
-  user        User          @relation(fields: [id], references: [id])
+  user        User          @relation(fields: [id], references: [id], onDelete: Cascade)
   socialMedia SocialMedia[]
   animals     Animal[]
 }
@@ -95,9 +95,9 @@ model ContactInfo {
   id          String  @id
   phoneNumber String?
   address     String?
-  cityId      Int
-  user        User?   @relation(fields: [id], references: [id])
-  city        City    @relation(fields: [cityId], references: [id])
+  cityId      Int?
+  user        User?   @relation(fields: [id], references: [id], onDelete: Cascade)
+  city        City?   @relation(fields: [cityId], references: [id])
 }
 
 model SocialMedia {
@@ -105,7 +105,7 @@ model SocialMedia {
   name      social_media_enum
   url       String
   shelterId String
-  shelter   Shelter?          @relation(fields: [shelterId], references: [id])
+  shelter   Shelter?          @relation(fields: [shelterId], references: [id], onDelete: Cascade)
 }
 
 model City {

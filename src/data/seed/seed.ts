@@ -53,6 +53,7 @@ const confirmationQuestion = (text: string) => {
   await prisma.adopter.deleteMany();
   await prisma.shelter.deleteMany();
   await prisma.admin.deleteMany();
+  await prisma.token.deleteMany();
   await prisma.user.deleteMany();
 
   const cities = await prisma.city.findMany();

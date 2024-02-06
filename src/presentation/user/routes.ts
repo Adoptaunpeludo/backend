@@ -4,6 +4,8 @@ import { JWTAdapter, envs } from '../../config';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { AuthService, UserService } from '../services';
 import { AuthController } from '../auth/controller';
+import { ValidationMiddleware } from '../middlewares';
+import { UpdateUserDto } from '../../domain';
 
 export class UserRoutes {
   static get routes() {
@@ -27,6 +29,13 @@ export class UserRoutes {
       '/:email',
       authMiddleware.authenticateUser,
       userController.deleteUser
+    );
+
+    router.put(
+      '/:email',
+      authMiddleware.authenticateUser,
+      ValidationMiddleware.validate(UpdateUserDto),
+      userController.updateUser
     );
 
     return router;

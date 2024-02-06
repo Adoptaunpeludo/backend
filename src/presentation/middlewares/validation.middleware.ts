@@ -9,6 +9,8 @@ export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
     return (req, res, next) => {
       const dtoObj = plainToInstance(type, req.body);
+
+      console.log({ dtoObj });
       validate(dtoObj, { skipMissingProperties }).then(
         (errors: ValidationError[]) => {
           if (errors.length > 0) {

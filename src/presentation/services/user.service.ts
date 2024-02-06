@@ -1,5 +1,5 @@
 import { prisma } from '../../data/postgres';
-import { NotFoundError } from '../../domain';
+import { NotFoundError, UpdateUserDto } from '../../domain';
 import { PayloadUser, UserRoles } from '../../interfaces';
 import { CheckPermissions } from '../../utils';
 
@@ -48,13 +48,72 @@ export class UserService {
     return user;
   }
 
-  public async deleteUser(user: PayloadUser, email: string) {
+  public async deleteUser(payloadUser: PayloadUser, email: string) {
     const userToDelete = await prisma.user.findUnique({ where: { email } });
 
     if (!userToDelete) throw new NotFoundError('User not found');
 
-    CheckPermissions.check(user, userToDelete.id);
+    CheckPermissions.check(payloadUser, userToDelete.id);
 
     await prisma.user.delete({ where: { email } });
+  }
+
+  public async updateUser(
+    updateUserDto: UpdateUserDto,
+    payloadUser: PayloadUser,
+    email: string
+  ) {
+    const userToUpdate = await prisma.user.findUnique({ where: { email } });
+
+    if (!userToUpdate) throw new NotFoundError('User not found');
+
+    CheckPermissions.check(payloadUser, userToUpdate.id);
+
+    const {
+      username,
+      firstName,
+      lastName,
+      name,
+      description,
+      phoneNumber,
+      address,
+      cityId,
+    } = updateUserDto;
+
+    const updateQuery: any = {};
+
+    if (username) updateQuery.username = username;
+    if (firstName || lastName) {
+      updateQuery.adopter = {
+        update: {
+          firstName,
+          lastName,
+        },
+      };
+    }
+    if (name || description) {
+      updateQuery.shelter = {
+        update: {
+          name,
+          description,
+        },
+      };
+    }
+    if (phoneNumber || address || cityId) {
+      updateQuery.contactInfo = {
+        update: {
+          ...(phoneNumber && { phoneNumber }),
+          ...(address && { address }),
+          ...(cityId && { cityId: +cityId }),
+        },
+      };
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { email },
+      data: updateQuery,
+    });
+
+    return updatedUser;
   }
 }

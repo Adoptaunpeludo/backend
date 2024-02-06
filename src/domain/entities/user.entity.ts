@@ -16,7 +16,7 @@ export class UserEntity {
       avatar: userResponse.avatar,
       phoneNumber: userResponse.contactInfo?.phoneNumber || '',
       address: userResponse.contactInfo?.address || '',
-      city: userResponse.contactInfo?.city.name || null,
+      city: userResponse.contactInfo?.city?.name || null,
     };
 
     switch (userResponse.role) {
