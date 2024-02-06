@@ -8,25 +8,29 @@ import { BadRequestError } from '../../domain/errors';
 export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
     return (req, res, next) => {
-      const dtoObj = plainToInstance(type, req.body);
+      const { user, ...updates } = req.body;
 
-      console.log({ dtoObj });
-      validate(dtoObj, { skipMissingProperties }).then(
-        (errors: ValidationError[]) => {
-          if (errors.length > 0) {
-            const dtoErrors = errors
-              .map((error: ValidationError) =>
-                (Object as any).values(error.constraints)
-              )
-              .join(', ');
-            next(new BadRequestError(dtoErrors));
-          } else {
-            sanitize(dtoObj);
-            req.body = dtoObj;
-            next();
-          }
+      const dtoObj = plainToInstance(type, updates);
+
+      validate(dtoObj, {
+        skipMissingProperties,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }).then((errors: ValidationError[]) => {
+        if (errors.length > 0) {
+          const dtoErrors = errors
+            .map((error: ValidationError) =>
+              (Object as any).values(error.constraints)
+            )
+            .join(', ');
+          next(new BadRequestError(dtoErrors));
+        } else {
+          sanitize(dtoObj);
+          req.body = dtoObj;
+          req.body.user = user;
+          next();
         }
-      );
+      });
     };
   }
 }

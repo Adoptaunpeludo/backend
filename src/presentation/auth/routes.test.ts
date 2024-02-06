@@ -6,7 +6,7 @@ import { UserRoles } from '../../interfaces';
 import { testServer } from '../test-server';
 import { get } from 'env-var';
 
-const cleanDB = async () => {
+export const cleanDB = async () => {
   await prisma.$transaction([
     prisma.socialMedia.deleteMany(),
     prisma.contactInfo.deleteMany(),
@@ -18,7 +18,7 @@ const cleanDB = async () => {
   ]);
 };
 
-interface User {
+export interface TestUser {
   username: string;
   email: string;
   password: string;
@@ -33,7 +33,7 @@ describe('Api auth routes testing', () => {
   const forgotPasswordRoute = '/api/auth/forgot-password';
   const resetPasswordRoute = '/api/auth/reset-password';
 
-  const user: User = {
+  const user: TestUser = {
     username: 'test',
     email: 'test@test.com',
     password: 'testtest',
