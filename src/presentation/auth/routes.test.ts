@@ -197,7 +197,7 @@ describe('Api auth routes testing', () => {
   });
 
   describe('Validate forgot-password routes test api/auth/forgot-password', () => {
-    test('Initial validate-email test', async () => {
+    test('Should sen an reset password email', async () => {
       await request(testServer.app).post(signupRoute).send(user).expect(201);
 
       const me = await prisma.user.findMany();
@@ -206,6 +206,8 @@ describe('Api auth routes testing', () => {
         .post(forgotPasswordRoute)
         .send({ email: me[0].email })
         .expect(200);
+
+      //* TODO: check mail service beeing called
 
       expect(body).toEqual({
         message: 'Reset password email sent successfully',
