@@ -114,6 +114,8 @@ describe('user.entity.ts', () => {
   test('should return an shelter user entity', () => {
     const shelter = UserEntity.fromObject(shelterRaw);
 
+    console.log({ shelter });
+
     expect(shelter).toEqual({
       id: shelterRaw.id,
       email: shelterRaw.email,
@@ -187,6 +189,22 @@ describe('user.entity.ts', () => {
     });
   });
 
+  test('should correctly map default values', () => {
+    const userResponse: UserResponse = {
+      id: '4',
+      email: 'test4@example.com',
+      password: 'password',
+      username: 'testuser4',
+      emailValidated: true,
+      role: 'shelter',
+      verified: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      avatar: 'avatar4.jpg',
+      shelter: null,
+    };
+  });
+
   test('should correctly map a user response object to a user entity object for a user with null values', () => {
     const userResponse: UserResponse = {
       id: '4',
@@ -225,7 +243,7 @@ describe('user.entity.ts', () => {
     expect(userEntity).toEqual(expectedUserEntity);
   });
 
-  it('should correctly map a user response object to a user entity object for a user with undefined values', () => {
+  test('should correctly map a user response object to a user entity object for a user with undefined values', () => {
     const userResponse: UserResponse = {
       id: '5',
       email: 'test5@example.com',
@@ -262,7 +280,7 @@ describe('user.entity.ts', () => {
     expect(userEntity).toEqual(expectedUserEntity);
   });
 
-  it('should correctly map a user response object to a user entity object for a user with empty strings', () => {
+  test('should correctly map a user response object to a user entity object for a user with empty strings', () => {
     const userResponse: UserResponse = {
       id: '6',
       email: 'test6@example.com',
