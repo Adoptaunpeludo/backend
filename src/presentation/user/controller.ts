@@ -2,8 +2,7 @@ import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserService } from '../services/user.service';
-import { AuthController } from '../auth/controller';
-import { prisma } from '../../data/postgres';
+import * as fs from 'fs';
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -53,5 +52,14 @@ export class UserController {
     res
       .status(HttpCodes.OK)
       .json({ message: 'User updated successfully', user: updatedUser });
+  };
+
+  changePassword = async (req: Request, res: Response) => {
+    const { oldPassword, newPassword } = req.body;
+    const { id } = req.body.user;
+
+    await this.userService.changePassword(oldPassword, newPassword, id);
+
+    res.status(HttpCodes.OK).json({ message: 'Password updated' });
   };
 }

@@ -1,5 +1,6 @@
+import { BcryptAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
-import { NotFoundError, UpdateUserDto } from '../../domain';
+import { BadRequestError, NotFoundError, UpdateUserDto } from '../../domain';
 import { PayloadUser, UserRoles } from '../../interfaces';
 import { CheckPermissions } from '../../utils';
 
@@ -56,6 +57,24 @@ export class UserService {
     CheckPermissions.check(payloadUser, userToDelete.id);
 
     await prisma.user.delete({ where: { email } });
+  }
+
+  public async changePassword(
+    oldPassword: string,
+    newPassword: string,
+    userId: string
+  ) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+
+    if (user) {
+      const isValid = BcryptAdapter.compare(oldPassword, user.password);
+      if (!isValid) throw new BadRequestError('Invalid password');
+      const hashPassword = BcryptAdapter.hash(newPassword);
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashPassword },
+      });
+    }
   }
 
   public async updateUser(
