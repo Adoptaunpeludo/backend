@@ -40,7 +40,7 @@ export class UserRoutes {
       userController.updateUser
     );
 
-    router.post(
+    router.put(
       '/change-password',
       authMiddleware.authenticateUser,
       ValidationMiddleware.validate(UpdatePasswordDto),
