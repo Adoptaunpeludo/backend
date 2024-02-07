@@ -25,14 +25,14 @@ export class AuthController {
   };
 
   login = async (req: Request, res: Response) => {
-    const userAgent = req.headers['user-agent'];
-    const ip = req.ip;
+    const userAgent = req.headers['user-agent'] || '';
+    const ip = req.ip || '';
 
     const { accessToken, refreshToken } = await this.authService.loginUser(
-      req.body!,
+      req.body,
       {
-        userAgent: userAgent || '',
-        ip: ip || '',
+        userAgent,
+        ip,
       }
     );
 

@@ -101,11 +101,12 @@ model ContactInfo {
 }
 
 model SocialMedia {
-  id        Int               @id @default(autoincrement())
   name      social_media_enum
   url       String
   shelterId String
-  shelter   Shelter?          @relation(fields: [shelterId], references: [id], onDelete: Cascade)
+  shelter   Shelter           @relation(fields: [shelterId], references: [id], onDelete: Cascade)
+
+  @@id([shelterId, name])
 }
 
 model City {

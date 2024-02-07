@@ -12,6 +12,8 @@ export class ValidationMiddleware {
 
       const dtoObj = plainToInstance(type, updates);
 
+      console.log({ dtoObj });
+
       validate(dtoObj, {
         skipMissingProperties,
         whitelist: true,
@@ -19,9 +21,17 @@ export class ValidationMiddleware {
       }).then((errors: ValidationError[]) => {
         if (errors.length > 0) {
           const dtoErrors = errors
-            .map((error: ValidationError) =>
-              (Object as any).values(error.constraints)
-            )
+            .flatMap((error: ValidationError) => {
+              if (error.children && error.children.length > 0) {
+                return error.children.flatMap((child) =>
+                  child.children?.flatMap((child) =>
+                    (Object as any).values(child.constraints)
+                  )
+                );
+              } else {
+                return (Object as any).values(error.constraints);
+              }
+            })
             .join(', ');
           next(new BadRequestError(dtoErrors));
         } else {

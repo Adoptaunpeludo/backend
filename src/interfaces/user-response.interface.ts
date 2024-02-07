@@ -50,7 +50,6 @@ export interface Shelter {
 }
 
 export interface SocialMedia {
-  id: number;
   name: AllowedMedia;
   url: string;
   shelterId: string;

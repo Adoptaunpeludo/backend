@@ -7,6 +7,7 @@ import { AuthController } from '../auth/controller';
 import { ValidationMiddleware } from '../middlewares';
 import { UpdateUserDto } from '../../domain';
 import { UpdatePasswordDto } from '../../domain/dtos/update-password.dto';
+import { UpdateSocialMediaDto } from '../../domain/dtos/update-social-media.dto';
 
 export class UserRoutes {
   static get routes() {
@@ -44,6 +45,14 @@ export class UserRoutes {
       authMiddleware.authenticateUser,
       ValidationMiddleware.validate(UpdatePasswordDto),
       userController.changePassword
+    );
+
+    router.post(
+      '/update-social-media',
+      authMiddleware.authenticateUser,
+      authMiddleware.authorizePermissions('shelter'),
+      ValidationMiddleware.validate(UpdateSocialMediaDto),
+      userController.updateSocialMedia
     );
 
     return router;

@@ -1,6 +1,7 @@
 import { BcryptAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
 import { BadRequestError, NotFoundError, UpdateUserDto } from '../../domain';
+import { UpdateSocialMediaDto } from '../../domain/dtos/update-social-media.dto';
 import { PayloadUser, UserRoles } from '../../interfaces';
 import { CheckPermissions } from '../../utils';
 
@@ -75,6 +76,42 @@ export class UserService {
         data: { password: hashPassword },
       });
     }
+  }
+
+  public async updateSocialMedia(
+    socialMediaDto: UpdateSocialMediaDto,
+    email: string
+  ) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) throw new NotFoundError('User or shelter not found');
+
+    const promises = socialMediaDto.socialMedia.map((socialMediaItem) =>
+      prisma.socialMedia.upsert({
+        where: {
+          shelterId_name: {
+            name: socialMediaItem.name,
+            shelterId: user.id,
+          },
+        },
+        update: {
+          url: socialMediaItem.url,
+        },
+        create: {
+          name: socialMediaItem.name,
+          url: socialMediaItem.url,
+          shelter: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      })
+    );
+
+    await Promise.all(promises);
   }
 
   public async updateUser(

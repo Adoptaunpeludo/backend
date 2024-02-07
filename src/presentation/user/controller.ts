@@ -1,3 +1,4 @@
+import { UpdateSocialMediaDto } from './../../domain/dtos/update-social-media.dto';
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { UserEntity } from '../../domain/entities/user.entity';
@@ -61,5 +62,15 @@ export class UserController {
     await this.userService.changePassword(oldPassword, newPassword, id);
 
     res.status(HttpCodes.OK).json({ message: 'Password updated' });
+  };
+
+  updateSocialMedia = async (req: Request, res: Response) => {
+    const { user, ...socialMediaDto } = req.body;
+
+    await this.userService.updateSocialMedia(socialMediaDto, user.email);
+
+    res
+      .status(HttpCodes.OK)
+      .json({ message: 'Social media updated successfully' });
   };
 }

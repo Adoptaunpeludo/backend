@@ -5,6 +5,7 @@ import { prisma } from '../../data/postgres';
 import { UserRoles } from '../../interfaces';
 import { testServer } from '../test-server';
 import { get } from 'env-var';
+import { AuthController } from './controller';
 
 export const cleanDB = async () => {
   await prisma.$transaction([
@@ -117,6 +118,8 @@ describe('Api auth routes testing', () => {
 
     test('Should return OK with correct credentials', async () => {
       const hash = BcryptAdapter.hash(user.password);
+
+      // const mockLogin = jest.spyOn(AuthController.prototype, "login").mockImplementation(()=>{});
 
       await prisma.user.create({
         data: { ...user, emailValidated: true, password: hash },

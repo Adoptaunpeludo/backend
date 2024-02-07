@@ -9,6 +9,9 @@ describe('Api user routes testing', () => {
   const currentUserRoute = '/api/users/me';
   const usersRoute = '/api/users';
   const deleteUserRoute = '/api/users';
+  const changePasswordRoute = '/api/users/change-password';
+  const registerRoute = '/api/auth/register';
+  const verifyEmailRoute = '/api/auth/verify-email';
 
   const user: TestUser = {
     username: 'test',
@@ -356,6 +359,43 @@ describe('Api user routes testing', () => {
       console.log({ body });
 
       expect(body.user.username).toBe('testuser');
+    });
+  });
+
+  describe('Change password route test api/change-password', () => {
+    test('should change user password', async () => {
+      // Create new user
+      const {
+        body: { token },
+      } = await request(testServer.app)
+        .post(registerRoute)
+        .send(user)
+        .expect(201);
+
+      // Verify email
+      await request(testServer.app)
+        .post(`${verifyEmailRoute}/${token}`)
+        .expect(200);
+
+      // Login to get cookies
+      const loginResponse = await request(testServer.app)
+        .post(loginRoute)
+        .send({ email: user.email, password: user.password })
+        .expect(200);
+
+      const [accessToken, refreshToken] = loginResponse.headers['set-cookie'];
+
+      const newPassword = 'testuser';
+
+      // Change password
+      const { body } = await request(testServer.app)
+        .post(changePasswordRoute)
+        .set('Cookie', accessToken)
+        .set('Cookie', refreshToken)
+        .send({ oldPassword: user.password, newPassword })
+        .expect(200);
+
+      expect(body).toEqual({ message: 'Password updated' });
     });
   });
 });
