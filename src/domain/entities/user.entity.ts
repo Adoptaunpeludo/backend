@@ -16,7 +16,7 @@ export class UserEntity {
       avatar: userResponse.avatar,
       phoneNumber: userResponse.contactInfo?.phoneNumber || '',
       address: userResponse.contactInfo?.address || '',
-      city: userResponse.contactInfo?.city.name || null,
+      city: userResponse.contactInfo?.city?.name || null,
     };
 
     switch (userResponse.role) {
@@ -25,6 +25,11 @@ export class UserEntity {
           ...user,
           name: userResponse.shelter?.name,
           description: userResponse.shelter?.description,
+          // animals:
+          //   userResponse.shelter?.animals.map((media) => ({
+          //     name: media.name,
+          //     url: media.url,
+          //   })) || [],
           socialMedia:
             userResponse.shelter?.socialMedia.map((media) => ({
               name: media.name,

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { JWTAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
 import { InternalServerError, RegisterUserDto } from '../../domain';

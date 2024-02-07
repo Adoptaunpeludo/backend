@@ -9,14 +9,19 @@ export class ErrorHandlerMiddleware {
 
     let message, statusCode;
 
+    if (!err || err === null) {
+      statusCode = 500;
+      message = 'Unknown error';
+    }
+
     if (err instanceof CustomAPIError) {
       statusCode = err.statusCode;
       message = err.message;
     }
 
     return res.status(statusCode || HttpCodes.INTERNAL_SERVER_ERROR).json({
-      name: err.name,
-      message: message || err.message,
+      name: err?.name || 'Error',
+      message: message || err?.message,
     });
   }
 }

@@ -4,7 +4,7 @@ import { HttpCodes, JWTAdapter } from '../../config';
 import { UserRoles } from '../../interfaces';
 import { UnauthenticatedError, UnauthorizedError } from '../../domain';
 import { prisma } from '../../data/postgres';
-import { AttachCookiesToResponse } from '../../utils/response.cookies';
+import { AttachCookiesToResponse } from '../../utils/response-cookies';
 
 export class AuthMiddleware {
   constructor(private readonly jwt: JWTAdapter) {}

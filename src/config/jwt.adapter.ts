@@ -1,14 +1,10 @@
 import jwt from 'jsonwebtoken';
 
 import { UserRoles } from '../interfaces/user-response.interface';
+import { PayloadUser } from '../interfaces';
 
 export interface JWTAdapterPayload {
-  user: {
-    id?: string;
-    name?: string;
-    email: string;
-    role?: UserRoles;
-  };
+  user: PayloadUser;
 
   refreshToken?: string;
 }

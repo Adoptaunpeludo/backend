@@ -21,12 +21,12 @@ type TokenType = 'passwordToken' | 'verificationToken';
 export class AuthService {
   constructor(
     private readonly jwt: JWTAdapter,
-    private readonly emailService: EmailService,
-    private readonly webServiceUrl: string
+    private readonly emailService?: EmailService,
+    private readonly webServiceUrl?: string
   ) {}
 
   public async registerUser(registerUserDto: RegisterUserDto) {
-    const { email } = registerUserDto;
+    const { email, role } = registerUserDto;
 
     const existUser = await prisma.user.findUnique({
       where: { email },
@@ -54,6 +54,33 @@ export class AuthService {
         username: registerUserDto.username || '',
         role: registerUserDto.role,
         verificationToken,
+        contactInfo: {
+          create: {
+            phoneNumber: '',
+            cityId: null,
+            address: '',
+          },
+        },
+        adopter:
+          role === 'adopter'
+            ? {
+                create: {
+                  firstName: '',
+                  lastName: '',
+                },
+              }
+            : undefined,
+        shelter:
+          role === 'shelter'
+            ? {
+                create: {
+                  name: '',
+                  description: '',
+                  animals: undefined,
+                  socialMedia: undefined,
+                },
+              }
+            : undefined,
       },
     });
 
@@ -168,7 +195,7 @@ export class AuthService {
       htmlBody: html,
     };
 
-    const isSent = await this.emailService.sendEmail(options);
+    const isSent = await this.emailService!.sendEmail(options);
 
     if (!isSent)
       throw new InternalServerError('Error sending email, check server logs');
@@ -208,6 +235,7 @@ export class AuthService {
       data: {
         emailValidated: true,
         verified: new Date(),
+        verificationToken: '',
       },
     });
 

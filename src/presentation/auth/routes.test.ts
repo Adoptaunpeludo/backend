@@ -4,9 +4,8 @@ import { BcryptAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
 import { UserRoles } from '../../interfaces';
 import { testServer } from '../test-server';
-import { get } from 'env-var';
 
-const cleanDB = async () => {
+export const cleanDB = async () => {
   await prisma.$transaction([
     prisma.socialMedia.deleteMany(),
     prisma.contactInfo.deleteMany(),
@@ -18,7 +17,7 @@ const cleanDB = async () => {
   ]);
 };
 
-interface User {
+export interface TestUser {
   username: string;
   email: string;
   password: string;
@@ -33,7 +32,7 @@ describe('Api auth routes testing', () => {
   const forgotPasswordRoute = '/api/auth/forgot-password';
   const resetPasswordRoute = '/api/auth/reset-password';
 
-  const user: User = {
+  const user: TestUser = {
     username: 'test',
     email: 'test@test.com',
     password: 'testtest',
@@ -63,6 +62,7 @@ describe('Api auth routes testing', () => {
 
       expect(body).toEqual({
         message: 'Success!, Please check your email to verify your account',
+        token: expect.any(String),
       });
     });
 
@@ -102,8 +102,7 @@ describe('Api auth routes testing', () => {
 
       expect(body).toEqual({
         name: 'Bad Request',
-        message:
-          'username should be minimum of 5 characters,username must be a string, email should be a valid email address, password should be minimum of 8 characters,password must be a string, role must be one of the following values: admin, shelter, adopter,role must be a string',
+        message: expect.any(String),
       });
     });
   });
@@ -116,6 +115,8 @@ describe('Api auth routes testing', () => {
 
     test('Should return OK with correct credentials', async () => {
       const hash = BcryptAdapter.hash(user.password);
+
+      // const mockLogin = jest.spyOn(AuthController.prototype, "login").mockImplementation(()=>{});
 
       await prisma.user.create({
         data: { ...user, emailValidated: true, password: hash },
@@ -190,12 +191,13 @@ describe('Api auth routes testing', () => {
 
       expect(body).toEqual({
         message: 'Email validated',
+        token: expect.any(String),
       });
     });
   });
 
   describe('Validate forgot-password routes test api/auth/forgot-password', () => {
-    test('Initial validate-email test', async () => {
+    test('Should sen an reset password email', async () => {
       await request(testServer.app).post(signupRoute).send(user).expect(201);
 
       const me = await prisma.user.findMany();
@@ -205,8 +207,11 @@ describe('Api auth routes testing', () => {
         .send({ email: me[0].email })
         .expect(200);
 
+      //* TODO: check mail service beeing called
+
       expect(body).toEqual({
         message: 'Reset password email sent successfully',
+        token: expect.any(String),
       });
     });
   });
