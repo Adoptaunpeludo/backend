@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { envs } from '../config';
 import { AppRoutes } from './routes';
 import { Server } from './server';

@@ -75,6 +75,8 @@ export class AuthService {
             ? {
                 create: {
                   name: '',
+                  description: '',
+                  animals: undefined,
                   socialMedia: undefined,
                 },
               }

@@ -1,6 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import 'reflect-metadata';
+import { Request, Response } from 'express';
 import { AuthMiddleware } from './auth.middleware';
-import { HttpCodes, JWTAdapter } from '../../config';
+import { JWTAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
 import { AttachCookiesToResponse } from '../../utils/';
 import { UnauthorizedError } from '../../domain';

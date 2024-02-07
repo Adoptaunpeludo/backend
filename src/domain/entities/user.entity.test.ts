@@ -31,19 +31,16 @@ describe('user.entity.ts', () => {
       description: '',
       socialMedia: [
         {
-          id: 25,
           name: 'facebook',
           url: 'http://facebook.com/shelter',
           shelterId: '433df3eb-e2de-4152-94b3-97b980ba7993',
         },
         {
-          id: 26,
           name: 'xtweet',
           url: 'http://twitter.com/shelter',
           shelterId: '433df3eb-e2de-4152-94b3-97b980ba7993',
         },
         {
-          id: 27,
           name: 'instagram',
           url: 'http://instagram.com/shelter',
           shelterId: '433df3eb-e2de-4152-94b3-97b980ba7993',
