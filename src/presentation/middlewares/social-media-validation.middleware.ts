@@ -11,11 +11,7 @@ export class SocialMediaValidation {
         req.body.socialMedia
       );
 
-      console.log({ updateSocialMediaDto });
-
       const errors = await validate(updateSocialMediaDto);
-
-      console.log({ errors });
 
       if (errors.length > 0) {
         const validationErrors = errors
