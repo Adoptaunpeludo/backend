@@ -25,4 +25,16 @@ export class RegisterUserDto {
   @IsString()
   @IsEnum(UserTypes)
   role!: UserRoles;
+
+  @IsString()
+  @Trim()
+  dni!: string;
+
+  @IsString()
+  @Trim()
+  firstName!: string;
+
+  @IsString()
+  @Trim()
+  lastName!: string;
 }
