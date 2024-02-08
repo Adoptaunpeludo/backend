@@ -1,4 +1,4 @@
-import { HttpCodes } from './http-status-codes.adapter';
+import { HttpCodes } from '../../config/http-status-codes.adapter';
 
 describe('http-status-codes.adapter.ts', () => {
   test('Should return correct status codes', () => {

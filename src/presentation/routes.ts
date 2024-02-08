@@ -1,7 +1,7 @@
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { Response, Router } from 'express';
 import { AuthRoutes } from './auth/routes';
-import { UserRoutes } from './user/routes';
+import { UserRoutes } from './users/routes';
 
 export class AppRoutes {
   static get routes(): Router {

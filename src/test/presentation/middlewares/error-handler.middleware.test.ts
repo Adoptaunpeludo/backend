@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { ErrorHandlerMiddleware } from './error-handler.middleware';
-import { HttpCodes } from '../../config';
+import { ErrorHandlerMiddleware } from '../../../presentation/middlewares/error-handler.middleware';
+import { HttpCodes } from '../../../config';
 
 describe('error-handler.middleware.ts', () => {
   test('should return internal server error and error message when receiving an unknown error', () => {

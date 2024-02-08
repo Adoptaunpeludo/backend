@@ -4,7 +4,7 @@ describe('envs.ts', () => {
     process.env.PORT = 'ABC';
 
     try {
-      await import('./envs');
+      await import('../../config/envs');
       expect(true).toBe(false);
     } catch (error) {
       expect(`${error}`).toContain('should be a valid integer');

@@ -1,9 +1,7 @@
-import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserService } from '../services/user.service';
-import * as fs from 'fs';
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -11,9 +9,9 @@ export class UserController {
   getAllUsers = async (req: Request, res: Response) => {
     const users = await this.userService.getAllUsers();
 
-    // const userEntities = users.map((user) => UserEntity.fromObject(user));
+    const userEntities = users.map((user) => UserEntity.fromObject(user));
 
-    res.status(HttpCodes.OK).json(users);
+    res.status(HttpCodes.OK).json(userEntities);
   };
 
   getUser = async (req: Request, res: Response) => {
@@ -21,9 +19,9 @@ export class UserController {
 
     const user = await this.userService.getCurrentUser(email, role);
 
-    // const userEntity = UserEntity.fromObject(user);
+    const userEntity = UserEntity.fromObject(user);
 
-    res.status(HttpCodes.OK).json(user);
+    res.status(HttpCodes.OK).json(userEntity);
   };
 
   deleteUser = async (req: Request, res: Response) => {

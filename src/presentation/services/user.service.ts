@@ -11,13 +11,17 @@ export class UserService {
   public async getAllUsers() {
     return await prisma.user.findMany({
       include: {
-        admin: true,
         shelter: {
           include: {
             socialMedia: true,
           },
         },
-        contactInfo: true,
+        contactInfo: {
+          include: {
+            city: true,
+          },
+        },
+        animals: true,
       },
     });
   }
@@ -28,7 +32,6 @@ export class UserService {
         email,
       },
       include: {
-        [role]: true,
         contactInfo: {
           include: {
             city: true,

@@ -1,15 +1,15 @@
+import { citiesData } from './../../../data/seed/data';
 import request from 'supertest';
 
-import { BcryptAdapter } from '../../config';
-import { prisma } from '../../data/postgres';
-import { UserRoles } from '../../interfaces';
-import { testServer } from '../test-server';
+import { BcryptAdapter } from '../../../config';
+import { prisma } from '../../../data/postgres';
+import { UserRoles } from '../../../interfaces';
+import { testServer } from '../../../presentation/test-server';
 
 export const cleanDB = async () => {
   await prisma.$transaction([
     prisma.socialMedia.deleteMany(),
     prisma.contactInfo.deleteMany(),
-    prisma.adopter.deleteMany(),
     prisma.shelter.deleteMany(),
     prisma.admin.deleteMany(),
     prisma.token.deleteMany(),
@@ -18,10 +18,16 @@ export const cleanDB = async () => {
 };
 
 export interface TestUser {
-  username: string;
   email: string;
   password: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  dni: string;
   role: UserRoles;
+  phoneNumber: string;
+  address: string;
+  cityId: number;
 }
 
 describe('Api auth routes testing', () => {
@@ -37,7 +43,15 @@ describe('Api auth routes testing', () => {
     email: 'test@test.com',
     password: 'testtest',
     role: 'shelter',
+    dni: '22222222',
+    firstName: 'test',
+    lastName: 'test',
+    phoneNumber: '2222222',
+    address: '13 rue del percebe',
+    cityId: 7,
   };
+
+  const { phoneNumber, address, cityId, ...rest } = user;
 
   beforeAll(async () => {
     prisma.$connect();
@@ -67,7 +81,7 @@ describe('Api auth routes testing', () => {
     });
 
     test('Should return a bad request error with duplicate email', async () => {
-      await prisma.user.create({ data: user });
+      await request(testServer.app).post(signupRoute).send(user).expect(201);
 
       const { body } = await request(testServer.app)
         .post(signupRoute)
@@ -119,7 +133,7 @@ describe('Api auth routes testing', () => {
       // const mockLogin = jest.spyOn(AuthController.prototype, "login").mockImplementation(()=>{});
 
       await prisma.user.create({
-        data: { ...user, emailValidated: true, password: hash },
+        data: { ...rest, emailValidated: true, password: hash },
       });
 
       const { body } = await request(testServer.app)
@@ -133,7 +147,7 @@ describe('Api auth routes testing', () => {
     });
 
     test('Should return an incorrect credentials error', async () => {
-      await prisma.user.create({ data: user });
+      await prisma.user.create({ data: rest });
 
       const { body } = await request(testServer.app)
         .post(loginRoute)
@@ -152,7 +166,7 @@ describe('Api auth routes testing', () => {
       const hash = BcryptAdapter.hash(user.password);
 
       await prisma.user.create({
-        data: { ...user, emailValidated: true, password: hash },
+        data: { ...rest, emailValidated: true, password: hash },
       });
 
       const loginResponse = await request(testServer.app)
