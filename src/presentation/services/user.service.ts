@@ -1,7 +1,7 @@
 import { BcryptAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
 import { BadRequestError, NotFoundError, UpdateUserDto } from '../../domain';
-import { UpdateSocialMediaDto } from '../../domain/dtos/update-social-media.dto';
+import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { PayloadUser, UserRoles } from '../../interfaces';
 import { CheckPermissions } from '../../utils';
 
@@ -37,6 +37,7 @@ export class UserService {
         shelter: {
           include: { socialMedia: true },
         },
+        animals: true,
       },
     });
 
@@ -82,8 +83,6 @@ export class UserService {
     });
 
     if (!user) throw new NotFoundError('User or shelter not found');
-
-    console.log({ socialMediaDto });
 
     const promises = socialMediaDto.socialMedia.map((socialMediaItem) =>
       prisma.socialMedia.upsert({

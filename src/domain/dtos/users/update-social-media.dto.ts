@@ -6,7 +6,7 @@ import {
   IsUrl,
   ValidateNested,
 } from 'class-validator';
-import { AllowedMedia } from '../../interfaces';
+import { AllowedMedia } from '../../../interfaces';
 import { Type } from 'class-transformer';
 
 export enum AllowedMediaItems {

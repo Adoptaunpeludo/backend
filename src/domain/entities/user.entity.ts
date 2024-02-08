@@ -10,7 +10,7 @@ export class UserEntity {
       username: userResponse.username || '',
       emailValidated: userResponse.emailValidated,
       role: userResponse.role,
-      verified: userResponse.verified,
+      verifiedAt: userResponse.verifiedAt,
       createdAt: userResponse.createdAt,
       updatedAt: userResponse.updatedAt,
       avatar: userResponse.avatar,
@@ -23,7 +23,7 @@ export class UserEntity {
       case 'shelter':
         userEntity = {
           ...user,
-          name: userResponse.shelter?.name,
+          username: userResponse.username,
           description: userResponse.shelter?.description,
           // animals:
           //   userResponse.shelter?.animals.map((media) => ({
@@ -37,13 +37,7 @@ export class UserEntity {
             })) || [],
         };
         break;
-      case 'adopter':
-        userEntity = {
-          ...user,
-          firstName: userResponse.adopter?.firstName,
-          lastName: userResponse.adopter?.lastName,
-        };
-        break;
+
       case 'admin':
         userEntity = {
           ...user,

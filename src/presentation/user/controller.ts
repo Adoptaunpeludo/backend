@@ -1,4 +1,4 @@
-import { UpdateSocialMediaDto } from './../../domain/dtos/update-social-media.dto';
+import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { UserEntity } from '../../domain/entities/user.entity';
