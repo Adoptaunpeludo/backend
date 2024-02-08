@@ -2,9 +2,6 @@ import { NextFunction, Request, Response } from 'express';
 
 import { CustomAPIError } from '../../domain/errors';
 import { HttpCodes } from '../../config';
-import EventEmitter from 'events';
-
-const ERROR_EVENT = 'error-event';
 
 export class ErrorHandlerMiddleware {
   static handle() {
@@ -26,5 +23,6 @@ export class ErrorHandlerMiddleware {
         message: message || err?.message,
       });
     };
+
   }
 }

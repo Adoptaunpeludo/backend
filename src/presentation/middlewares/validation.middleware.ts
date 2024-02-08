@@ -11,7 +11,7 @@ export class ValidationMiddleware {
       const { user, ...updates } = req.body;
 
       const dtoObj = plainToInstance(type, updates);
-
+      
       validate(dtoObj, {
         skipMissingProperties,
         whitelist: true,

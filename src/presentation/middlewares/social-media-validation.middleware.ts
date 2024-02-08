@@ -10,9 +10,9 @@ export class SocialMediaValidation {
         SocialMediaDto,
         req.body.socialMedia
       );
-
+      
       const errors = await validate(updateSocialMediaDto);
-
+      
       if (errors.length > 0) {
         const validationErrors = errors
           .map((error) => (Object as any).values(error.constraints))
