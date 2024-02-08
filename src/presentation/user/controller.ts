@@ -11,9 +11,9 @@ export class UserController {
   getAllUsers = async (req: Request, res: Response) => {
     const users = await this.userService.getAllUsers();
 
-    const userEntities = users.map((user) => UserEntity.fromObject(user));
+    // const userEntities = users.map((user) => UserEntity.fromObject(user));
 
-    res.status(HttpCodes.OK).json(userEntities);
+    res.status(HttpCodes.OK).json(users);
   };
 
   getUser = async (req: Request, res: Response) => {
@@ -21,9 +21,9 @@ export class UserController {
 
     const user = await this.userService.getCurrentUser(email, role);
 
-    const userEntity = UserEntity.fromObject(user);
+    // const userEntity = UserEntity.fromObject(user);
 
-    res.status(HttpCodes.OK).json(userEntity);
+    res.status(HttpCodes.OK).json(user);
   };
 
   deleteUser = async (req: Request, res: Response) => {

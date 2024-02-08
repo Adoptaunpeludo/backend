@@ -12,17 +12,12 @@ export class UserService {
     return await prisma.user.findMany({
       include: {
         admin: true,
-        adopter: true,
-        contactInfo: {
-          include: {
-            city: true,
-          },
-        },
         shelter: {
           include: {
             socialMedia: true,
           },
         },
+        contactInfo: true,
       },
     });
   }
@@ -87,6 +82,8 @@ export class UserService {
     });
 
     if (!user) throw new NotFoundError('User or shelter not found');
+
+    console.log({ socialMediaDto });
 
     const promises = socialMediaDto.socialMedia.map((socialMediaItem) =>
       prisma.socialMedia.upsert({

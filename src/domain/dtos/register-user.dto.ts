@@ -1,5 +1,12 @@
-import { Trim } from 'class-sanitizer';
-import { IsEmail, IsEnum, IsString, MinLength } from 'class-validator';
+import { ToInt, Trim } from 'class-sanitizer';
+import {
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 import { UserRoles } from '../../interfaces/user-response.interface';
 
@@ -12,7 +19,7 @@ export class RegisterUserDto {
   @IsString()
   @Trim()
   @MinLength(3, { message: 'username should be minimum of 5 characters' })
-  username?: string;
+  username!: string;
 
   @IsEmail({}, { message: 'email should be a valid email address' })
   @Trim()
@@ -37,4 +44,16 @@ export class RegisterUserDto {
   @IsString()
   @Trim()
   lastName!: string;
+
+  @IsString()
+  @Trim()
+  phoneNumber!: string;
+
+  @IsString()
+  @Trim()
+  address!: string;
+
+  @IsOptional()
+  @ToInt()
+  cityId!: number;
 }

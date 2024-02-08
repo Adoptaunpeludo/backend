@@ -50,7 +50,6 @@ const confirmationQuestion = (text: string) => {
 
   await prisma.socialMedia.deleteMany();
   await prisma.contactInfo.deleteMany();
-  await prisma.adopter.deleteMany();
   await prisma.shelter.deleteMany();
   await prisma.admin.deleteMany();
   await prisma.token.deleteMany();
@@ -65,58 +64,58 @@ const confirmationQuestion = (text: string) => {
     await prisma.city.createMany({ data: citiesNames });
   }
 
-  await Promise.all(
-    seedData.map(async (userData) => {
-      const createdUser = await prisma.user.create({
-        data: {
-          email: userData.email,
-          password: userData.password,
-          username: 'test',
-          role: userData.role as UserRoles,
-          contactInfo: {
-            create: {
-              phoneNumber: userData.contactInfo.phone_number,
-              cityId: userData.contactInfo.cityID,
-              address: '13 rue del percebe',
-            },
-          },
-          adopter:
-            userData.role === 'adopter'
-              ? {
-                  create: {
-                    firstName: userData.first_name!,
-                    lastName: userData.last_name!,
-                  },
-                }
-              : undefined,
-          shelter:
-            userData.role === 'shelter'
-              ? {
-                  create: {
-                    name: userData.name!,
+  // await Promise.all(
+  //   seedData.map(async (userData) => {
+  //     const createdUser = await prisma.user.create({
+  //       data: {
+  //         email: userData.email,
+  //         password: userData.password,
+  //         username: 'test',
+  //         role: userData.role as UserRoles,
+  //         contactInfo: {
+  //           create: {
+  //             phoneNumber: userData.contactInfo.phone_number,
+  //             cityId: userData.contactInfo.cityID,
+  //             address: '13 rue del percebe',
+  //           },
+  //         },
+  //         adopter:
+  //           userData.role === 'adopter'
+  //             ? {
+  //                 create: {
+  //                   firstName: userData.first_name!,
+  //                   lastName: userData.last_name!,
+  //                 },
+  //               }
+  //             : undefined,
+  //         shelter:
+  //           userData.role === 'shelter'
+  //             ? {
+  //                 create: {
+  //                   name: userData.name!,
 
-                    socialMedia: {
-                      create: userData.socialMedia!.map((media) => ({
-                        name: media.name as AllowedMedia,
-                        url: media.url,
-                      })),
-                    },
-                  },
-                }
-              : undefined,
-          admin:
-            userData.role === 'admin'
-              ? {
-                  create: {
-                    name: userData.name!,
-                  },
-                }
-              : undefined,
-        },
-      });
-      console.log(`User created: ${JSON.stringify(createdUser)}`);
-    })
-  );
+  //                   socialMedia: {
+  //                     create: userData.socialMedia!.map((media) => ({
+  //                       name: media.name as AllowedMedia,
+  //                       url: media.url,
+  //                     })),
+  //                   },
+  //                 },
+  //               }
+  //             : undefined,
+  //         admin:
+  //           userData.role === 'admin'
+  //             ? {
+  //                 create: {
+  //                   name: userData.name!,
+  //                 },
+  //               }
+  //             : undefined,
+  //       },
+  //     });
+  //     console.log(`User created: ${JSON.stringify(createdUser)}`);
+  //   })
+  // );
 
   await prisma.$disconnect();
 })();

@@ -1,5 +1,4 @@
 import { Channel } from 'amqplib';
-import { envs } from '../../config';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 
 export class ProducerService {

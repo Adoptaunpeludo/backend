@@ -53,36 +53,29 @@ export class AuthService {
       data: {
         email: registerUserDto.email,
         password: hashedPassword,
-        username: registerUserDto.username || '',
         role: registerUserDto.role,
-        verificationToken,
+        username: registerUserDto.username,
+        dni: registerUserDto.dni,
+        firstName: registerUserDto.firstName,
+        lastName: registerUserDto.lastName,
+        verificationToken: verificationToken,
+        shelter:
+          registerUserDto.role === 'shelter'
+            ? {
+                create: {
+                  cif: '',
+                  description: '',
+                  images: [],
+                },
+              }
+            : undefined,
         contactInfo: {
           create: {
-            phoneNumber: '',
-            cityId: null,
-            address: '',
+            phoneNumber: registerUserDto.phoneNumber,
+            address: registerUserDto.address,
+            cityId: registerUserDto.cityId,
           },
         },
-        adopter:
-          role === 'adopter'
-            ? {
-                create: {
-                  firstName: '',
-                  lastName: '',
-                },
-              }
-            : undefined,
-        shelter:
-          role === 'shelter'
-            ? {
-                create: {
-                  name: '',
-                  description: '',
-                  animals: undefined,
-                  socialMedia: undefined,
-                },
-              }
-            : undefined,
       },
     });
 
@@ -242,7 +235,7 @@ export class AuthService {
       },
       data: {
         emailValidated: true,
-        verified: new Date(),
+        verifiedAt: new Date(),
         verificationToken: '',
       },
     });
