@@ -23,5 +23,6 @@ export class ErrorHandlerMiddleware {
         message: message || err?.message,
       });
     };
+
   }
 }
