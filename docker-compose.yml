@@ -12,3 +12,36 @@ services:
     restart: always
     ports:
       - '${DB_PORT}:5432'
+
+  rabbitmq:
+    image: rabbitmq:3.12.12-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      ENV: ${NODE_ENV}
+
+  email-service:
+    image: jaderodev/email-service:latest
+    restart: on-failure
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    container_name: email-service
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+      MAIL_SERVICE: ${MAIL_SERVICE}
+      MAILER_EMAIL: ${MAILER_EMAIL}
+      MAILER_SECRET_KEY: ${MAILER_SECRET_KEY}
+      WEB_SERVICE_URL: ${WEB_SERVICE_URL}

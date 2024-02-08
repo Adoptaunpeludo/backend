@@ -4,24 +4,25 @@ import { CustomAPIError } from '../../domain/errors';
 import { HttpCodes } from '../../config';
 
 export class ErrorHandlerMiddleware {
-  static handle(err: Error, _req: Request, res: Response, _next: NextFunction) {
-    console.log({ err });
+  static handle() {
+    return (err: Error, _req: Request, res: Response, _next: NextFunction) => {
+      let message, statusCode;
 
-    let message, statusCode;
+      if (!err || err === null) {
+        statusCode = 500;
+        message = 'Unknown error';
+      }
 
-    if (!err || err === null) {
-      statusCode = 500;
-      message = 'Unknown error';
-    }
+      if (err instanceof CustomAPIError) {
+        statusCode = err.statusCode;
+        message = err.message;
+      }
 
-    if (err instanceof CustomAPIError) {
-      statusCode = err.statusCode;
-      message = err.message;
-    }
+      return res.status(statusCode || HttpCodes.INTERNAL_SERVER_ERROR).json({
+        name: err?.name || 'Error',
+        message: message || err?.message,
+      });
+    };
 
-    return res.status(statusCode || HttpCodes.INTERNAL_SERVER_ERROR).json({
-      name: err?.name || 'Error',
-      message: message || err?.message,
-    });
   }
 }

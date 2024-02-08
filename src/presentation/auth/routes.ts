@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { AuthController } from './controller';
 import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
-import { AuthService, EmailService } from '../services';
+import { AuthService, EmailService, ProducerService } from '../services';
 import { JWTAdapter, envs } from '../../config';
 import { LoginUserDto, RegisterUserDto } from '../../domain';
 import { ForgotPasswordDto, ResetPasswordDto } from '../../domain/dtos';
@@ -17,7 +17,15 @@ export class AuthRoutes {
       envs.MAILER_EMAIL,
       envs.MAILER_SECRET_KEY
     );
-    const authService = new AuthService(jwt, emailService, envs.WEBSERVICE_URL);
+
+    const producer = new ProducerService(envs.RABBITMQ_URL, 'email-service');
+
+    const authService = new AuthService(
+      jwt,
+      producer,
+      emailService,
+      envs.WEBSERVICE_URL
+    );
     const authController = new AuthController(authService);
     const authMiddleware = new AuthMiddleware(jwt);
 
