@@ -22,4 +22,9 @@ export const envs = {
 
   //*
   WEBSERVICE_URL: get('WEBSERVICE_URL').required().asString(),
+
+  //* RABBITMQ
+  RABBITMQ_USER: get('RABBITMQ_USER').required().asString(),
+  RABBITMQ_PASS: get('RABBITMQ_PASS').required().asString(),
+  RABBITMQ_URL: get('RABBITMQ_URL').required().asString(),
 };

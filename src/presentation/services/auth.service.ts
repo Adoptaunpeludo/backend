@@ -10,6 +10,7 @@ import { BcryptAdapter, JWTAdapter } from '../../config';
 import { EmailService } from './email.service';
 import { InternalServerError, UnauthenticatedError } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
+import { ProducerService } from './producer.service';
 
 interface Options {
   userAgent: string;
@@ -21,6 +22,7 @@ type TokenType = 'passwordToken' | 'verificationToken';
 export class AuthService {
   constructor(
     private readonly jwt: JWTAdapter,
+    private readonly producerService: ProducerService,
     private readonly emailService?: EmailService,
     private readonly webServiceUrl?: string
   ) {}
@@ -84,17 +86,23 @@ export class AuthService {
       },
     });
 
+    await this.producerService.addToEmailQueue({
+      email: createdUser.email,
+      verificationToken,
+      type: 'email',
+    });
+
     // Rollback in case there is an error sending the validation email
-    try {
-      await this.sendEmailValidationLink(
-        createdUser.email,
-        verificationToken,
-        'email'
-      );
-    } catch (error) {
-      await prisma.user.delete({ where: { email: createdUser.email } });
-      throw error;
-    }
+    // try {
+    //   await this.sendEmailValidationLink(
+    //     createdUser.email,
+    //     verificationToken,
+    //     'email'
+    //   );
+    // } catch (error) {
+    //   await prisma.user.delete({ where: { email: createdUser.email } });
+    //   throw error;
+    // }
 
     return createdUser;
   }
@@ -264,15 +272,21 @@ export class AuthService {
 
     await prisma.user.update({ data: { passwordToken }, where: { email } });
 
-    try {
-      await this.sendEmailValidationLink(email, passwordToken, 'password');
-    } catch (error) {
-      await prisma.user.update({
-        data: { passwordToken: '' },
-        where: { email },
-      });
-      throw error;
-    }
+    await this.producerService.addToEmailQueue({
+      email,
+      passwordToken,
+      type: 'password',
+    });
+
+    // try {
+    //   await this.sendEmailValidationLink(email, passwordToken, 'password');
+    // } catch (error) {
+    //   await prisma.user.update({
+    //     data: { passwordToken: '' },
+    //     where: { email },
+    //   });
+    //   throw error;
+    // }
 
     return passwordToken;
   }

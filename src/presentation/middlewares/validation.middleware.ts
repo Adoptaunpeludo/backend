@@ -12,8 +12,6 @@ export class ValidationMiddleware {
 
       const dtoObj = plainToInstance(type, updates);
 
-      console.log({ dtoObj });
-
       validate(dtoObj, {
         skipMissingProperties,
         whitelist: true,

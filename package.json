@@ -12,7 +12,8 @@
     "test:watch": "dotenv -e .env.test -- jest --watch --runInBand --silent",
     "test:coverage": "jest --coverage",
     "migrate:test": "dotenv -e .env.test -- npx prisma migrate deploy",
-    "migrate": "npx prisma migrate dev"
+    "migrate": "npx prisma migrate dev",
+    "error-consumer": "ts-node-dev ./src/presentation/rabbitmq/rabbitmq.consumer.ts"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   "homepage": "https://github.com/Adoptaunpeludo/backend#readme",
   "devDependencies": {
     "@prisma/client": "^5.9.1",
+    "@types/amqplib": "^0.10.4",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.6",
     "@types/express": "^4.17.21",
@@ -43,6 +45,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.3",
     "bcryptjs": "^2.4.3",
     "class-sanitizer": "^1.0.1",
     "class-transformer": "^0.5.1",

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 
 import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
 import { envs } from '../config';
+import { prisma } from '../data/postgres';
 
 interface Options {
   port: number;
@@ -44,8 +45,15 @@ export class Server {
     //* Error Handler Middleware
     this.app.use(ErrorHandlerMiddleware.handle);
 
-    this.serverListener = this.app.listen(this.port, () => {
-      console.log(`Server running on port ${this.port}`);
+    this.serverListener = this.app.listen(this.port, async () => {
+      try {
+        await prisma.$connect();
+        console.log('Connected to database');
+        console.log(`Server running on port ${this.port}`);
+      } catch (error) {
+        console.log(error);
+        console.log('There was an error connection to the database');
+      }
     });
   }
 
