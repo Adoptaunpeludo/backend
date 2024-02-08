@@ -127,13 +127,13 @@ model Token {
 }
 
 model Shelter {
-  id                   String      @id
-  description          String      @default("")
-  cif                  String      @unique
-  legalForms           legal_forms
-  veterinaryFacilities Boolean
-  facilities           facilities
-  ownVet               Boolean
+  id                   String       @id
+  description          String       @default("")
+  cif                  String       @unique
+  legalForms           legal_forms?
+  veterinaryFacilities Boolean?
+  facilities           facilities?
+  ownVet               Boolean?
   images               String[]
 
   user        User          @relation(fields: [id], references: [id], onDelete: Cascade)
@@ -148,12 +148,12 @@ model Admin {
 }
 
 model ContactInfo {
-  id          String  @id
-  phoneNumber String?
-  address     String?
-  cityId      Int?
-  user        User?   @relation(fields: [id], references: [id], onDelete: Cascade)
-  city        City?   @relation(fields: [cityId], references: [id])
+  id          String @id
+  phoneNumber String
+  address     String
+  cityId      Int
+  user        User   @relation(fields: [id], references: [id], onDelete: Cascade)
+  city        City   @relation(fields: [cityId], references: [id])
 }
 
 model SocialMedia {
