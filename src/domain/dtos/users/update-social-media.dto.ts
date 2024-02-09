@@ -2,6 +2,7 @@ import { Trim } from 'class-sanitizer';
 import {
   IsArray,
   IsEnum,
+  IsOptional,
   IsString,
   IsUrl,
   ValidateNested,
@@ -19,9 +20,10 @@ export class SocialMediaDto {
   @IsEnum(AllowedMediaItems)
   name!: AllowedMedia;
 
-  @IsUrl()
+  @IsString()
   @Trim()
-  url!: string;
+  @IsOptional()
+  url?: string;
 }
 
 export class UpdateSocialMediaDto {

@@ -105,7 +105,7 @@ export class UserService {
         },
         create: {
           name: socialMediaItem.name,
-          url: socialMediaItem.url,
+          url: socialMediaItem.url || '',
           shelter: {
             connect: {
               id: user.id,
