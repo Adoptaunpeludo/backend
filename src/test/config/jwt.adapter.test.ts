@@ -1,4 +1,4 @@
-import { JWTAdapter, JWTAdapterPayload } from './jwt.adapter';
+import { JWTAdapter, JWTAdapterPayload } from '../../config/jwt.adapter';
 import JWT from 'jsonwebtoken';
 
 describe('jwt.adapter.ts', () => {

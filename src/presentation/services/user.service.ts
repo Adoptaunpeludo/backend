@@ -1,7 +1,7 @@
 import { BcryptAdapter } from '../../config';
 import { prisma } from '../../data/postgres';
 import { BadRequestError, NotFoundError, UpdateUserDto } from '../../domain';
-import { UpdateSocialMediaDto } from '../../domain/dtos/update-social-media.dto';
+import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { PayloadUser, UserRoles } from '../../interfaces';
 import { CheckPermissions } from '../../utils';
 
@@ -11,18 +11,17 @@ export class UserService {
   public async getAllUsers() {
     return await prisma.user.findMany({
       include: {
-        admin: true,
-        adopter: true,
-        contactInfo: {
-          include: {
-            city: true,
-          },
-        },
         shelter: {
           include: {
             socialMedia: true,
           },
         },
+        contactInfo: {
+          include: {
+            city: true,
+          },
+        },
+        animals: true,
       },
     });
   }
@@ -33,7 +32,6 @@ export class UserService {
         email,
       },
       include: {
-        [role]: true,
         contactInfo: {
           include: {
             city: true,
@@ -42,6 +40,7 @@ export class UserService {
         shelter: {
           include: { socialMedia: true },
         },
+        animals: true,
       },
     });
 

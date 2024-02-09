@@ -4,6 +4,7 @@ import { ValidationError, validate } from 'class-validator';
 import { sanitize } from 'class-sanitizer';
 
 import { BadRequestError } from '../../domain/errors';
+import { HttpCodes } from '../../config';
 
 export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
@@ -11,7 +12,7 @@ export class ValidationMiddleware {
       const { user, ...updates } = req.body;
 
       const dtoObj = plainToInstance(type, updates);
-      
+
       validate(dtoObj, {
         skipMissingProperties,
         whitelist: true,
@@ -31,6 +32,9 @@ export class ValidationMiddleware {
               }
             })
             .join(', ');
+
+          // throw new BadRequestError(dtoErrors);
+          // res.status(HttpCodes.BAD_REQUEST).json({ message: dtoErrors });
           next(new BadRequestError(dtoErrors));
         } else {
           sanitize(dtoObj);

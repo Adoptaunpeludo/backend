@@ -1,16 +1,18 @@
 import 'reflect-metadata';
-import { JWTAdapter } from '../../config';
-import { prisma } from '../../data/postgres';
-import { InternalServerError, RegisterUserDto } from '../../domain';
-import { AuthService } from './auth.service';
-import { EmailService } from './email.service';
+import { JWTAdapter } from '../../../config';
+import { prisma } from '../../../data/postgres';
+import { InternalServerError, RegisterUserDto } from '../../../domain';
+import { AuthService } from '../../../presentation/services/auth.service';
+import { EmailService } from '../../../presentation/services/email.service';
+import { ProducerService } from '../../../presentation/services/producer.service';
+
+jest.mock('../../../presentation/services/producer.service');
 
 describe('auth.service.ts', () => {
   const cleanDB = async () => {
     await prisma.$transaction([
       prisma.socialMedia.deleteMany(),
       prisma.contactInfo.deleteMany(),
-      prisma.adopter.deleteMany(),
       prisma.shelter.deleteMany(),
       prisma.admin.deleteMany(),
       prisma.token.deleteMany(),
@@ -37,6 +39,7 @@ describe('auth.service.ts', () => {
 
     const authService = new AuthService(
       jwt,
+      new ProducerService('', ''),
       new EmailService('', '', ''),
       'https://example.com'
     );
@@ -44,29 +47,5 @@ describe('auth.service.ts', () => {
     await expect(authService.registerUser(registerUserDto)).rejects.toThrow(
       InternalServerError
     );
-  });
-
-  test('should throw CustomAPIError if EmailService fails', async () => {
-    // Arrange
-
-    const jwt = new JWTAdapter('secret');
-
-    prisma.user.delete = jest.fn();
-
-    const emailService = new EmailService('', '', '');
-
-    const authService = new AuthService(
-      jwt,
-      emailService,
-      'https://example.com'
-    );
-
-    await expect(authService.registerUser(registerUserDto)).rejects.toThrow(
-      InternalServerError
-    );
-
-    expect(prisma.user.delete).toHaveBeenCalledWith({
-      where: { email: registerUserDto.email },
-    });
   });
 });

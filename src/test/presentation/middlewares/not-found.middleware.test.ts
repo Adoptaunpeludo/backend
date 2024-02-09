@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { NotFoundMiddleware } from './not-found.middleware';
-import { HttpCodes } from '../../config';
+import { NotFoundMiddleware } from '../../../presentation/middlewares/not-found.middleware';
+import { HttpCodes } from '../../../config';
 
 describe('not-found.middleware.ts', () => {
   it('should return a 404 status code and a JSON message with the route not found when init method is called with a Request object and a Response object', () => {

@@ -2,48 +2,47 @@ import { UserResponse } from '../../interfaces/user-response.interface';
 
 export class UserEntity {
   static fromObject(userResponse: UserResponse) {
+    const {
+      password,
+      verificationToken,
+      passwordToken,
+      shelter,
+      contactInfo,
+      admin,
+      ...commonUser
+    } = userResponse;
+
     let userEntity = {};
 
     const user = {
-      id: userResponse.id,
-      email: userResponse.email,
-      username: userResponse.username || '',
-      emailValidated: userResponse.emailValidated,
-      role: userResponse.role,
-      verified: userResponse.verified,
-      createdAt: userResponse.createdAt,
-      updatedAt: userResponse.updatedAt,
-      avatar: userResponse.avatar,
-      phoneNumber: userResponse.contactInfo?.phoneNumber || '',
-      address: userResponse.contactInfo?.address || '',
-      city: userResponse.contactInfo?.city?.name || null,
+      ...commonUser,
+      phoneNumber: contactInfo?.phoneNumber,
+      address: contactInfo?.address,
+      city: contactInfo?.city?.name,
     };
 
     switch (userResponse.role) {
       case 'shelter':
         userEntity = {
           ...user,
-          name: userResponse.shelter?.name,
-          description: userResponse.shelter?.description,
-          // animals:
-          //   userResponse.shelter?.animals.map((media) => ({
-          //     name: media.name,
-          //     url: media.url,
-          //   })) || [],
+          description: shelter?.description,
+          cif: shelter?.cif,
+          legalForms: shelter?.legalForms,
+          veterinaryFacilities: shelter?.veterinaryFacilities,
+          facilities: shelter?.facilities,
+          ownVet: shelter?.ownVet,
+          images: shelter?.images,
           socialMedia:
-            userResponse.shelter?.socialMedia.map((media) => ({
+            shelter?.socialMedia.map((media) => ({
               name: media.name,
               url: media.url,
             })) || [],
         };
         break;
+
       case 'adopter':
-        userEntity = {
-          ...user,
-          firstName: userResponse.adopter?.firstName,
-          lastName: userResponse.adopter?.lastName,
-        };
-        break;
+        userEntity = user;
+
       case 'admin':
         userEntity = {
           ...user,

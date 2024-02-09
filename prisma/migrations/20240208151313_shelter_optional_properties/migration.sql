@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Shelter" ALTER COLUMN "facilities" DROP NOT NULL,
+ALTER COLUMN "legalForms" DROP NOT NULL,
+ALTER COLUMN "ownVet" DROP NOT NULL,
+ALTER COLUMN "veterinaryFacilities" DROP NOT NULL;

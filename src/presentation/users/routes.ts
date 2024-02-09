@@ -6,8 +6,8 @@ import { AuthService, UserService } from '../services';
 import { AuthController } from '../auth/controller';
 import { ValidationMiddleware } from '../middlewares';
 import { UpdateUserDto } from '../../domain';
-import { UpdatePasswordDto } from '../../domain/dtos/update-password.dto';
-import { UpdateSocialMediaDto } from '../../domain/dtos/update-social-media.dto';
+import { UpdatePasswordDto } from '../../domain/dtos/auth/update-password.dto';
+import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 
 export class UserRoutes {
   static get routes() {
@@ -40,7 +40,7 @@ export class UserRoutes {
       userController.updateUser
     );
 
-    router.put(
+    router.post(
       '/change-password',
       authMiddleware.authenticateUser,
       ValidationMiddleware.validate(UpdatePasswordDto),

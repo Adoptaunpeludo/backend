@@ -1,4 +1,4 @@
-import { BcryptAdapter } from './bcrypt.adapter';
+import { BcryptAdapter } from '../../config/bcrypt.adapter';
 
 describe('bcrypt.adapter.ts', () => {
   const password = 'secret';

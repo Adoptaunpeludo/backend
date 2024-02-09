@@ -1,9 +1,7 @@
-import { UpdateSocialMediaDto } from './../../domain/dtos/update-social-media.dto';
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserService } from '../services/user.service';
-import * as fs from 'fs';
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
