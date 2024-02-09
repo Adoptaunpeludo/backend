@@ -1,14 +1,31 @@
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config';
 import { AnimalService } from '../services/animal.service';
+import { BadRequestError } from '../../domain';
 
 export class AnimalController {
   constructor(private readonly animalService: AnimalService) {}
 
-  create = async (req: Request, res: Response) => {
-    const resp = await this.animalService.create();
+  createCat = async (req: Request, res: Response) => {
+    const { user, ...animal } = req.body;
 
-    res.status(HttpCodes.OK).json({ message: resp });
+    if (animal.type !== 'cat')
+      throw new BadRequestError('Wrong route, use /dog');
+
+    const cat = await this.animalService.createCat(user.id, user.name, animal);
+
+    res.status(HttpCodes.OK).json(cat);
+  };
+
+  createDog = async (req: Request, res: Response) => {
+    const { user, ...animal } = req.body;
+
+    if (animal.type !== 'dog')
+      throw new BadRequestError('Wrong route, use /cat');
+
+    const dog = await this.animalService.createDog(user.id, user.name, animal);
+
+    res.status(HttpCodes.OK).json(dog);
   };
 
   getAll = async (req: Request, res: Response) => {

@@ -7,7 +7,7 @@ import {
   UserEntity,
 } from '../../domain';
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
-import { PayloadUser, UserRoles } from '../../interfaces';
+import { PayloadUser, UserRoles } from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
 
 export class UserService {

@@ -4,7 +4,7 @@ import { citiesData, seedData } from './data';
 import {
   AllowedMedia,
   UserRoles,
-} from '../../interfaces/user-response.interface';
+} from '../../domain/interfaces/user-response.interface';
 
 const confirmationQuestion = (text: string) => {
   return new Promise((resolve) => {

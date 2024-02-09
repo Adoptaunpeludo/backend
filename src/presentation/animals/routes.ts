@@ -1,11 +1,16 @@
 import { Router } from 'express';
 import { AnimalController } from './controller';
 import { AnimalService } from '../services/animal.service';
+import { JWTAdapter, envs } from '../../config';
+import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
+import { CreateCatDto, CreateDogDto } from '../../domain';
 
 export class AnimalRoutes {
   static get routes() {
     const router = Router();
 
+    const jwt = new JWTAdapter(envs.JWT_SEED);
+    const authMiddleware = new AuthMiddleware(jwt);
     const animalService = new AnimalService();
     const animalController = new AnimalController(animalService);
 
@@ -13,7 +18,21 @@ export class AnimalRoutes {
 
     router.get('/:id', animalController.getSingle);
 
-    router.post('/', animalController.create);
+    router.post(
+      '/cat',
+      authMiddleware.authenticateUser,
+      authMiddleware.authorizePermissions('shelter'),
+      ValidationMiddleware.validate(CreateCatDto),
+      animalController.createCat
+    );
+
+    router.post(
+      '/dog',
+      authMiddleware.authenticateUser,
+      authMiddleware.authorizePermissions('shelter'),
+      ValidationMiddleware.validate(CreateDogDto),
+      animalController.createDog
+    );
 
     router.put('/:id', animalController.update);
 

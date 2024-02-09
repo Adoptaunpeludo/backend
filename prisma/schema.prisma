@@ -70,7 +70,7 @@ enum molting {
 enum energy {
   light
   moderate
-  heavy
+  high
 }
 
 enum potential {
@@ -79,6 +79,11 @@ enum potential {
   moderate
   high
   excessive
+}
+
+enum animal_type {
+  cat
+  dog
 }
 
 //* TODO ONDELETE CASCADE
@@ -177,10 +182,10 @@ model Animal {
   id            String                  @id @default(uuid())
   gender        genter_enum
   name          String
+  type          animal_type
   slug          String                  @unique
   age           Float
   description   String                  @default("")
-  birthdate     DateTime
   breed         String
   size          animal_size
   publishStatus adoption_publish_status @default(pending)
@@ -193,22 +198,20 @@ model Animal {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  adoptedBy String
+  adoptedBy String?
   createdBy String
   cityId    Int
 
-  adopter User?   @relation(name: "adopted", fields: [userId], references: [id])
+  adopter User?   @relation(name: "adopted", fields: [adoptedBy], references: [id])
   shelter Shelter @relation(fields: [createdBy], references: [id])
   city    City    @relation(fields: [cityId], references: [id])
   userFav User[]  @relation(name: "userFav")
   dog     Dog?
-  Cat     Cat?
-  userId  String?
+  cat     Cat?
 
   @@index([gender])
   @@index([name])
   @@index([age])
-  @@index([birthdate])
   @@index([size])
   @@index([createdBy])
 }
@@ -225,7 +228,7 @@ model Cat {
   id               String    @id
   playLevel        potential
   kidsFriendly     Boolean
-  toilletTrained   Boolean
+  toiletTrained    Boolean
   scratchPotential potential
   animal           Animal    @relation(fields: [id], references: [id])
 }

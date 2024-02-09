@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { HttpCodes, JWTAdapter } from '../../config';
-import { UserRoles } from '../../interfaces';
+import { UserRoles } from '../../domain/interfaces';
 import { UnauthenticatedError, UnauthorizedError } from '../../domain';
 import { prisma } from '../../data/postgres';
 import { AttachCookiesToResponse } from '../../utils/response-cookies';

@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-import { UserRoles } from '../../../interfaces/user-response.interface';
+import { UserRoles } from '../../interfaces/user-response.interface';
 
 enum UserTypes {
   ADMIN = 'admin',

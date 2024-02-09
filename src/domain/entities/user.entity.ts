@@ -1,4 +1,4 @@
-import { UserResponse } from '../../interfaces/user-response.interface';
+import { UserResponse } from '../interfaces/user-response.interface';
 
 export class UserEntity {
   static fromObject(userResponse: UserResponse) {

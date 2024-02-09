@@ -7,7 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-import { legalForms } from '../../../interfaces';
+import { legalForms } from '../../interfaces';
 import { facilities } from '@prisma/client';
 import { Transform, Type } from 'class-transformer';
 
@@ -74,12 +74,12 @@ export class UpdateUserDto {
   @IsOptional()
   facilities?: facilities;
 
-  @Transform(({ value }) => value === 'true')
-  @IsOptional()
+  @IsBoolean()
+  @ToBoolean()
   veterinaryFacilities?: boolean;
 
-  @Transform(({ value }) => value === 'true')
-  @IsOptional()
+  @IsBoolean()
+  @ToBoolean()
   ownVet?: boolean;
 
   @IsString()

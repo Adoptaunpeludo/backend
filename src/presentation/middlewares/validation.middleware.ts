@@ -4,7 +4,6 @@ import { ValidationError, validate } from 'class-validator';
 import { sanitize } from 'class-sanitizer';
 
 import { BadRequestError } from '../../domain/errors';
-import { HttpCodes } from '../../config';
 
 export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
