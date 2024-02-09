@@ -1,4 +1,4 @@
-import { prisma } from '../../data/postgres';
+import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 import {
   BadRequestError,
   CustomAPIError,
@@ -6,7 +6,7 @@ import {
   RegisterUserDto,
   UnauthorizedError,
 } from '../../domain';
-import { BcryptAdapter, JWTAdapter } from '../../config';
+import { JWTAdapter } from '../../config';
 import { EmailService } from './email.service';
 import { InternalServerError, UnauthenticatedError } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
@@ -39,7 +39,7 @@ export class AuthService {
         `Email ${registerUserDto.email} already exists, try another one`
       );
 
-    const hashedPassword = BcryptAdapter.hash(registerUserDto.password);
+    const hashedPassword = prisma.user.hashPassword(registerUserDto.password);
 
     const verificationToken = await this.jwt.generateToken(
       { user: { email } },
@@ -109,7 +109,10 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedError('Incorrect email or password');
 
-    const isMatch = BcryptAdapter.compare(loginUserDto.password, user.password);
+    const isMatch = prisma.user.validatePassword({
+      password: loginUserDto.password,
+      hash: user.password,
+    });
 
     if (!isMatch) throw new UnauthorizedError('Incorrect email or password');
 
@@ -176,32 +179,6 @@ export class AuthService {
     `;
 
     return { html, title };
-  }
-
-  private async sendEmailValidationLink(
-    email: string,
-    token: string,
-    type: string
-  ) {
-    if (!token)
-      throw new InternalServerError(
-        'Error while generating JWT token, check server logs'
-      );
-
-    const { html, title } = this.generateEmailContent(type, token, email);
-
-    const options = {
-      to: email,
-      subject: title,
-      htmlBody: html,
-    };
-
-    const isSent = await this.emailService!.sendEmail(options);
-
-    if (!isSent)
-      throw new InternalServerError('Error sending email, check server logs');
-
-    return true;
   }
 
   private async verifyToken(token: string, type: TokenType) {
@@ -287,7 +264,7 @@ export class AuthService {
   public async resetPassword(password: string, token: string) {
     const email = await this.verifyToken(token, 'passwordToken');
 
-    const hash = BcryptAdapter.hash(password);
+    const hash = prisma.user.hashPassword(password);
 
     const user = await prisma.user.update({
       data: { password: hash, passwordToken: '' },
