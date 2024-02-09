@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { ValidationError, validate } from 'class-validator';
 import { sanitize } from 'class-sanitizer';
 

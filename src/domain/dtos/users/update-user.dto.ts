@@ -1,12 +1,31 @@
-import { Trim, ToInt } from 'class-sanitizer';
+import { Trim, ToInt, ToBoolean } from 'class-sanitizer';
 import {
-  IsInt,
+  IsBoolean,
+  IsEnum,
   IsOptional,
   IsString,
-  Max,
-  Min,
   MinLength,
 } from 'class-validator';
+
+import { legalForms } from '../../../interfaces';
+import { facilities } from '@prisma/client';
+import { Transform, Type } from 'class-transformer';
+
+enum enum_legalForms {
+  A = 'association',
+  PUA = 'public_utility_association',
+  AF = 'autonomous_foundation',
+  NF = 'national_foundation',
+  O = 'other',
+}
+
+enum enum_facilities {
+  FH = 'foster_homes',
+  MOPF = 'municipal_or_public_facilities',
+  LF = 'leased_facilities',
+  OF = 'owned_facilities',
+  PR = 'private_residences',
+}
 
 export class UpdateUserDto {
   @IsString()
@@ -29,15 +48,39 @@ export class UpdateUserDto {
 
   @IsString()
   @Trim()
-  @MinLength(3)
+  @MinLength(9)
   @IsOptional()
-  name?: string;
+  dni?: string;
 
   @IsString()
   @Trim()
   @MinLength(3)
   @IsOptional()
   description?: string;
+
+  @IsString()
+  @Trim()
+  @MinLength(9)
+  @IsOptional()
+  cif?: string;
+
+  @Trim()
+  @IsEnum(enum_legalForms)
+  @IsOptional()
+  legalForms?: legalForms;
+
+  @Trim()
+  @IsEnum(enum_facilities)
+  @IsOptional()
+  facilities?: facilities;
+
+  @Transform(({ value }) => value === 'true')
+  @IsOptional()
+  veterinaryFacilities?: boolean;
+
+  @Transform(({ value }) => value === 'true')
+  @IsOptional()
+  ownVet?: boolean;
 
   @IsString()
   @Trim()
