@@ -4,20 +4,28 @@ import {
   IsNumber,
   IsUUID,
   IsString,
+  Min,
 } from 'class-validator';
-import { animal_size, genter_enum } from '@prisma/client';
-import { Trim } from 'class-sanitizer';
+import { animal_size, gender_enum } from '@prisma/client';
+import { ToInt, Trim } from 'class-sanitizer';
+import { Type } from 'class-transformer';
 
-enum enum_animal_size {
-  SMALL = 'small',
-  MEDIUM = 'medium',
-  BIG = 'big',
-  VERY_BIG = 'very_big',
+enum enumAnimalSize {
+  S = 'small',
+  M = 'medium',
+  B = 'big',
+  VB = 'very_big',
 }
 
-enum enum_genter_enum {
-  MALE = 'male',
-  FEMALE = 'female',
+enum enumGenderEnum {
+  M = 'male',
+  F = 'female',
+}
+
+enum ageRange {
+  P = 'puppy',
+  A = 'adult',
+  S = 'senior',
 }
 
 export class AnimalFilterDto {
@@ -33,17 +41,18 @@ export class AnimalFilterDto {
 
   @IsOptional()
   @Trim()
-  @IsEnum(enum_animal_size)
+  @IsEnum(enumAnimalSize)
   size?: animal_size;
 
   @IsOptional()
   @Trim()
-  @IsEnum(enum_genter_enum)
-  gender?: genter_enum;
+  @IsEnum(enumGenderEnum)
+  gender?: gender_enum;
 
   @IsOptional()
-  @IsNumber()
-  age?: number;
+  @IsString()
+  @IsEnum(ageRange)
+  age?: ageRange;
 
   @IsOptional()
   @Trim()

@@ -75,18 +75,41 @@ export class AnimalService {
   public async getSingle() {
     return 'Get single Animal';
   }
+
+  private mapFilters(animalFilterDto: AnimalFilterDto) {
+    const { age, createdBy, gender, id, name, size, slug } = animalFilterDto;
+
+    let filters: any = {};
+
+    if (age) {
+      if (age === 'puppy') filters.age = { gte: 0, lte: 2 };
+      if (age === 'adult') filters.age = { gte: 2, lte: 10 };
+      if (age === 'senior') filters.age = { gt: 10 };
+    }
+    if (createdBy) filters.createdBy = createdBy;
+    if (gender) filters.gender = gender;
+    if (id) filters.id = id;
+    if (name) filters.name = name;
+    if (size) filters.size = size;
+    if (slug) filters.slug = slug;
+
+    return filters;
+  }
+
   public async getAll(
     paginationDto: PaginationDto,
     animalFilterDto: AnimalFilterDto
   ) {
     const { limit = 10, page = 1 } = paginationDto;
-    const { age, createdBy, gender, id, name, size, slug } = animalFilterDto;
+
+    const filters = this.mapFilters(animalFilterDto);
 
     const [total, animals] = await prisma.$transaction([
-      prisma.animal.count(),
+      prisma.animal.count({ where: filters }),
       prisma.animal.findMany({
         skip: (page - 1) * limit,
         take: limit,
+        where: filters,
         include: {
           shelter: {
             include: { user: { select: { avatar: true, username: true } } },

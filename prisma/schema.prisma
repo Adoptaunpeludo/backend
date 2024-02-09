@@ -13,7 +13,7 @@ enum user_roles {
   admin
 }
 
-enum genter_enum {
+enum gender_enum {
   male
   female
 }
@@ -180,7 +180,7 @@ model City {
 
 model Animal {
   id            String                  @id @default(uuid())
-  gender        genter_enum
+  gender        gender_enum
   name          String
   type          animal_type
   slug          String                  @unique
