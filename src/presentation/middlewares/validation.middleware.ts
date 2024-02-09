@@ -8,10 +8,16 @@ import { BadRequestError } from '../../domain/errors';
 export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
     return (req, res, next) => {
+      console.log(req.query);
+
+      console.log({ type });
+
       const { user, ...body } = req.body;
-      const { page, limit } = req.query;
+      const { page, limit, ...filters } = req.query;
 
       let dtoObj = {};
+
+      // if (page || limit) plainToInstance(type, { page, limit });
 
       dtoObj =
         page || limit

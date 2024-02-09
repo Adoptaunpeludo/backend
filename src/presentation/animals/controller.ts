@@ -30,8 +30,11 @@ export class AnimalController {
   };
 
   getAll = async (req: Request, res: Response) => {
+    const { limit = 10, page = 1, ...filters } = req.query;
+
     const { animals, ...pagination } = await this.animalService.getAll(
-      req.query
+      { limit: +limit, page: +page },
+      filters
     );
 
     const animalsEntity = AnimalEntity.fromArray(animals);

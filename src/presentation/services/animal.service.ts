@@ -1,5 +1,10 @@
 import { prismaWithSlugExtension as prisma } from '../../data/postgres';
-import { CreateCatDto, CreateDogDto, PaginationDto } from '../../domain/dtos';
+import {
+  AnimalFilterDto,
+  CreateCatDto,
+  CreateDogDto,
+  PaginationDto,
+} from '../../domain/dtos';
 
 export class AnimalService {
   constructor() {}
@@ -70,8 +75,12 @@ export class AnimalService {
   public async getSingle() {
     return 'Get single Animal';
   }
-  public async getAll(paginationDto: PaginationDto) {
+  public async getAll(
+    paginationDto: PaginationDto,
+    animalFilterDto: AnimalFilterDto
+  ) {
     const { limit = 10, page = 1 } = paginationDto;
+    const { age, createdBy, gender, id, name, size, slug } = animalFilterDto;
 
     const [total, animals] = await prisma.$transaction([
       prisma.animal.count(),
