@@ -102,19 +102,20 @@ model User {
 
   shelter     Shelter?
   admin       Admin?
-  animals     Animal[]
+  animals     Animal[]     @relation(name: "adopted")
   contactInfo ContactInfo?
   Token       Token?
-  userFav     UserFav[]
+  userFav     Animal[]     @relation(name: "userFav")
 }
 
-model UserFav {
-  id       String  @id @default(uuid())
-  User     User?   @relation(fields: [userId], references: [id])
-  userId   String?
-  Animal   Animal? @relation(fields: [animalId], references: [id])
-  animalId String?
-}
+// model UserFav {
+//   User     User?   @relation(fields: [userId], references: [id])
+//   userId   String
+//   Animal   Animal? @relation(fields: [animalId], references: [id])
+//   animalId String
+
+//   @@id([userId, animalId])
+// }
 
 model Token {
   id           String  @id @default(uuid())
@@ -196,12 +197,13 @@ model Animal {
   createdBy String
   cityId    Int
 
-  adopter User?     @relation(fields: [adoptedBy], references: [id])
-  shelter Shelter   @relation(fields: [createdBy], references: [id])
-  city    City      @relation(fields: [cityId], references: [id])
-  userFav UserFav[]
+  adopter User?   @relation(name: "adopted", fields: [userId], references: [id])
+  shelter Shelter @relation(fields: [createdBy], references: [id])
+  city    City    @relation(fields: [cityId], references: [id])
+  userFav User[]  @relation(name: "userFav")
   dog     Dog?
   Cat     Cat?
+  userId  String?
 
   @@index([gender])
   @@index([name])
