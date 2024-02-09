@@ -6,7 +6,7 @@ import { UserService } from '../services/user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  getAllUsers = async (req: Request, res: Response) => {
+  getAllUsers = async (_req: Request, res: Response) => {
     const users = await this.userService.getAllUsers();
 
     const userEntities = users.map((user) => UserEntity.fromObject(user));

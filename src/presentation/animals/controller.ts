@@ -28,8 +28,10 @@ export class AnimalController {
     res.status(HttpCodes.OK).json(dog);
   };
 
-  getAll = async (req: Request, res: Response) => {
-    res.status(HttpCodes.OK).json({ message: 'Get All Animals' });
+  getAll = async (_req: Request, res: Response) => {
+    const animals = await this.animalService.getAll();
+
+    res.status(HttpCodes.OK).json(animals);
   };
 
   getSingle = async (req: Request, res: Response) => {

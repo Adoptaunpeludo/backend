@@ -67,11 +67,20 @@ export class AnimalService {
 
     return animal;
   }
-  public async single() {
+  public async getSingle() {
     return 'Get single Animal';
   }
-  public async all() {
-    return 'Get all Animals';
+  public async getAll() {
+    const animals = prisma.animal.findMany({
+      include: {
+        shelter: { include: { user: { select: { avatar: true } } } },
+        city: true,
+        cat: true,
+        dog: true,
+      },
+    });
+
+    return animals;
   }
   public async update() {
     return 'Update Animal';
