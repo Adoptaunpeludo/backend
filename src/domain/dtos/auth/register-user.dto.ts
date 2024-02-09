@@ -3,12 +3,14 @@ import {
   IsEmail,
   IsEnum,
   IsInt,
+  IsNumber,
   IsOptional,
   IsString,
   MinLength,
 } from 'class-validator';
 
 import { UserRoles } from '../../interfaces/user-response.interface';
+import { Type } from 'class-transformer';
 
 enum UserTypes {
   ADMIN = 'admin',
@@ -54,6 +56,7 @@ export class RegisterUserDto {
   address!: string;
 
   @IsOptional()
-  @ToInt()
+  @IsNumber()
+  @Type(() => Number)
   cityId!: number;
 }

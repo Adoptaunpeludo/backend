@@ -2,6 +2,7 @@ import { Trim, ToInt, ToBoolean } from 'class-sanitizer';
 import {
   IsBoolean,
   IsEnum,
+  IsNumber,
   IsOptional,
   IsString,
   MinLength,
@@ -94,6 +95,7 @@ export class UpdateUserDto {
   address?: string;
 
   @IsOptional()
-  @ToInt()
+  @IsNumber()
+  @Type(() => Number)
   cityId?: number;
 }
