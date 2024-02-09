@@ -3,7 +3,7 @@ import { AnimalController } from './controller';
 import { AnimalService } from '../services/animal.service';
 import { JWTAdapter, envs } from '../../config';
 import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
-import { CreateCatDto, CreateDogDto } from '../../domain';
+import { CreateCatDto, CreateDogDto, PaginationDto } from '../../domain';
 
 export class AnimalRoutes {
   static get routes() {
@@ -14,7 +14,11 @@ export class AnimalRoutes {
     const animalService = new AnimalService();
     const animalController = new AnimalController(animalService);
 
-    router.get('/', animalController.getAll);
+    router.get(
+      '/',
+      ValidationMiddleware.validate(PaginationDto),
+      animalController.getAll
+    );
 
     router.get('/:id', animalController.getSingle);
 

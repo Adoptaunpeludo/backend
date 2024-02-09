@@ -1,5 +1,5 @@
 import { prismaWithSlugExtension as prisma } from '../../data/postgres';
-import { CreateCatDto, CreateDogDto } from '../../domain/dtos';
+import { CreateCatDto, CreateDogDto, PaginationDto } from '../../domain/dtos';
 
 export class AnimalService {
   constructor() {}
@@ -70,19 +70,40 @@ export class AnimalService {
   public async getSingle() {
     return 'Get single Animal';
   }
-  public async getAll() {
-    const animals = prisma.animal.findMany({
-      include: {
-        shelter: {
-          include: { user: { select: { avatar: true, username: true } } },
-        },
-        city: true,
-        cat: true,
-        dog: true,
-      },
-    });
+  public async getAll(paginationDto: PaginationDto) {
+    const { limit = 10, page = 1 } = paginationDto;
 
-    return animals;
+    const [total, animals] = await prisma.$transaction([
+      prisma.animal.count(),
+      prisma.animal.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        include: {
+          shelter: {
+            include: { user: { select: { avatar: true, username: true } } },
+          },
+          city: true,
+          cat: true,
+          dog: true,
+        },
+      }),
+    ]);
+
+    const maxPages = Math.ceil(total / limit);
+
+    return {
+      currentPage: page,
+      maxPages,
+      limit,
+      total,
+      next:
+        page + 1 <= maxPages
+          ? `/api/animals?page=${page + 1}&limit=${limit}`
+          : null,
+      prev:
+        page - 1 > 0 ? `/api/animals?page=${page - 1}&limit=${limit}` : null,
+      animals,
+    };
   }
   public async update() {
     return 'Update Animal';

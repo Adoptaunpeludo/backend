@@ -29,11 +29,13 @@ export class AnimalController {
     res.status(HttpCodes.OK).json(dog);
   };
 
-  getAll = async (_req: Request, res: Response) => {
-    const animals = await this.animalService.getAll();
+  getAll = async (req: Request, res: Response) => {
+    const { animals, ...pagination } = await this.animalService.getAll(
+      req.query
+    );
 
     const animalsEntity = AnimalEntity.fromArray(animals);
-    res.status(HttpCodes.OK).json(animalsEntity);
+    res.status(HttpCodes.OK).json({ ...pagination, animalsEntity });
   };
 
   getSingle = async (req: Request, res: Response) => {
