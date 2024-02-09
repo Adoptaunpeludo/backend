@@ -9,8 +9,14 @@ export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
     return (req, res, next) => {
       const { user, ...body } = req.body;
+      const { page, limit } = req.query;
 
-      const dtoObj = plainToInstance(type, body);
+      let dtoObj = {};
+
+      dtoObj =
+        page || limit
+          ? plainToInstance(type, { page, limit })
+          : plainToInstance(type, body);
 
       validate(dtoObj, {
         skipMissingProperties,
@@ -37,7 +43,11 @@ export class ValidationMiddleware {
           next(new BadRequestError(dtoErrors));
         } else {
           sanitize(dtoObj);
-          req.body = dtoObj;
+          if (page || limit) {
+            req.query = dtoObj;
+          } else {
+            req.body = dtoObj;
+          }
           req.body.user = user;
           next();
         }
