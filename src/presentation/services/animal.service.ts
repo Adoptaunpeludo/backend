@@ -73,7 +73,9 @@ export class AnimalService {
   public async getAll() {
     const animals = prisma.animal.findMany({
       include: {
-        shelter: { include: { user: { select: { avatar: true } } } },
+        shelter: {
+          include: { user: { select: { avatar: true, username: true } } },
+        },
         city: true,
         cat: true,
         dog: true,

@@ -8,9 +8,9 @@ import { BadRequestError } from '../../domain/errors';
 export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
     return (req, res, next) => {
-      const { user, ...updates } = req.body;
+      const { user, ...body } = req.body;
 
-      const dtoObj = plainToInstance(type, updates);
+      const dtoObj = plainToInstance(type, body);
 
       validate(dtoObj, {
         skipMissingProperties,

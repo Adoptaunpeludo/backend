@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { HttpCodes } from '../../config';
 import { AnimalService } from '../services/animal.service';
 import { BadRequestError } from '../../domain';
+import { AnimalEntity } from '../../domain/entities/animals.entity';
 
 export class AnimalController {
   constructor(private readonly animalService: AnimalService) {}
@@ -31,7 +32,8 @@ export class AnimalController {
   getAll = async (_req: Request, res: Response) => {
     const animals = await this.animalService.getAll();
 
-    res.status(HttpCodes.OK).json(animals);
+    const animalsEntity = AnimalEntity.fromArray(animals);
+    res.status(HttpCodes.OK).json(animalsEntity);
   };
 
   getSingle = async (req: Request, res: Response) => {
