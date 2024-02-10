@@ -82,9 +82,9 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - .nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
-      - .nginx/passwd/:/etc/nginx/passwd
-      - .nginx/letsencrypt/:/etc/letsencrypt/
-      - .nginx/certificates/certs/:/etc/nginx/certs
-      - .nginx/certificates/private/:/etc/nginx/private
-      - .nginx/logs/:/var/log/nginx/
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./nginx/passwd/:/etc/nginx/passwd
+      - ./nginx/letsencrypt/:/etc/letsencrypt/
+      - ./nginx/certificates/certs/:/etc/nginx/certs
+      - ./nginx/certificates/private/:/etc/nginx/private
+      - ./nginx/logs/:/var/log/nginx/
