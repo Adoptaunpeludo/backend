@@ -58,11 +58,7 @@ jobs:
 
     - name: Move to project folder
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'cd backend/'
-
-    - name: Stop running containers
-      run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker compose down'
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'cd backend/ && sudo docker compose down'
 
     - name: Remove old image
       run: |
@@ -70,7 +66,7 @@ jobs:
 
     - name: Run new containers
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker compose up -d'
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'cd backend/ && sudo docker compose up -d'
     
     
 
