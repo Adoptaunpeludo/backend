@@ -39,15 +39,16 @@ export class Server {
     //* Routes
     this.app.use(this.routes);
 
+    //* CI/CD Test
+    this.app.get('/', (_req: Request, res: Response) => {
+      res.send('<h1>Probando CI/CD</h1>');
+    });
+
     //* NotFound Middleware
     this.app.use(NotFoundMiddleware.init);
 
     //* Error Handler Middleware
     this.app.use(ErrorHandlerMiddleware.handle);
-
-    this.app.get('/', (_req: Request, res: Response) => {
-      res.send('<h1>Probando CI/CD</h1>');
-    });
 
     this.serverListener = this.app.listen(this.port, async () => {
       try {
