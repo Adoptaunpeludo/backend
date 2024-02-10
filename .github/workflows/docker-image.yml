@@ -66,7 +66,7 @@ jobs:
 
     - name: Run new containers
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'cd backend/ && sudo docker compose up -d'
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'cd backend/ && git pull && sudo docker compose up -d'
     
     
 
