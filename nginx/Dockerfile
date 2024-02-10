@@ -1,3 +1,6 @@
 FROM nginx:alpine
-RUN rm /etc/nginx/conf.d/default.conf
-COPY ./nginx.conf /etc/nginx/conf.d
+
+RUN apt-get update && apt-get install -y \
+software-properties-common && add-apt-repository "deb http://deb.debian.org/debian stretch-backports main" && \
+apt-get update && apt-get install -y \
+certbot python-certbot-nginx -t stretch-backports
