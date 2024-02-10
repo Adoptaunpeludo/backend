@@ -1,5 +1,4 @@
-import { BcryptAdapter } from '../../config';
-import { prisma } from '../../data/postgres';
+import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 import {
   BadRequestError,
   NotFoundError,
@@ -43,9 +42,11 @@ export class UserService {
           },
         },
         shelter: {
-          include: { socialMedia: true },
+          include: {
+            socialMedia: true,
+            animals: { include: { cat: true, dog: true } },
+          },
         },
-        animals: true,
       },
     });
 
@@ -72,9 +73,12 @@ export class UserService {
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (user) {
-      const isValid = BcryptAdapter.compare(oldPassword, user.password);
+      const isValid = prisma.user.validatePassword({
+        password: oldPassword,
+        hash: user.password,
+      });
       if (!isValid) throw new BadRequestError('Invalid password');
-      const hashPassword = BcryptAdapter.hash(newPassword);
+      const hashPassword = prisma.user.hashPassword(newPassword);
       await prisma.user.update({
         where: { id: userId },
         data: { password: hashPassword },

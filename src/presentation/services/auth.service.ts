@@ -11,6 +11,7 @@ import { EmailService } from './email.service';
 import { InternalServerError, UnauthenticatedError } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
 import { ProducerService } from './producer.service';
+import { PartialUserResponse, UserResponse } from '../../domain/interfaces';
 
 interface Options {
   userAgent: string;
@@ -100,9 +101,7 @@ export class AuthService {
     return createdUser;
   }
 
-  public async loginUser(loginUserDto: LoginUserDto, options: Options) {
-    const { userAgent, ip } = options;
-
+  private async validateCredentials(loginUserDto: LoginUserDto) {
     const user = await prisma.user.findUnique({
       where: { email: loginUserDto.email },
     });
@@ -119,7 +118,14 @@ export class AuthService {
     if (!user.emailValidated)
       throw new UnauthenticatedError('Please first verify your email');
 
-    //* Refresh token
+    return user;
+  }
+
+  private async generateCookies(
+    user: PartialUserResponse,
+    ip: string,
+    userAgent: string
+  ) {
     let token = '';
 
     const tokenExist = await prisma.token.findUnique({
@@ -160,25 +166,22 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  public async logout(userId: string) {
-    await prisma.token.delete({ where: { userId } });
+  public async loginUser(loginUserDto: LoginUserDto, options: Options) {
+    const { userAgent, ip } = options;
+
+    const user = await this.validateCredentials(loginUserDto);
+
+    const { accessToken, refreshToken } = await this.generateCookies(
+      user,
+      ip,
+      userAgent
+    );
+
+    return { accessToken, refreshToken };
   }
 
-  private generateEmailContent(type: string, token: string, email: string) {
-    const endPoint = type === 'email' ? 'verify-email' : 'reset-password';
-    const title = type === 'email' ? 'Valida tu Email' : 'Cambia tu password';
-    const action =
-      type === 'email' ? 'validar tu email' : 'cambiar tu password';
-
-    const link = `${this.webServiceUrl}/user/${endPoint}?token=${token}&email=${email}`;
-
-    const html = `
-        <h1>${title}</h1>
-        <p>Por favor haz click en el siguiente link para ${action}</p>
-        <a href="${link}">${title}</a>
-    `;
-
-    return { html, title };
+  public async logout(userId: string) {
+    await prisma.token.delete({ where: { userId } });
   }
 
   private async verifyToken(token: string, type: TokenType) {

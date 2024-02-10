@@ -9,7 +9,7 @@ export class UserController {
   getAllUsers = async (_req: Request, res: Response) => {
     const users = await this.userService.getAllUsers();
 
-    const userEntities = users.map((user) => UserEntity.fromObject(user));
+    const userEntities = users.map((user: any) => UserEntity.fromObject(user));
 
     res.status(HttpCodes.OK).json(userEntities);
   };

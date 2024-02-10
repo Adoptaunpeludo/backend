@@ -1,14 +1,5 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsNumber,
-  IsUUID,
-  IsString,
-  Min,
-} from 'class-validator';
-import { animal_size, gender_enum } from '@prisma/client';
-import { ToInt, Trim } from 'class-sanitizer';
-import { Type } from 'class-transformer';
+import { IsEnum, IsOptional, IsUUID, IsString } from 'class-validator';
+import { Trim } from 'class-sanitizer';
 
 enum enumAnimalSize {
   S = 'small',
@@ -42,12 +33,12 @@ export class AnimalFilterDto {
   @IsOptional()
   @Trim()
   @IsEnum(enumAnimalSize)
-  size?: animal_size;
+  size?: enumAnimalSize;
 
   @IsOptional()
   @Trim()
   @IsEnum(enumGenderEnum)
-  gender?: gender_enum;
+  gender?: enumGenderEnum;
 
   @IsOptional()
   @IsString()

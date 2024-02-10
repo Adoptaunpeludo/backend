@@ -1,4 +1,4 @@
-import { Trim, ToInt, ToBoolean } from 'class-sanitizer';
+import { Trim, ToBoolean } from 'class-sanitizer';
 import {
   IsBoolean,
   IsEnum,
@@ -8,11 +8,10 @@ import {
   MinLength,
 } from 'class-validator';
 
-import { legalForms } from '../../interfaces';
-import { facilities } from '@prisma/client';
-import { Transform, Type } from 'class-transformer';
+import { facilities, legalForms } from '../../interfaces';
+import { Type } from 'class-transformer';
 
-enum enum_legalForms {
+enum enumLegalForms {
   A = 'association',
   PUA = 'public_utility_association',
   AF = 'autonomous_foundation',
@@ -20,7 +19,7 @@ enum enum_legalForms {
   O = 'other',
 }
 
-enum enum_facilities {
+enum enumFacilities {
   FH = 'foster_homes',
   MOPF = 'municipal_or_public_facilities',
   LF = 'leased_facilities',
@@ -66,12 +65,12 @@ export class UpdateUserDto {
   cif?: string;
 
   @Trim()
-  @IsEnum(enum_legalForms)
+  @IsEnum(enumLegalForms)
   @IsOptional()
   legalForms?: legalForms;
 
   @Trim()
-  @IsEnum(enum_facilities)
+  @IsEnum(enumFacilities)
   @IsOptional()
   facilities?: facilities;
 
