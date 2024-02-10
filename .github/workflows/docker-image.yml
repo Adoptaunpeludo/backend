@@ -62,9 +62,11 @@ jobs:
         ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker compose down'
 
     - name: Remove old image
+      run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker image rm -f backend-aup-backend:latest'
 
     - name: Run new containers
+      run: |
         ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker compose up -d'
     
     
