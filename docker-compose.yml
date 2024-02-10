@@ -5,7 +5,7 @@ services:
     image: postgres:16
     container_name: ${DB_NAME}
     volumes:
-      - ./postgres:/var/lib/postgresql/data
+      - ./postgresdb:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
@@ -48,7 +48,7 @@ services:
       WEB_SERVICE_URL: ${WEB_SERVICE_URL}
 
   aup-backend:
-    image: jaderodev/aup-backend:latest
+    build: .
     restart: on-failure
     depends_on:
       rabbitmq:
@@ -76,6 +76,8 @@ services:
 
   proxy:
     build: ./nginx
+    depends_on:
+      - aup-backend
     container_name: aup-backend-proxy
     restart: always
     ports:
