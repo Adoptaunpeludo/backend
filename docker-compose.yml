@@ -81,3 +81,10 @@ services:
     ports:
       - 80:80
       - 443:443
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./passwd/:/etc/nginx/passwd
+      - ./letsencrypt/:/etc/letsencrypt/
+      - ./certificates/certs/:/etc/nginx/certs
+      - ./certificates/private/:/etc/nginx/private
+      - ./logs/:/var/log/nginx/
