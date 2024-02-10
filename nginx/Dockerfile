@@ -6,4 +6,4 @@ apt-get update && apt-get install -y \
 certbot python3-certbot-nginx
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx/nginx.conf /etc/nginx/conf.d
+COPY ./nginx.conf /etc/nginx/conf.d
