@@ -30,12 +30,14 @@ jobs:
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
       run: |
         docker build -t $DOCKER_USER/aup-backend:0.0.2 .
+        docker build -t $DOCKER_USER/aup-backend:latest .
         
     - name: Push Docker Image
       env: 
         DOCKER_USER: ${{ secrets.DOCKER_USER }}
       run: |
         docker push $DOCKER_USER/aup-backend:0.0.2 
+        docker push $DOCKER_USER/aup-backend:latest
     
     # - name: Build the Docker image
     #   run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
