@@ -41,7 +41,7 @@ export class Server {
 
     //* CI/CD Test
     this.app.get('/', (_req: Request, res: Response) => {
-      res.send('<h1>Probando CI/CD<!!!!!!!/h1>');
+      res.send('<h1>Probando CI/CD</h1>');
     });
 
     //* NotFound Middleware
