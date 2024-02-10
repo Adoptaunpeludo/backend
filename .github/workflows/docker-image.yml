@@ -56,18 +56,21 @@ jobs:
         echo "${{ secrets.AWS_PRIVATE_KEY }}" > key.pem
         chmod 600 key.pem
 
-    - name: Stop runnin containers
+    - name: Move to project folder
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'ls -l'
-    #     ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker compose down'
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'cd backend/'
 
-    # - name: Remove old image
-    #   run: |
-    #     ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker image rm -f backend-aup-backend:latest'
+    - name: Stop running containers
+      run: |
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker compose down'
 
-    # - name: Run new containers
-    #   run: |
-    #     ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker compose up -d'
+    - name: Remove old image
+      run: |
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker image rm -f backend-aup-backend:latest'
+
+    - name: Run new containers
+      run: |
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker compose up -d'
     
     
 
