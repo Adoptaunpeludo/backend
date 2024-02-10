@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
-import { UserRoles } from '../interfaces/user-response.interface';
-import { PayloadUser } from '../interfaces';
+import { UserRoles } from '../domain/interfaces/user-response.interface';
+import { PayloadUser } from '../domain/interfaces';
 
 export interface JWTAdapterPayload {
   user: PayloadUser;

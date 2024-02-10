@@ -1,10 +1,10 @@
-import { citiesData } from './../../../data/seed/data';
 import request from 'supertest';
 
 import { BcryptAdapter } from '../../../config';
 import { prisma } from '../../../data/postgres';
-import { UserRoles } from '../../../interfaces';
+
 import { testServer } from '../../../presentation/test-server';
+import { UserRoles } from '../../../domain/interfaces';
 
 export const cleanDB = async () => {
   await prisma.$transaction([

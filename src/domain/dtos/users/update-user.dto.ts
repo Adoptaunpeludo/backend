@@ -1,12 +1,31 @@
-import { Trim, ToInt } from 'class-sanitizer';
+import { Trim, ToBoolean } from 'class-sanitizer';
 import {
-  IsInt,
+  IsBoolean,
+  IsEnum,
+  IsNumber,
   IsOptional,
   IsString,
-  Max,
-  Min,
   MinLength,
 } from 'class-validator';
+
+import { facilities, legalForms } from '../../interfaces';
+import { Type } from 'class-transformer';
+
+enum enumLegalForms {
+  A = 'association',
+  PUA = 'public_utility_association',
+  AF = 'autonomous_foundation',
+  NF = 'national_foundation',
+  O = 'other',
+}
+
+enum enumFacilities {
+  FH = 'foster_homes',
+  MOPF = 'municipal_or_public_facilities',
+  LF = 'leased_facilities',
+  OF = 'owned_facilities',
+  PR = 'private_residences',
+}
 
 export class UpdateUserDto {
   @IsString()
@@ -29,15 +48,39 @@ export class UpdateUserDto {
 
   @IsString()
   @Trim()
-  @MinLength(3)
+  @MinLength(9)
   @IsOptional()
-  name?: string;
+  dni?: string;
 
   @IsString()
   @Trim()
   @MinLength(3)
   @IsOptional()
   description?: string;
+
+  @IsString()
+  @Trim()
+  @MinLength(9)
+  @IsOptional()
+  cif?: string;
+
+  @Trim()
+  @IsEnum(enumLegalForms)
+  @IsOptional()
+  legalForms?: legalForms;
+
+  @Trim()
+  @IsEnum(enumFacilities)
+  @IsOptional()
+  facilities?: facilities;
+
+  @IsBoolean()
+  @ToBoolean()
+  veterinaryFacilities?: boolean;
+
+  @IsBoolean()
+  @ToBoolean()
+  ownVet?: boolean;
 
   @IsString()
   @Trim()
@@ -51,6 +94,7 @@ export class UpdateUserDto {
   address?: string;
 
   @IsOptional()
-  @ToInt()
+  @IsNumber()
+  @Type(() => Number)
   cityId?: number;
 }

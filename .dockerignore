@@ -1,0 +1,4 @@
+node_modules
+postgresdb
+coverage
+.env.template

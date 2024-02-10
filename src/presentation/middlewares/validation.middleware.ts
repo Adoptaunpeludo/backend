@@ -1,17 +1,24 @@
 import { RequestHandler } from 'express';
-import { plainToInstance } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { ValidationError, validate } from 'class-validator';
 import { sanitize } from 'class-sanitizer';
 
 import { BadRequestError } from '../../domain/errors';
-import { HttpCodes } from '../../config';
+import { AnimalFilterDto, PaginationDto } from '../../domain';
 
 export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
     return (req, res, next) => {
-      const { user, ...updates } = req.body;
+      const { user, ...body } = req.body;
+      const { page, limit, ...filters } = req.query;
 
-      const dtoObj = plainToInstance(type, updates);
+      let dtoObj = {};
+
+      if (type.prototype === PaginationDto.prototype)
+        dtoObj = plainToInstance(type, { page, limit });
+      else if (type.prototype === AnimalFilterDto.prototype)
+        dtoObj = plainToInstance(type, filters);
+      else dtoObj = plainToInstance(type, body);
 
       validate(dtoObj, {
         skipMissingProperties,
@@ -38,7 +45,12 @@ export class ValidationMiddleware {
           next(new BadRequestError(dtoErrors));
         } else {
           sanitize(dtoObj);
-          req.body = dtoObj;
+          if (type.prototype === PaginationDto.prototype) {
+            req.query = { ...dtoObj, ...filters };
+          } else if (type.prototype === AnimalFilterDto.prototype) {
+            req.query = { ...dtoObj, ...{ page, limit } };
+          } else req.body = dtoObj;
+
           req.body.user = user;
           next();
         }

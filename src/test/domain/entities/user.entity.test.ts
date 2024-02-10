@@ -1,5 +1,5 @@
-import { UserResponse } from '../../../interfaces/user-response.interface';
 import { UserEntity } from '../../../domain/entities/user.entity';
+import { UserResponse } from '../../../domain/interfaces';
 
 describe('user.entity.ts', () => {
   // Should return a user entity object with common user properties and contact info

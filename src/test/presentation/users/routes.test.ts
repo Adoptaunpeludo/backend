@@ -75,8 +75,11 @@ describe('Api user routes testing', () => {
     test('Should return current logged user info', async () => {
       const hash = BcryptAdapter.hash(user.password);
 
-      const newUser = await prisma.user.create({
-        data: { ...userRest, emailValidated: true, password: hash },
+      await request(testServer.app).post(registerRoute).send(user).expect(201);
+
+      const newUser = await prisma.user.update({
+        where: { email: userRest.email },
+        data: { emailValidated: true },
       });
 
       const loginResponse = await request(testServer.app)

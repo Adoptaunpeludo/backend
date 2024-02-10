@@ -1,8 +1,12 @@
-import { BcryptAdapter } from '../../config';
-import { prisma } from '../../data/postgres';
-import { BadRequestError, NotFoundError, UpdateUserDto } from '../../domain';
+import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
+import {
+  BadRequestError,
+  NotFoundError,
+  UpdateUserDto,
+  UserEntity,
+} from '../../domain';
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
-import { PayloadUser, UserRoles } from '../../interfaces';
+import { PayloadUser, UserRoles } from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
 
 export class UserService {
@@ -38,9 +42,11 @@ export class UserService {
           },
         },
         shelter: {
-          include: { socialMedia: true },
+          include: {
+            socialMedia: true,
+            animals: { include: { cat: true, dog: true } },
+          },
         },
-        animals: true,
       },
     });
 
@@ -67,9 +73,12 @@ export class UserService {
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (user) {
-      const isValid = BcryptAdapter.compare(oldPassword, user.password);
+      const isValid = prisma.user.validatePassword({
+        password: oldPassword,
+        hash: user.password,
+      });
       if (!isValid) throw new BadRequestError('Invalid password');
-      const hashPassword = BcryptAdapter.hash(newPassword);
+      const hashPassword = prisma.user.hashPassword(newPassword);
       await prisma.user.update({
         where: { id: userId },
         data: { password: hashPassword },
@@ -100,7 +109,7 @@ export class UserService {
         },
         create: {
           name: socialMediaItem.name,
-          url: socialMediaItem.url,
+          url: socialMediaItem.url || '',
           shelter: {
             connect: {
               id: user.id,
@@ -124,51 +133,75 @@ export class UserService {
 
     CheckPermissions.check(payloadUser, userToUpdate.id);
 
+    const updatedAt = new Date();
+
     const {
       username,
       firstName,
       lastName,
-      name,
       description,
       phoneNumber,
       address,
       cityId,
+      dni,
+      cif,
+      facilities,
+      legalForms,
+      ownVet,
+      veterinaryFacilities,
     } = updateUserDto;
 
-    const updateQuery: any = {};
-
-    if (username) updateQuery.username = username;
-    if (firstName || lastName) {
-      updateQuery.adopter = {
+    const updateQuery: any = {
+      updatedAt,
+      username,
+      firstName,
+      lastName,
+      dni,
+      contactInfo: {
         update: {
-          firstName,
-          lastName,
+          phoneNumber,
+          address,
+          cityId: cityId && +cityId,
         },
-      };
-    }
-    if (name || description) {
-      updateQuery.shelter = {
+      },
+      shelter: {
         update: {
-          name,
           description,
+          cif,
+          facilities,
+          legalForms,
+          ownVet,
+          veterinaryFacilities,
         },
-      };
+      },
+    };
+
+    if (ownVet !== undefined) {
+      updateQuery.shelter.update.ownVet = ownVet;
     }
-    if (phoneNumber || address || cityId) {
-      updateQuery.contactInfo = {
-        update: {
-          ...(phoneNumber && { phoneNumber }),
-          ...(address && { address }),
-          ...(cityId && { cityId: +cityId }),
-        },
-      };
+
+    if (veterinaryFacilities !== undefined) {
+      updateQuery.shelter.update.veterinaryFacilities = veterinaryFacilities;
     }
 
     const updatedUser = await prisma.user.update({
       where: { email },
       data: updateQuery,
+      include: {
+        contactInfo: {
+          include: {
+            city: true,
+          },
+        },
+        shelter: {
+          include: { socialMedia: true },
+        },
+        animals: true,
+      },
     });
 
-    return updatedUser;
+    const userEntity = UserEntity.fromObject(updatedUser);
+
+    return userEntity;
   }
 }

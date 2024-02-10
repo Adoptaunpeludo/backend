@@ -1,5 +1,5 @@
 import { UnauthorizedError } from '../domain';
-import { PayloadUser } from '../interfaces';
+import { PayloadUser } from '../domain/interfaces';
 
 export class CheckPermissions {
   static check(requestUser: PayloadUser, resourceUserId: string) {
