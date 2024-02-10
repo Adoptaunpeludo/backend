@@ -1,5 +1,5 @@
 import 'express-async-errors';
-import express, { Router } from 'express';
+import express, { Request, Response, Router } from 'express';
 import cookieParser from 'cookie-parser';
 
 import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
@@ -44,6 +44,10 @@ export class Server {
 
     //* Error Handler Middleware
     this.app.use(ErrorHandlerMiddleware.handle);
+
+    this.app.get('/', (_req: Request, res: Response) => {
+      res.send('<h1>Probando CI/CD</h1>');
+    });
 
     this.serverListener = this.app.listen(this.port, async () => {
       try {
