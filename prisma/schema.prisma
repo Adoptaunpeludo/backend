@@ -221,7 +221,7 @@ model Dog {
   departmentAdapted Boolean
   droolingPotential potential
   bark              potential
-  animal            Animal    @relation(fields: [id], references: [id])
+  animal            Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
 model Cat {
@@ -230,5 +230,5 @@ model Cat {
   kidsFriendly     Boolean
   toiletTrained    Boolean
   scratchPotential potential
-  animal           Animal    @relation(fields: [id], references: [id])
+  animal           Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
 }

@@ -42,9 +42,9 @@ export class AnimalController {
   };
 
   getSingle = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { term } = req.params;
 
-    const animal = await this.animalService.getSingle(id);
+    const animal = await this.animalService.getSingle(term);
 
     //* TODO Detailed animal entity
 
@@ -56,6 +56,11 @@ export class AnimalController {
   };
 
   delete = async (req: Request, res: Response) => {
-    res.status(HttpCodes.OK).json({ message: 'Delete Animal' });
+    const { term } = req.params;
+    const { user } = req.body;
+
+    await this.animalService.delete(user, term);
+
+    res.status(HttpCodes.OK).json({ message: 'Animal deleted' });
   };
 }

@@ -26,7 +26,7 @@ export class AnimalRoutes {
       animalController.getAll
     );
 
-    router.get('/:id', animalController.getSingle);
+    router.get('/:term', animalController.getSingle);
 
     router.post(
       '/cat',
@@ -46,7 +46,12 @@ export class AnimalRoutes {
 
     router.put('/:id', animalController.update);
 
-    router.delete('/:id', animalController.delete);
+    router.delete(
+      '/:term',
+      authMiddleware.authenticateUser,
+      authMiddleware.authorizePermissions('shelter'),
+      animalController.delete
+    );
 
     return router;
   }

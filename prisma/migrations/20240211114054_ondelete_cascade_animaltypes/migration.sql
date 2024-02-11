@@ -1,0 +1,11 @@
+-- DropForeignKey
+ALTER TABLE "Cat" DROP CONSTRAINT "Cat_id_fkey";
+
+-- DropForeignKey
+ALTER TABLE "Dog" DROP CONSTRAINT "Dog_id_fkey";
+
+-- AddForeignKey
+ALTER TABLE "Dog" ADD CONSTRAINT "Dog_id_fkey" FOREIGN KEY ("id") REFERENCES "Animal"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Cat" ADD CONSTRAINT "Cat_id_fkey" FOREIGN KEY ("id") REFERENCES "Animal"("id") ON DELETE CASCADE ON UPDATE CASCADE;

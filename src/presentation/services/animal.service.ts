@@ -181,8 +181,8 @@ export class AnimalService {
 
     if (!animal) throw new NotFoundError('Animal not found');
 
-    CheckPermissions.check(user, animal?.id);
+    CheckPermissions.check(user, animal.createdBy);
 
-    return 'Delete Animal';
+    await prisma.animal.delete({ where: { id: animal.id } });
   }
 }
