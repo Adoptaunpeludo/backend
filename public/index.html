@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Endpoints</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .dropdown-container {
+        margin-bottom: 20px;
+      }
+      .dropdown-container select {
+        padding: 5px;
+      }
+      .endpoint-container {
+        margin-bottom: 30px;
+      }
+      .endpoint {
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        padding: 10px;
+      }
+      .endpoint h3 {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dropdown-container">
+      <h2>Auth</h2>
+      <select id="authEndpoints">
+        <option value="login">Login</option>
+        <option value="register">Register</option>
+        <option value="validateEmail">Validate Email</option>
+        <option value="forgotPassword">Forgot Password</option>
+        <option value="resetPassword">Reset Password</option>
+        <option value="logout">Logout</option>
+      </select>
+    </div>
+
+    <div class="endpoint-container" id="authEndpointsContainer"></div>
+
+    <div class="dropdown-container">
+      <h2>User</h2>
+      <select id="userEndpoints">
+        <option value="me">Me</option>
+        <option value="allUsers">All Users</option>
+        <option value="changePassword">Change Password</option>
+        <option value="updateSocialMedia">Update Social Media</option>
+        <option value="deleteUser">Delete User</option>
+        <option value="updateUser">Update User</option>
+      </select>
+    </div>
+
+    <div class="endpoint-container" id="userEndpointsContainer"></div>
+
+    <div class="dropdown-container">
+      <h2>Animal</h2>
+      <select id="animalEndpoints">
+        <option value="allAnimals">All Animals</option>
+        <option value="getSingleAnimal">Get Single Animal</option>
+        <option value="createAnimal">Create Animal</option>
+        <option value="updateAnimal">Update Animal</option>
+        <option value="deleteAnimal">Delete Animal</option>
+      </select>
+    </div>
+
+    <div class="endpoint-container" id="animalEndpointsContainer"></div>
+
+    <script>
+      function createEndpointHTML(name, route, description) {
+        return `
+            <div class="endpoint">
+                <h3>${name}</h3>
+                <p><strong>Route:</strong> ${route}</p>
+                <p><strong>Description:</strong> ${description}</p>
+            </div>
+        `;
+      }
+
+      function updateContainer(containerId, endpointHtml) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = endpointHtml;
+      }
+
+      document
+        .getElementById('authEndpoints')
+        .addEventListener('change', function () {
+          const selectedEndpoint = this.value;
+          let endpointHtml = '';
+          switch (selectedEndpoint) {
+            case 'login':
+              endpointHtml = createEndpointHTML(
+                'Login',
+                '/auth/login',
+                'Allows a user to authenticate in the system by providing their email and password.'
+              );
+              break;
+            case 'register':
+              endpointHtml = createEndpointHTML(
+                'Register',
+                '/auth/register',
+                'Registers a new user in the system with the provided information.'
+              );
+              break;
+            case 'validateEmail':
+              endpointHtml = createEndpointHTML(
+                'Validate Email',
+                '/auth/validate-email',
+                "Verifies the validity of a user's JWT token to confirm their email."
+              );
+              break;
+            case 'forgotPassword':
+              endpointHtml = createEndpointHTML(
+                'Forgot Password',
+                '/auth/forgot-password',
+                'Sends an email to the user with instructions to reset their password.'
+              );
+              break;
+            case 'resetPassword':
+              endpointHtml = createEndpointHTML(
+                'Reset Password',
+                '/auth/reset-password',
+                "Resets a user's password by providing a new JWT token."
+              );
+              break;
+            case 'logout':
+              endpointHtml = createEndpointHTML(
+                'Logout',
+                '/auth/logout',
+                "Ends a user's session and removes their JWT token from local storage."
+              );
+              break;
+          }
+          updateContainer('authEndpointsContainer', endpointHtml);
+        });
+
+      document
+        .getElementById('userEndpoints')
+        .addEventListener('change', function () {
+          const selectedEndpoint = this.value;
+          let endpointHtml = '';
+          switch (selectedEndpoint) {
+            case 'me':
+              endpointHtml = createEndpointHTML(
+                'Me',
+                '/users/me',
+                'Gets the information of the currently authenticated user.'
+              );
+              break;
+            case 'allUsers':
+              endpointHtml = createEndpointHTML(
+                'All Users',
+                '/users',
+                'Gets the list of all users registered in the system.'
+              );
+              break;
+            case 'changePassword':
+              endpointHtml = createEndpointHTML(
+                'Change Password',
+                '/users/change-password',
+                'Allows a user to change their password by providing the old and new passwords.'
+              );
+              break;
+            case 'updateSocialMedia':
+              endpointHtml = createEndpointHTML(
+                'Update Social Media',
+                '/users/update-social-media',
+                "Updates a user's social media links."
+              );
+              break;
+            case 'deleteUser':
+              endpointHtml = createEndpointHTML(
+                'Delete User',
+                '/users',
+                "Deletes a user's account from the system."
+              );
+              break;
+            case 'updateUser':
+              endpointHtml = createEndpointHTML(
+                'Update User',
+                '/users',
+                'Updates the information of a specific user.'
+              );
+              break;
+          }
+          updateContainer('userEndpointsContainer', endpointHtml);
+        });
+
+      document
+        .getElementById('animalEndpoints')
+        .addEventListener('change', function () {
+          const selectedEndpoint = this.value;
+          let endpointHtml = '';
+          switch (selectedEndpoint) {
+            case 'allAnimals':
+              endpointHtml = createEndpointHTML(
+                'All Animals',
+                '/animals',
+                'Gets the list of all animals registered in the system.'
+              );
+              break;
+            case 'getSingleAnimal':
+              endpointHtml = createEndpointHTML(
+                'Get Single Animal',
+                '/animals/{animalId}',
+                'Gets the information of a specific animal by providing its ID.'
+              );
+              break;
+            case 'createAnimal':
+              endpointHtml = createEndpointHTML(
+                'Create Animal',
+                '/animals',
+                'Creates a new animal in the system with the provided information.'
+              );
+              break;
+            case 'updateAnimal':
+              endpointHtml = createEndpointHTML(
+                'Update Animal',
+                '/animals/{animalId}',
+                'Updates the information of a specific animal.'
+              );
+              break;
+            case 'deleteAnimal':
+              endpointHtml = createEndpointHTML(
+                'Delete Animal',
+                '/animals/{animalId}',
+                'Deletes a specific animal from the system by providing its ID.'
+              );
+              break;
+          }
+          updateContainer('animalEndpointsContainer', endpointHtml);
+        });
+
+      // Initialize with default options
+      document
+        .getElementById('authEndpoints')
+        .dispatchEvent(new Event('change'));
+      document
+        .getElementById('userEndpoints')
+        .dispatchEvent(new Event('change'));
+      document
+        .getElementById('animalEndpoints')
+        .dispatchEvent(new Event('change'));
+    </script>
+  </body>
+</html>

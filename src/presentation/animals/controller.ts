@@ -55,11 +55,9 @@ export class AnimalController {
     const { term } = req.params;
     const { user, ...updates } = req.body;
 
-    console.log({ updates });
-
     await this.animalService.update(updates, user, term);
 
-    res.status(HttpCodes.OK).json({ message: 'Update Animal' });
+    res.status(HttpCodes.OK).json({ message: 'Animal updated' });
   };
 
   delete = async (req: Request, res: Response) => {
