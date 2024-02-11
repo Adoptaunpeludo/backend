@@ -13,6 +13,7 @@ env:
 jobs:
 
   test:
+    name: Jest Tests
     runs-on: ubuntu-latest
 
     steps:
