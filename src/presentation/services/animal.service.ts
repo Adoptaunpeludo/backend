@@ -193,6 +193,7 @@ export class AnimalService {
       kidsFriendly,
       toiletTrained,
       scratchPotential,
+      type,
       ...common
     } = updateAnimalDto;
 
@@ -200,7 +201,7 @@ export class AnimalService {
       ...common,
       updatedAt,
       cat:
-        updateAnimalDto.type === 'cat'
+        type === 'cat'
           ? {
               playLevel,
               kidsFriendly,
@@ -209,7 +210,7 @@ export class AnimalService {
             }
           : undefined,
       dog:
-        updateAnimalDto.type === 'dog'
+        type === 'dog'
           ? {
               droolingPotential,
               departmentAdapted,
@@ -231,6 +232,8 @@ export class AnimalService {
     CheckPermissions.check(user, animal.createdBy);
 
     const updateQuery = this.buildQuery(updateAnimalDto);
+
+    console.log({ updateQuery });
 
     const updatedAnimal = await prisma.animal.update({
       where: { id: animal.id },

@@ -1,4 +1,4 @@
-import { ToBoolean, ToInt, Trim } from 'class-sanitizer';
+import { ToInt, Trim } from 'class-sanitizer';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 import {
@@ -41,7 +41,7 @@ export class CreateAnimalDto {
   size!: animalSize;
 
   @IsBoolean()
-  @ToBoolean()
+  @Transform(({ value }) => value === 'true')
   easyTrain!: boolean;
 
   @IsEnum(energy)
@@ -64,7 +64,7 @@ export class CreateAnimalDto {
 
 export class CreateDogDto extends CreateAnimalDto {
   @IsBoolean()
-  @ToBoolean()
+  @Transform(({ value }) => value === 'true')
   departmentAdapted!: boolean;
 
   @IsEnum(potential)
@@ -82,11 +82,11 @@ export class CreateCatDto extends CreateAnimalDto {
   playLevel!: animalPotential;
 
   @IsBoolean()
-  @ToBoolean()
+  @Transform(({ value }) => value === 'true')
   kidsFriendly!: boolean;
 
   @IsBoolean()
-  @ToBoolean()
+  @Transform(({ value }) => value === 'true')
   toiletTrained!: boolean;
 
   @IsEnum(potential)

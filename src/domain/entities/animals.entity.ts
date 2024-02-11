@@ -9,7 +9,7 @@ export class AnimalEntity {
       user: { avatar, username, isOnline },
       ...userInfo
     } = shelter!;
-    const typeInfo = animalResponse.type === 'cat' ? { ...dog } : { ...cat };
+    const typeInfo = animalResponse.type === 'cat' ? { ...cat } : { ...dog };
 
     return {
       ...animalData,
@@ -43,7 +43,7 @@ export class AnimalEntity {
       type,
       cityName,
       images,
-      shelter: { avatar, username },
+      shelter: { avatar, username, isOnline },
     };
   }
 }

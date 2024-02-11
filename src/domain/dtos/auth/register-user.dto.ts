@@ -1,10 +1,8 @@
-import { ToInt, Trim } from 'class-sanitizer';
+import { Trim } from 'class-sanitizer';
 import {
   IsEmail,
   IsEnum,
-  IsInt,
   IsNumber,
-  IsOptional,
   IsString,
   MinLength,
 } from 'class-validator';

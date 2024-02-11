@@ -1,4 +1,4 @@
-import { ToBoolean, ToInt, Trim } from 'class-sanitizer';
+import { Trim } from 'class-sanitizer';
 import {
   IsBoolean,
   IsEnum,
@@ -19,6 +19,7 @@ import {
   potential,
   type,
 } from '../../interfaces/animal.interface';
+import { Transform, Type } from 'class-transformer';
 
 export class UpdateAnimalDto {
   @IsOptional()
@@ -33,7 +34,7 @@ export class UpdateAnimalDto {
 
   @IsOptional()
   @IsNumber()
-  @ToInt()
+  @Type(() => Number)
   age?: number;
 
   @IsOptional()
@@ -53,7 +54,7 @@ export class UpdateAnimalDto {
 
   @IsOptional()
   @IsBoolean()
-  @ToBoolean()
+  @Transform(({ value }) => value === 'true')
   easyTrain?: boolean;
 
   @IsOptional()
@@ -74,12 +75,12 @@ export class UpdateAnimalDto {
 
   @IsOptional()
   @IsNumber()
-  @ToInt()
+  @Type(() => Number)
   cityId?: number;
 
   @IsOptional()
   @IsBoolean()
-  @ToBoolean()
+  @Transform(({ value }) => value === 'true')
   departmentAdapted?: boolean;
 
   @IsOptional()
@@ -99,12 +100,12 @@ export class UpdateAnimalDto {
 
   @IsOptional()
   @IsBoolean()
-  @ToBoolean()
+  @Transform(({ value }) => value === 'true')
   kidsFriendly?: boolean;
 
   @IsOptional()
   @IsBoolean()
-  @ToBoolean()
+  @Transform(({ value }) => value === 'true')
   toiletTrained?: boolean;
 
   @IsOptional()

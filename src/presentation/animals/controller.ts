@@ -46,7 +46,6 @@ export class AnimalController {
 
     const animal = await this.animalService.getSingle(term);
 
-    //* TODO Detailed animal entity
     const detail = AnimalEntity.fromObjectDetail(animal);
 
     res.status(HttpCodes.OK).json(detail);
@@ -55,6 +54,8 @@ export class AnimalController {
   update = async (req: Request, res: Response) => {
     const { term } = req.params;
     const { user, ...updates } = req.body;
+
+    console.log({ updates });
 
     await this.animalService.update(updates, user, term);
 

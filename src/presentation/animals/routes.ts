@@ -9,6 +9,7 @@ import {
   CreateDogDto,
   PaginationDto,
 } from '../../domain';
+import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
 
 export class AnimalRoutes {
   static get routes() {
@@ -45,10 +46,10 @@ export class AnimalRoutes {
     );
 
     router.put(
-      '/:id',
+      '/:term',
       authMiddleware.authenticateUser,
       authMiddleware.authorizePermissions('shelter'),
-      ValidationMiddleware.validate(CreateDogDto),
+      ValidationMiddleware.validate(UpdateAnimalDto),
       animalController.update
     );
 
