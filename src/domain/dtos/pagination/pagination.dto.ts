@@ -1,6 +1,6 @@
 import { ToInt } from 'class-sanitizer';
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsPositive, Min } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 
 export class PaginationDto {
   @IsOptional()

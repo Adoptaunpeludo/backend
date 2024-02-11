@@ -1,4 +1,4 @@
-import { Trim, ToBoolean } from 'class-sanitizer';
+import { Trim } from 'class-sanitizer';
 import {
   IsBoolean,
   IsEnum,
@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 
 import { facilities, legalForms } from '../../interfaces';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 
 enum enumLegalForms {
   A = 'association',
@@ -28,71 +28,71 @@ enum enumFacilities {
 }
 
 export class UpdateUserDto {
+  @IsOptional()
   @IsString()
   @Trim()
   @MinLength(3)
-  @IsOptional()
   username?: string;
 
+  @IsOptional()
   @IsString()
   @Trim()
   @MinLength(3)
-  @IsOptional()
   firstName?: string;
 
+  @IsOptional()
   @IsString()
   @Trim()
   @MinLength(3)
-  @IsOptional()
   lastName?: string;
 
+  @IsOptional()
   @IsString()
   @Trim()
   @MinLength(9)
-  @IsOptional()
   dni?: string;
 
+  @IsOptional()
   @IsString()
   @Trim()
   @MinLength(3)
-  @IsOptional()
   description?: string;
 
+  @IsOptional()
   @IsString()
   @Trim()
   @MinLength(9)
-  @IsOptional()
   cif?: string;
 
+  @IsOptional()
   @Trim()
   @IsEnum(enumLegalForms)
-  @IsOptional()
   legalForms?: legalForms;
 
+  @IsOptional()
   @Trim()
   @IsEnum(enumFacilities)
-  @IsOptional()
   facilities?: facilities;
 
-  @IsBoolean()
-  @ToBoolean()
   @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   veterinaryFacilities?: boolean;
 
-  @IsBoolean()
-  @ToBoolean()
   @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   ownVet?: boolean;
 
+  @IsOptional()
   @IsString()
   @Trim()
   @MinLength(9)
-  @IsOptional()
   phoneNumber?: string;
 
+  @IsOptional()
   @IsString()
   @Trim()
-  @IsOptional()
   address?: string;
 
   @IsOptional()

@@ -42,14 +42,30 @@ export class AnimalController {
   };
 
   getSingle = async (req: Request, res: Response) => {
-    res.status(HttpCodes.OK).json({ message: 'Get Single Animal' });
+    const { term } = req.params;
+
+    const animal = await this.animalService.getSingle(term);
+
+    const detail = AnimalEntity.fromObjectDetail(animal);
+
+    res.status(HttpCodes.OK).json(detail);
   };
 
   update = async (req: Request, res: Response) => {
-    res.status(HttpCodes.OK).json({ message: 'Update Animal' });
+    const { term } = req.params;
+    const { user, ...updates } = req.body;
+
+    await this.animalService.update(updates, user, term);
+
+    res.status(HttpCodes.OK).json({ message: 'Animal updated' });
   };
 
   delete = async (req: Request, res: Response) => {
-    res.status(HttpCodes.OK).json({ message: 'Delete Animal' });
+    const { term } = req.params;
+    const { user } = req.body;
+
+    await this.animalService.delete(user, term);
+
+    res.status(HttpCodes.OK).json({ message: 'Animal deleted' });
   };
 }

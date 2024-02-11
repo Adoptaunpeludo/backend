@@ -2,8 +2,7 @@ import { Router } from 'express';
 import { UserController } from './controller';
 import { JWTAdapter, envs } from '../../config';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
-import { AuthService, UserService } from '../services';
-import { AuthController } from '../auth/controller';
+import { UserService } from '../services';
 import { ValidationMiddleware } from '../middlewares';
 import { UpdateUserDto } from '../../domain';
 import { UpdatePasswordDto } from '../../domain/dtos/auth/update-password.dto';
@@ -26,6 +25,8 @@ export class UserRoutes {
       // authMiddleware.authorizePermissions('admin'),
       userController.getAllUsers
     );
+
+    //* TODO: getSingle
 
     router.delete(
       '/:email',

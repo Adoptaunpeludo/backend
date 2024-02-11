@@ -1,10 +1,17 @@
+import { UUID } from '../../config/uuid.adapter';
 import { prismaWithSlugExtension as prisma } from '../../data/postgres';
+import { NotFoundError } from '../../domain';
 import {
   AnimalFilterDto,
   CreateCatDto,
   CreateDogDto,
   PaginationDto,
 } from '../../domain/dtos';
+import { AnimalResponse } from '../../domain/interfaces';
+import { IsUUID } from 'class-validator';
+import { PayloadUser } from '../../domain/interfaces/payload-user.interface';
+import { CheckPermissions } from '../../utils';
+import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
 
 export class AnimalService {
   constructor() {}
@@ -72,8 +79,44 @@ export class AnimalService {
 
     return animal;
   }
-  public async getSingle() {
-    return 'Get single Animal';
+
+  private async getAnimalFromTerm(term: string) {
+    let animal: AnimalResponse | null = null;
+
+    const isUUID = UUID.validate(term);
+
+    if (isUUID)
+      animal = await prisma.animal.findUnique({
+        where: { id: term },
+        include: {
+          shelter: { include: { user: true } },
+          cat: true,
+          dog: true,
+          city: true,
+        },
+      });
+
+    if (!isUUID) {
+      animal = await prisma.animal.findUnique({
+        where: { slug: term.toLowerCase() },
+        include: {
+          shelter: { include: { user: true } },
+          cat: true,
+          dog: true,
+          city: true,
+        },
+      });
+    }
+    if (!animal) throw new NotFoundError('Animal not found');
+
+    return animal;
+  }
+  public async getSingle(term: string) {
+    const animal = this.getAnimalFromTerm(term);
+
+    if (!animal) throw new NotFoundError('Animal not found');
+
+    return animal;
   }
 
   private mapFilters(animalFilterDto: AnimalFilterDto) {
@@ -107,7 +150,11 @@ export class AnimalService {
         where: filters,
         include: {
           shelter: {
-            include: { user: { select: { avatar: true, username: true } } },
+            include: {
+              user: {
+                select: { avatar: true, username: true, isOnline: true },
+              },
+            },
           },
           city: true,
           cat: true,
@@ -132,10 +179,74 @@ export class AnimalService {
       animals,
     };
   }
-  public async update() {
+
+  private buildQuery(updateAnimalDto: UpdateAnimalDto) {
+    const updatedAt = new Date();
+
+    let query: any;
+
+    const {
+      departmentAdapted,
+      droolingPotential,
+      bark,
+      playLevel,
+      kidsFriendly,
+      toiletTrained,
+      scratchPotential,
+      type,
+      ...common
+    } = updateAnimalDto;
+
+    query = {
+      ...common,
+      updatedAt,
+      cat:
+        type === 'cat'
+          ? {
+              playLevel,
+              kidsFriendly,
+              toiletTrained,
+              scratchPotential,
+            }
+          : undefined,
+      dog:
+        type === 'dog'
+          ? {
+              droolingPotential,
+              departmentAdapted,
+              bark,
+            }
+          : undefined,
+    };
+
+    return query;
+  }
+
+  public async update(
+    updateAnimalDto: UpdateAnimalDto,
+    user: PayloadUser,
+    term: string
+  ) {
+    const animal = await this.getAnimalFromTerm(term);
+
+    CheckPermissions.check(user, animal.createdBy);
+
+    const updateQuery = this.buildQuery(updateAnimalDto);
+
+    console.log({ updateQuery });
+
+    const updatedAnimal = await prisma.animal.update({
+      where: { id: animal.id },
+      data: updateQuery,
+    });
+
     return 'Update Animal';
   }
-  public async delete() {
-    return 'Delete Animal';
+  public async delete(user: PayloadUser, term: string) {
+    const animal = await this.getAnimalFromTerm(term);
+
+    CheckPermissions.check(user, animal.createdBy);
+
+    await prisma.animal.delete({ where: { id: animal.id } });
   }
 }

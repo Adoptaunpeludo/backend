@@ -1,3 +1,5 @@
+import { AnimalResponse } from './animal.interface';
+
 export type AllowedMedia = 'facebook' | 'xtweet' | 'instagram';
 export type UserRoles = 'admin' | 'adopter' | 'shelter';
 export type legalForms =
@@ -69,6 +71,7 @@ export interface Shelter {
   ownVet: boolean | null;
   images: any[];
   socialMedia: SocialMedia[];
+  animals: AnimalResponse[];
 }
 
 export interface SocialMedia {

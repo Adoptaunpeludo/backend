@@ -9,6 +9,7 @@ import {
   CreateDogDto,
   PaginationDto,
 } from '../../domain';
+import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
 
 export class AnimalRoutes {
   static get routes() {
@@ -26,7 +27,7 @@ export class AnimalRoutes {
       animalController.getAll
     );
 
-    router.get('/:id', animalController.getSingle);
+    router.get('/:term', animalController.getSingle);
 
     router.post(
       '/cat',
@@ -44,9 +45,20 @@ export class AnimalRoutes {
       animalController.createDog
     );
 
-    router.put('/:id', animalController.update);
+    router.put(
+      '/:term',
+      authMiddleware.authenticateUser,
+      authMiddleware.authorizePermissions('shelter'),
+      ValidationMiddleware.validate(UpdateAnimalDto),
+      animalController.update
+    );
 
-    router.delete('/:id', animalController.delete);
+    router.delete(
+      '/:term',
+      authMiddleware.authenticateUser,
+      authMiddleware.authorizePermissions('shelter'),
+      animalController.delete
+    );
 
     return router;
   }
