@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
 import { envs } from '../config';
 import { prisma } from '../data/postgres';
+import path from 'path';
 
 interface Options {
   port: number;
@@ -41,7 +42,7 @@ export class Server {
 
     //* CI/CD Test
     this.app.get('/', (_req: Request, res: Response) => {
-      res.sendFile('index.html');
+      res.sendFile(__dirname + path.join('public', 'index.html'));
     });
 
     //* NotFound Middleware
