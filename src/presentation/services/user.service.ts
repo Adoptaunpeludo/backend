@@ -202,7 +202,10 @@ export class UserService {
           },
         },
         shelter: {
-          include: { socialMedia: true },
+          include: {
+            socialMedia: true,
+            animals: { include: { cat: true, dog: true } },
+          },
         },
         animals: true,
       },

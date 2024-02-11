@@ -17,6 +17,44 @@ export type animalGender = 'female' | 'male';
 
 export type animalPublishStatus = 'pending' | 'rejected' | 'published';
 
+export enum type {
+  C = 'cat',
+  D = 'dog',
+}
+
+export enum gender {
+  M = 'male',
+  F = 'female',
+}
+
+export enum animalSizeEnum {
+  S = 'small',
+  M = 'medium',
+  B = 'big',
+  VB = 'very_big',
+}
+
+export enum energy {
+  L = 'light',
+  M = 'moderate',
+  H = 'high',
+}
+
+export enum potential {
+  N = 'none',
+  L = 'low',
+  M = 'moderate',
+  H = 'high',
+  E = 'excessive',
+}
+
+export enum molting {
+  L = 'light',
+  M = 'moderate',
+  H = 'heavy',
+  NS = 'no_shedding',
+}
+
 export interface AnimalResponse {
   id: string;
   gender: animalGender;
@@ -38,8 +76,8 @@ export interface AnimalResponse {
   adoptedBy: string | null;
   createdBy: string;
   cityId: number;
-  shelter: Shelter;
-  city: City;
+  shelter?: Shelter;
+  city?: City;
   cat: Cat | null;
   dog: Dog | null;
 }

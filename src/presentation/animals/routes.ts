@@ -44,7 +44,13 @@ export class AnimalRoutes {
       animalController.createDog
     );
 
-    router.put('/:id', animalController.update);
+    router.put(
+      '/:id',
+      authMiddleware.authenticateUser,
+      authMiddleware.authorizePermissions('shelter'),
+      ValidationMiddleware.validate(CreateDogDto),
+      animalController.update
+    );
 
     router.delete(
       '/:term',

@@ -52,6 +52,11 @@ export class AnimalController {
   };
 
   update = async (req: Request, res: Response) => {
+    const { term } = req.params;
+    const { user, ...updates } = req.body;
+
+    await this.animalService.update(updates, user, term);
+
     res.status(HttpCodes.OK).json({ message: 'Update Animal' });
   };
 

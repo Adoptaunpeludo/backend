@@ -1,56 +1,19 @@
 import { ToBoolean, ToInt, Trim } from 'class-sanitizer';
 import { Transform } from 'class-transformer';
-import {
-  IsBoolean,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsNumber, IsString } from 'class-validator';
 import {
   animalEnergy,
   animalMolting,
   animalPotential,
+  animalSize,
+  animalSizeEnum,
   animalType,
+  energy,
+  gender,
+  molting,
+  potential,
+  type,
 } from '../../interfaces/animal.interface';
-
-enum type {
-  C = 'cat',
-  D = 'dog',
-}
-
-enum gender {
-  M = 'male',
-  F = 'female',
-}
-
-enum animalSize {
-  S = 'small',
-  M = 'medium',
-  B = 'big',
-  VB = 'very_big',
-}
-
-enum energy {
-  L = 'light',
-  M = 'moderate',
-  H = 'high',
-}
-
-enum potential {
-  N = 'none',
-  L = 'low',
-  M = 'moderate',
-  H = 'high',
-  E = 'excessive',
-}
-
-enum molting {
-  L = 'light',
-  M = 'moderate',
-  H = 'heavy',
-  NS = 'no_shedding',
-}
 
 export class CreateAnimalDto {
   @IsEnum(type)
@@ -73,7 +36,7 @@ export class CreateAnimalDto {
   @Trim()
   breed!: string;
 
-  @IsEnum(animalSize)
+  @IsEnum(animalSizeEnum)
   @Trim()
   size!: animalSize;
 

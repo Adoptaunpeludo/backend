@@ -8,19 +8,10 @@ export class AnimalEntity {
   }
 
   static fromObject(animalResponse: AnimalResponse) {
-    const {
-      images,
-      name,
-      age,
-      gender,
-      size,
-      type,
-      slug,
-      city: { name: cityName },
-      shelter: {
-        user: { avatar, username },
-      },
-    } = animalResponse;
+    const { name: cityName } = animalResponse.city!;
+    const { avatar, username } = animalResponse.shelter!.user!;
+
+    const { images, name, age, gender, size, type, slug } = animalResponse;
 
     return {
       slug,

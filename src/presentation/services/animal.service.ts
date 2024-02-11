@@ -11,6 +11,7 @@ import { AnimalResponse } from '../../domain/interfaces';
 import { IsUUID } from 'class-validator';
 import { PayloadUser } from '../../domain/interfaces/payload-user.interface';
 import { CheckPermissions } from '../../utils';
+import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
 
 export class AnimalService {
   constructor() {}
@@ -106,6 +107,7 @@ export class AnimalService {
         },
       });
     }
+    if (!animal) throw new NotFoundError('Animal not found');
 
     return animal;
   }
@@ -173,13 +175,68 @@ export class AnimalService {
       animals,
     };
   }
-  public async update() {
+
+  private buildQuery(updateAnimalDto: UpdateAnimalDto) {
+    const updatedAt = new Date();
+
+    let query: any;
+
+    const {
+      departmentAdapted,
+      droolingPotential,
+      bark,
+      playLevel,
+      kidsFriendly,
+      toiletTrained,
+      scratchPotential,
+      ...common
+    } = updateAnimalDto;
+
+    query = {
+      ...common,
+      updatedAt,
+      cat:
+        updateAnimalDto.type === 'cat'
+          ? {
+              playLevel,
+              kidsFriendly,
+              toiletTrained,
+              scratchPotential,
+            }
+          : undefined,
+      dog:
+        updateAnimalDto.type === 'dog'
+          ? {
+              droolingPotential,
+              departmentAdapted,
+              bark,
+            }
+          : undefined,
+    };
+
+    return query;
+  }
+
+  public async update(
+    updateAnimalDto: UpdateAnimalDto,
+    user: PayloadUser,
+    term: string
+  ) {
+    const animal = await this.getAnimalFromTerm(term);
+
+    CheckPermissions.check(user, animal.createdBy);
+
+    const updateQuery = this.buildQuery(updateAnimalDto);
+
+    const updatedAnimal = await prisma.animal.update({
+      where: { id: animal.id },
+      data: updateQuery,
+    });
+
     return 'Update Animal';
   }
   public async delete(user: PayloadUser, term: string) {
     const animal = await this.getAnimalFromTerm(term);
-
-    if (!animal) throw new NotFoundError('Animal not found');
 
     CheckPermissions.check(user, animal.createdBy);
 
