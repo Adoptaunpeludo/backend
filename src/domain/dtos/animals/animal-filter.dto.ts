@@ -1,5 +1,6 @@
 import { IsEnum, IsOptional, IsUUID, IsString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
+import { type as animalType } from '../../interfaces';
 
 enum enumAnimalSize {
   S = 'small',
@@ -52,4 +53,9 @@ export class AnimalFilterDto {
   @IsOptional()
   @Trim()
   id?: string;
+
+  @IsOptional()
+  @Trim()
+  @IsEnum(animalType)
+  type?: 'cat' | 'dog';
 }

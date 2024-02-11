@@ -150,7 +150,11 @@ export class AnimalService {
         where: filters,
         include: {
           shelter: {
-            include: { user: { select: { avatar: true, username: true } } },
+            include: {
+              user: {
+                select: { avatar: true, username: true, isOnline: true },
+              },
+            },
           },
           city: true,
           cat: true,

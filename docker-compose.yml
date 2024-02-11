@@ -47,46 +47,46 @@ services:
       MAILER_SECRET_KEY: ${MAILER_SECRET_KEY}
       WEB_SERVICE_URL: ${WEB_SERVICE_URL}
 
-  aup-backend:
-    build: .
-    restart: on-failure
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    container_name: aup-backend
-    ports:
-      - ${PORT}:${PORT}
-    environment:
-      NODE_ENV: ${NODE_ENV}
-      PORT: ${PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      JWT_SEED: ${JWT_SEED}
-      DATABASE_URL: ${DATABASE_URL}
-      MAIL_SERVICE: ${MAIL_SERVICE}
-      MAILER_EMAIL: ${MAILER_EMAIL}
-      MAILER_SECRET_KEY: ${MAILER_SECRET_KEY}
-      WEBSERVICE_URL: ${WEBSERVICE_URL}
-      RABBITMQ_USER: ${RABBITMQ_USER}
-      RABBITMQ_PASS: ${RABBITMQ_PASS}
-      RABBITMQ_URL: ${RABBITMQ_URL}
+  # aup-backend:
+  #   build: .
+  #   restart: on-failure
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   container_name: aup-backend
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   environment:
+  #     NODE_ENV: ${NODE_ENV}
+  #     PORT: ${PORT}
+  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_NAME: ${DB_NAME}
+  #     DB_HOST: ${DB_HOST}
+  #     DB_PORT: ${DB_PORT}
+  #     DB_USERNAME: ${DB_USERNAME}
+  #     JWT_SEED: ${JWT_SEED}
+  #     DATABASE_URL: ${DATABASE_URL}
+  #     MAIL_SERVICE: ${MAIL_SERVICE}
+  #     MAILER_EMAIL: ${MAILER_EMAIL}
+  #     MAILER_SECRET_KEY: ${MAILER_SECRET_KEY}
+  #     WEBSERVICE_URL: ${WEBSERVICE_URL}
+  #     RABBITMQ_USER: ${RABBITMQ_USER}
+  #     RABBITMQ_PASS: ${RABBITMQ_PASS}
+  #     RABBITMQ_URL: ${RABBITMQ_URL}
 
-  proxy:
-    build: ./nginx
-    depends_on:
-      - aup-backend
-    container_name: aup-backend-proxy
-    restart: always
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ./nginx/passwd/:/etc/nginx/passwd:ro
-      - ./nginx/letsencrypt/:/etc/letsencrypt/:ro
-      - ./nginx/certificates/certs/:/etc/nginx/certs:ro
-      - ./nginx/certificates/private/:/etc/nginx/private:ro
-      - ./nginx/logs/:/var/log/nginx/
+  # proxy:
+  #   build: ./nginx
+  #   depends_on:
+  #     - aup-backend
+  #   container_name: aup-backend-proxy
+  #   restart: always
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+  #     - ./nginx/passwd/:/etc/nginx/passwd:ro
+  #     - ./nginx/letsencrypt/:/etc/letsencrypt/:ro
+  #     - ./nginx/certificates/certs/:/etc/nginx/certs:ro
+  #     - ./nginx/certificates/private/:/etc/nginx/private:ro
+  #     - ./nginx/logs/:/var/log/nginx/

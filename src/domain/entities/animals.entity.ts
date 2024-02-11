@@ -1,7 +1,27 @@
 import { AnimalResponse } from '../interfaces/animal.interface';
 
 export class AnimalEntity {
-  // static fromObjectDetail(animalResponse: )
+  static fromObjectDetail(animalResponse: AnimalResponse) {
+    const { shelter, cat, dog, city, ...rest } = animalResponse;
+    const { cityId, ...animalData } = rest;
+
+    const {
+      user: { avatar, username, isOnline },
+      ...userInfo
+    } = shelter!;
+    const typeInfo = animalResponse.type === 'cat' ? { ...dog } : { ...cat };
+
+    return {
+      ...animalData,
+      ...typeInfo,
+      city: city!.name,
+      user: {
+        avatar,
+        username,
+        isOnline,
+      },
+    };
+  }
 
   static fromArray(animalsResponse: AnimalResponse[]) {
     return animalsResponse.map((animal) => this.fromObject(animal));
@@ -9,11 +29,12 @@ export class AnimalEntity {
 
   static fromObject(animalResponse: AnimalResponse) {
     const { name: cityName } = animalResponse.city!;
-    const { avatar, username } = animalResponse.shelter!.user!;
+    const { avatar, username, isOnline } = animalResponse.shelter!.user!;
 
-    const { images, name, age, gender, size, type, slug } = animalResponse;
+    const { id, images, name, age, gender, size, type, slug } = animalResponse;
 
     return {
+      id,
       slug,
       name,
       age,

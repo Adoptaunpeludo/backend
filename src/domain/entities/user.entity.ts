@@ -38,9 +38,9 @@ export class UserEntity {
               url: media.url,
             })) || [],
 
-          animals: shelter?.animals.map((animal) => ({
-            ...animal,
-          })),
+          // animals: shelter?.animals.map((animal) => ({
+          //   ...animal,
+          // })),
         };
         break;
 
