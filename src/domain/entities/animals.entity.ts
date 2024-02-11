@@ -1,6 +1,8 @@
 import { AnimalResponse } from '../interfaces/animal.interface';
 
 export class AnimalEntity {
+  // static fromObjectDetail(animalResponse: )
+
   static fromArray(animalsResponse: AnimalResponse[]) {
     return animalsResponse.map((animal) => this.fromObject(animal));
   }

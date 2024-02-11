@@ -88,20 +88,22 @@ export class UserService {
 
   public async updateSocialMedia(
     socialMediaDto: UpdateSocialMediaDto,
-    email: string
+    user: PayloadUser
   ) {
-    const user = await prisma.user.findUnique({
-      where: { email },
+    const userFound = await prisma.user.findUnique({
+      where: { email: user.email },
     });
 
-    if (!user) throw new NotFoundError('User or shelter not found');
+    if (!userFound) throw new NotFoundError('User or shelter not found');
+
+    CheckPermissions.check(user, userFound.id);
 
     const promises = socialMediaDto.socialMedia.map((socialMediaItem) =>
       prisma.socialMedia.upsert({
         where: {
           shelterId_name: {
             name: socialMediaItem.name,
-            shelterId: user.id,
+            shelterId: userFound.id,
           },
         },
         update: {
@@ -112,7 +114,7 @@ export class UserService {
           url: socialMediaItem.url || '',
           shelter: {
             connect: {
-              id: user.id,
+              id: userFound.id,
             },
           },
         },

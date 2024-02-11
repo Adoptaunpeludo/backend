@@ -1,10 +1,16 @@
+import { UUID } from '../../config/uuid.adapter';
 import { prismaWithSlugExtension as prisma } from '../../data/postgres';
+import { NotFoundError } from '../../domain';
 import {
   AnimalFilterDto,
   CreateCatDto,
   CreateDogDto,
   PaginationDto,
 } from '../../domain/dtos';
+import { AnimalResponse } from '../../domain/interfaces';
+import { IsUUID } from 'class-validator';
+import { PayloadUser } from '../../domain/interfaces/payload-user.interface';
+import { CheckPermissions } from '../../utils';
 
 export class AnimalService {
   constructor() {}
@@ -72,8 +78,43 @@ export class AnimalService {
 
     return animal;
   }
-  public async getSingle() {
-    return 'Get single Animal';
+
+  private async getAnimalFromTerm(term: string) {
+    let animal: AnimalResponse | null = null;
+
+    const isUUID = UUID.validate(term);
+
+    if (isUUID)
+      animal = await prisma.animal.findUnique({
+        where: { id: term },
+        include: {
+          shelter: { include: { user: true } },
+          cat: true,
+          dog: true,
+          city: true,
+        },
+      });
+
+    if (!isUUID) {
+      animal = await prisma.animal.findUnique({
+        where: { slug: term.toLowerCase() },
+        include: {
+          shelter: { include: { user: true } },
+          cat: true,
+          dog: true,
+          city: true,
+        },
+      });
+    }
+
+    return animal;
+  }
+  public async getSingle(term: string) {
+    const animal = this.getAnimalFromTerm(term);
+
+    if (!animal) throw new NotFoundError('Animal not found');
+
+    return animal;
   }
 
   private mapFilters(animalFilterDto: AnimalFilterDto) {
@@ -135,7 +176,13 @@ export class AnimalService {
   public async update() {
     return 'Update Animal';
   }
-  public async delete() {
+  public async delete(user: PayloadUser, term: string) {
+    const animal = await this.getAnimalFromTerm(term);
+
+    if (!animal) throw new NotFoundError('Animal not found');
+
+    CheckPermissions.check(user, animal?.id);
+
     return 'Delete Animal';
   }
 }

@@ -42,7 +42,13 @@ export class AnimalController {
   };
 
   getSingle = async (req: Request, res: Response) => {
-    res.status(HttpCodes.OK).json({ message: 'Get Single Animal' });
+    const { id } = req.params;
+
+    const animal = await this.animalService.getSingle(id);
+
+    //* TODO Detailed animal entity
+
+    res.status(HttpCodes.OK).json(animal);
   };
 
   update = async (req: Request, res: Response) => {
