@@ -42,7 +42,7 @@ export class Server {
 
     //* CI/CD Test
     this.app.get('/', (_req: Request, res: Response) => {
-      res.sendFile(__dirname + path.join('public', 'index.html'));
+      res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
     });
 
     //* NotFound Middleware
