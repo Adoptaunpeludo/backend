@@ -16,7 +16,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY ./package.json .
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/public ./dist/public
 # RUN npx prisma migrate dev
 # RUN node dist/data/seed/seed.js
 CMD ["node", "dist/app.js"]
