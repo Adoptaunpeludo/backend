@@ -77,21 +77,16 @@ export class AnimalService {
   }
 
   private mapFilters(animalFilterDto: AnimalFilterDto) {
-    const { age, createdBy, gender, id, name, size, slug } = animalFilterDto;
-
     let filters: any = {};
 
-    if (age) {
-      if (age === 'puppy') filters.age = { gte: 0, lte: 2 };
-      if (age === 'adult') filters.age = { gte: 2, lte: 10 };
-      if (age === 'senior') filters.age = { gt: 10 };
-    }
-    if (createdBy) filters.createdBy = createdBy;
-    if (gender) filters.gender = gender;
-    if (id) filters.id = id;
-    if (name) filters.name = name;
-    if (size) filters.size = size;
-    if (slug) filters.slug = slug;
+    Object.entries(animalFilterDto).forEach(([key, value]) => {
+      if (key === 'age') {
+        if (value === 'puppy') filters.age = { gte: 0, lte: 2 };
+        if (value === 'adult') filters.age = { gte: 2, lte: 10 };
+        if (value === 'senior') filters.age = { gt: 10 };
+      }
+      filters[key] = value;
+    });
 
     return filters;
   }

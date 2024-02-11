@@ -55,7 +55,6 @@ export class RegisterUserDto {
   @Trim()
   address!: string;
 
-  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   cityId!: number;

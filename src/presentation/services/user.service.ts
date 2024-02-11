@@ -122,17 +122,7 @@ export class UserService {
     await Promise.all(promises);
   }
 
-  public async updateUser(
-    updateUserDto: UpdateUserDto,
-    payloadUser: PayloadUser,
-    email: string
-  ) {
-    const userToUpdate = await prisma.user.findUnique({ where: { email } });
-
-    if (!userToUpdate) throw new NotFoundError('User not found');
-
-    CheckPermissions.check(payloadUser, userToUpdate.id);
-
+  private buildQuery(updateUserDto: UpdateUserDto) {
     const updatedAt = new Date();
 
     const {
@@ -183,6 +173,22 @@ export class UserService {
     if (veterinaryFacilities !== undefined) {
       updateQuery.shelter.update.veterinaryFacilities = veterinaryFacilities;
     }
+
+    return updateQuery;
+  }
+
+  public async updateUser(
+    updateUserDto: UpdateUserDto,
+    payloadUser: PayloadUser,
+    email: string
+  ) {
+    const userToUpdate = await prisma.user.findUnique({ where: { email } });
+
+    if (!userToUpdate) throw new NotFoundError('User not found');
+
+    CheckPermissions.check(payloadUser, userToUpdate.id);
+
+    const updateQuery = this.buildQuery(updateUserDto);
 
     const updatedUser = await prisma.user.update({
       where: { email },

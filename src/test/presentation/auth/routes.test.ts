@@ -1,3 +1,4 @@
+import { citiesData } from './../../../data/seed/data';
 import request from 'supertest';
 
 import { BcryptAdapter } from '../../../config';
@@ -55,6 +56,14 @@ describe('Api auth routes testing', () => {
 
   beforeAll(async () => {
     prisma.$connect();
+    const cities = await prisma.city.findMany();
+    if (cities.length === 0) {
+      const citiesNames = citiesData.map((city) => ({
+        name: city.label,
+      }));
+
+      await prisma.city.createMany({ data: citiesNames });
+    }
     await testServer.start();
   });
 

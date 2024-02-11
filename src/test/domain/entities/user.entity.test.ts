@@ -64,8 +64,6 @@ describe('user.entity.ts', () => {
 
     const userEntity = UserEntity.fromObject(userResponse);
 
-    console.log({ userEntity });
-
     expect(userEntity).toEqual(expectedUserEntity);
   });
 

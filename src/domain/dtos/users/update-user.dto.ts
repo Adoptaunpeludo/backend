@@ -76,10 +76,12 @@ export class UpdateUserDto {
 
   @IsBoolean()
   @ToBoolean()
+  @IsOptional()
   veterinaryFacilities?: boolean;
 
   @IsBoolean()
   @ToBoolean()
+  @IsOptional()
   ownVet?: boolean;
 
   @IsString()
