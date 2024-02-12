@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 import {
   BadRequestError,
+  FileUploadDto,
   NotFoundError,
   UpdateUserDto,
   UserEntity,
@@ -9,9 +10,10 @@ import {
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { PayloadUser, UserRoles } from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
+import { S3Service } from './s3.service';
 
 export class UserService {
-  constructor() {}
+  constructor(private readonly s3Service: S3Service) {}
 
   public async getAllUsers() {
     return await prisma.user.findMany({
@@ -56,14 +58,16 @@ export class UserService {
     return user;
   }
 
-  public async deleteUser(payloadUser: PayloadUser, email: string) {
-    const userToDelete = await prisma.user.findUnique({ where: { email } });
+  public async deleteUser(user: PayloadUser) {
+    const userToDelete = await prisma.user.findUnique({
+      where: { email: user.email },
+    });
 
     if (!userToDelete) throw new NotFoundError('User not found');
 
-    CheckPermissions.check(payloadUser, userToDelete.id);
+    CheckPermissions.check(user, userToDelete.id);
 
-    await prisma.user.delete({ where: { email } });
+    await prisma.user.delete({ where: { email: userToDelete.email } });
   }
 
   public async changePassword(
@@ -180,29 +184,19 @@ export class UserService {
     return updateQuery;
   }
 
-  public async updateUser(
-    updateUserDto: UpdateUserDto,
-    payloadUser: PayloadUser,
-    email: string,
-    files?: Express.MulterS3.File[]
-  ) {
-    const user = await prisma.user.findUnique({ where: { email } });
+  public async updateUser(updateUserDto: UpdateUserDto, user: PayloadUser) {
+    const userToUpdate = await prisma.user.findUnique({
+      where: { email: user.email },
+    });
 
-    if (!user) throw new NotFoundError('User not found');
+    if (!userToUpdate) throw new NotFoundError('User not found');
 
-    CheckPermissions.check(payloadUser, user.id);
+    CheckPermissions.check(user, userToUpdate.id);
 
     const updateQuery = this.buildQuery(updateUserDto);
 
-    if (files)
-      updateQuery.shelter.update.images = files.map((file) => file.key);
-
-    // if (files?.[0]?.key) updateQuery.avatar = files[0].key;
-
-    updateQuery.avatar = files?.[0]?.key ? files[0].key : 'avatar.png';
-
     const updatedUser = await prisma.user.update({
-      where: { email },
+      where: { email: userToUpdate.email },
       data: updateQuery,
       include: {
         contactInfo: {
@@ -223,5 +217,73 @@ export class UserService {
     const userEntity = UserEntity.fromObject(updatedUser);
 
     return userEntity;
+  }
+
+  public async updateImages(
+    files: Express.MulterS3.File[],
+    user: PayloadUser,
+    deleteImages: string[]
+  ) {
+    const userToUpdate = await prisma.user.findUnique({
+      where: { email: user.email },
+      select: {
+        shelter: {
+          select: {
+            images: true,
+          },
+        },
+      },
+    });
+
+    const images = userToUpdate?.shelter?.images;
+
+    let resultImages: string[] = [];
+
+    if (images)
+      resultImages = images.filter((image) => !deleteImages.includes(image));
+
+    if (deleteImages.length > 0) await this.s3Service.deleteFiles(deleteImages);
+
+    let updateQuery: any = {
+      shelter: {
+        update: {
+          images: [],
+        },
+      },
+    };
+
+    if (files && files.length > 0) {
+      const uploadedImages = files.map((file) => file.key);
+      resultImages = [...resultImages, ...uploadedImages];
+    }
+
+    resultImages = resultImages.filter(
+      (image, index, array) => array.indexOf(image) === index
+    );
+
+    updateQuery.shelter.update.images = resultImages;
+
+    updateQuery.avatar = resultImages[0] ? resultImages[0] : 'avatar.png';
+
+    await prisma.user.update({
+      where: {
+        email: user.email,
+      },
+      data: updateQuery,
+      include: {
+        contactInfo: {
+          include: {
+            city: true,
+          },
+        },
+        shelter: {
+          include: {
+            socialMedia: true,
+            animals: { include: { cat: true, dog: true } },
+          },
+        },
+        animals: true,
+      },
+    });
   }
 }

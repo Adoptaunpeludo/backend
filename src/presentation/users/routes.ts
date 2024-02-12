@@ -4,7 +4,7 @@ import { JWTAdapter, envs } from '../../config';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
 import { UserService } from '../services';
 import { ValidationMiddleware } from '../middlewares';
-import { UpdateUserDto } from '../../domain';
+import { FileUploadDto, UpdateUserDto } from '../../domain';
 import { UpdatePasswordDto } from '../../domain/dtos/auth/update-password.dto';
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { S3Service } from '../services/s3.service';
@@ -17,14 +17,14 @@ export class UserRoutes {
 
     const jwt = new JWTAdapter(envs.JWT_SEED);
     const authMiddleware = new AuthMiddleware(jwt);
-    const userService = new UserService();
-    const userController = new UserController(userService);
     const s3Service = new S3Service(
       envs.AWS_REGION,
       envs.AWS_ACCESS_KEY_ID,
       envs.AWS_SECRET_ACCESS_KEY,
       envs.AWS_BUCKET
     );
+    const userService = new UserService(s3Service);
+    const userController = new UserController(userService);
     const fileUploadMiddleware = new FileUploadMiddleware(s3Service);
 
     router.get('/me', authMiddleware.authenticateUser, userController.getUser);
@@ -39,29 +39,34 @@ export class UserRoutes {
     //* TODO: getSingle
 
     router.delete(
-      '/:email',
+      '/',
       authMiddleware.authenticateUser,
       userController.deleteUser
     );
 
     router.put(
-      '/:email',
+      '/',
       authMiddleware.authenticateUser,
       ValidationMiddleware.validate(UpdateUserDto),
-      // fileUploadMiddleware.single,
-      fileUploadMiddleware.multiple,
-      // fileUploadMiddleware.multiUpload,
       userController.updateUser
     );
 
     router.post(
+      '/upload-images',
+      authMiddleware.authenticateUser,
+      ValidationMiddleware.validate(FileUploadDto),
+      fileUploadMiddleware.multiple,
+      userController.uploadImages
+    );
+
+    router.put(
       '/change-password',
       authMiddleware.authenticateUser,
       ValidationMiddleware.validate(UpdatePasswordDto),
       userController.changePassword
     );
 
-    router.post(
+    router.put(
       '/update-social-media',
       authMiddleware.authenticateUser,
       authMiddleware.authorizePermissions('shelter'),

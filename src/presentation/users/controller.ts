@@ -25,9 +25,7 @@ export class UserController {
   };
 
   deleteUser = async (req: Request, res: Response) => {
-    const { email } = req.params;
-
-    await this.userService.deleteUser(req.user, email);
+    await this.userService.deleteUser(req.user);
 
     res.cookie('refreshToken', 'logout', {
       httpOnly: true,
@@ -43,18 +41,10 @@ export class UserController {
   };
 
   updateUser = async (req: Request, res: Response) => {
-    const { email } = req.params;
     const updates = req.body;
-    const { file, user, files } = req;
+    const { user } = req;
 
-    console.log({ files });
-
-    const updatedUser = await this.userService.updateUser(
-      updates,
-      user,
-      email,
-      files as Express.MulterS3.File[]
-    );
+    const updatedUser = await this.userService.updateUser(updates, user);
 
     res
       .status(HttpCodes.OK)
@@ -79,5 +69,25 @@ export class UserController {
     res
       .status(HttpCodes.OK)
       .json({ message: 'Social media updated successfully' });
+  };
+
+  uploadImages = async (req: Request, res: Response) => {
+    const { files, user } = req;
+    const { deleteImages } = req.body;
+
+    let imagesToDelete: string[] = [];
+
+    if (deleteImages)
+      imagesToDelete = Array.isArray(deleteImages)
+        ? deleteImages
+        : [deleteImages];
+
+    await this.userService.updateImages(
+      files as Express.MulterS3.File[],
+      user,
+      imagesToDelete
+    );
+
+    res.status(HttpCodes.OK).json({ message: 'Images updated successfully' });
   };
 }

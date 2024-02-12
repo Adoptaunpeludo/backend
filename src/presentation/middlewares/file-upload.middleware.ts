@@ -54,9 +54,6 @@ export class FileUploadMiddleware {
 
     CheckPermissions.check(req.user, user.id);
 
-    if (user.shelter?.images && user.shelter.images.length > 0)
-      await this.s3Service.deleteFiles(user.shelter.images);
-
     await this.s3Service.uploadMultiple('users')(req, res);
     next();
   };
