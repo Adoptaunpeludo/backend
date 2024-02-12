@@ -10,8 +10,6 @@ import { PayloadUser, UserRoles } from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
 
 export class UserService {
-  constructor() {}
-
   public async getAllUsers() {
     return await prisma.user.findMany({
       include: {
@@ -180,6 +178,7 @@ export class UserService {
   }
 
   public async updateUser(
+    avatar: string,
     updateUserDto: UpdateUserDto,
     payloadUser: PayloadUser,
     email: string
@@ -191,6 +190,8 @@ export class UserService {
     CheckPermissions.check(payloadUser, userToUpdate.id);
 
     const updateQuery = this.buildQuery(updateUserDto);
+
+    updateQuery.avatar = avatar;
 
     const updatedUser = await prisma.user.update({
       where: { email },

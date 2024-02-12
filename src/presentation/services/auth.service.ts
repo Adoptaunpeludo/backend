@@ -29,20 +29,20 @@ export class AuthService {
   ) {}
 
   public async registerUser(registerUserDto: RegisterUserDto) {
-    const { email, role } = registerUserDto;
+    const { email } = registerUserDto;
 
-    const existUser = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (existUser)
+    if (user)
       throw new BadRequestError(
         `Email ${registerUserDto.email} already exists, try another one`
       );
 
     const hashedPassword = prisma.user.hashPassword(registerUserDto.password);
 
-    const verificationToken = await this.jwt.generateToken(
+    const verificationToken = this.jwt.generateToken(
       { user: { email } },
       '15m'
     );
@@ -149,9 +149,9 @@ export class AuthService {
       name: user.username,
     };
 
-    const accessToken = await this.jwt.generateToken({ user: userToken });
+    const accessToken = this.jwt.generateToken({ user: userToken });
 
-    const refreshToken = await this.jwt.generateToken({
+    const refreshToken = this.jwt.generateToken({
       user: userToken,
       refreshToken: token,
     });
@@ -185,7 +185,7 @@ export class AuthService {
   }
 
   private async verifyToken(token: string, type: TokenType) {
-    const payload = await this.jwt.validateToken(token);
+    const payload = this.jwt.validateToken(token);
 
     if (!payload) throw new UnauthorizedError('Invalid token validation');
 
@@ -231,8 +231,8 @@ export class AuthService {
 
     if (!user) throw new BadRequestError(`User with email: ${email} not found`);
 
-    const passwordToken = await this.jwt.generateToken(
-      { user: { email } },
+    const passwordToken = this.jwt.generateToken(
+      { user: { email, id: user.id, name: user.username, role: user.role } },
       '15m'
     );
 

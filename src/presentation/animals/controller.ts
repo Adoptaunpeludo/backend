@@ -8,23 +8,33 @@ export class AnimalController {
   constructor(private readonly animalService: AnimalService) {}
 
   createCat = async (req: Request, res: Response) => {
-    const { user, ...animal } = req.body;
+    const animal = req.body;
+    const user = req.user;
 
     if (animal.type !== 'cat')
       throw new BadRequestError('Wrong route, use /dog');
 
-    const cat = await this.animalService.createCat(user.id, user.name, animal);
+    const cat = await this.animalService.createCat(
+      user.id!,
+      user.name!,
+      animal
+    );
 
     res.status(HttpCodes.OK).json(cat);
   };
 
   createDog = async (req: Request, res: Response) => {
-    const { user, ...animal } = req.body;
+    const animal = req.body;
+    const user = req.user;
 
     if (animal.type !== 'dog')
       throw new BadRequestError('Wrong route, use /cat');
 
-    const dog = await this.animalService.createDog(user.id, user.name, animal);
+    const dog = await this.animalService.createDog(
+      user.id!,
+      user.name!,
+      animal
+    );
 
     res.status(HttpCodes.OK).json(dog);
   };
@@ -53,7 +63,8 @@ export class AnimalController {
 
   update = async (req: Request, res: Response) => {
     const { term } = req.params;
-    const { user, ...updates } = req.body;
+    const updates = req.body;
+    const user = req.user;
 
     await this.animalService.update(updates, user, term);
 
@@ -62,7 +73,7 @@ export class AnimalController {
 
   delete = async (req: Request, res: Response) => {
     const { term } = req.params;
-    const { user } = req.body;
+    const user = req.user;
 
     await this.animalService.delete(user, term);
 

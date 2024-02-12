@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { HttpCodes, JWTAdapter } from '../../config';
+import { JWTAdapter } from '../../config';
 import { UserRoles } from '../../domain/interfaces';
 import { UnauthenticatedError, UnauthorizedError } from '../../domain';
 import { prisma } from '../../data/postgres';
@@ -16,17 +16,17 @@ export class AuthMiddleware {
   ) => {
     const { refreshToken, accessToken } = req.signedCookies;
 
+    if (!refreshToken && !accessToken)
+      throw new UnauthenticatedError('Please first login');
+
     if (accessToken) {
-      const payload = await this.jwt.validateToken(accessToken);
+      const payload = this.jwt.validateToken(accessToken);
       if (!payload) throw new UnauthorizedError('Invalid token validation');
-
-      const { user } = payload;
-
-      req.body.user = user;
+      req.user = payload.user;
       return next();
     }
 
-    const payload = await this.jwt.validateToken(refreshToken);
+    const payload = this.jwt.validateToken(refreshToken);
     if (!payload) throw new UnauthorizedError('Invalid token validation');
 
     const existingToken = await prisma.token.findUnique({
@@ -38,8 +38,8 @@ export class AuthMiddleware {
 
     const { user } = payload;
 
-    const accessTokenJWT = await this.jwt.generateToken({ user }, '15m');
-    const refreshTokenJWT = await this.jwt.generateToken(
+    const accessTokenJWT = this.jwt.generateToken({ user }, '15m');
+    const refreshTokenJWT = this.jwt.generateToken(
       { user, refreshToken: existingToken.refreshToken },
       '1d'
     );
@@ -50,17 +50,17 @@ export class AuthMiddleware {
       refreshToken: refreshTokenJWT!,
     });
 
-    req.body.user = user;
+    req.user = user;
     next();
   };
 
   public authorizePermissions = (...roles: UserRoles[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
-      const { role } = req.body.user;
+      const { role } = req.user;
 
       if (role === 'admin') return next();
 
-      if (!roles.includes(role))
+      if (!roles.includes(role!))
         throw new UnauthorizedError('Unauthorized to access this resource');
 
       next();
