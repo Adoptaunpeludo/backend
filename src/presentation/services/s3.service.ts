@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Request } from 'express';
 import multer, { Multer } from 'multer';
 import multerS3 from 'multer-s3';
@@ -59,5 +59,16 @@ export class S3Service {
     }).single('avatar');
 
     return util.promisify(uploadSingleFile);
+  }
+
+  public async deleteFile(file: string) {
+    const command = new DeleteObjectCommand({
+      Bucket: this.bucket,
+      Key: file,
+    });
+
+    const response = await this.s3.send(command);
+
+    return response;
   }
 }

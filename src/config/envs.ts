@@ -33,4 +33,5 @@ export const envs = {
   AWS_SECRET_ACCESS_KEY: get('AWS_SECRET_ACCESS_KEY').required().asString(),
   AWS_REGION: get('AWS_REGION').required().asString(),
   AWS_BUCKET: get('AWS_BUCKET').required().asString(),
+  AWS_BUCKET_URL: get('AWS_BUCKET_URL').required().asString(),
 };

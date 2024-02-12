@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client';
 import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 import {
   BadRequestError,
@@ -10,6 +11,8 @@ import { PayloadUser, UserRoles } from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
 
 export class UserService {
+  constructor() {}
+
   public async getAllUsers() {
     return await prisma.user.findMany({
       include: {
@@ -183,11 +186,11 @@ export class UserService {
     payloadUser: PayloadUser,
     email: string
   ) {
-    const userToUpdate = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!userToUpdate) throw new NotFoundError('User not found');
+    if (!user) throw new NotFoundError('User not found');
 
-    CheckPermissions.check(payloadUser, userToUpdate.id);
+    CheckPermissions.check(payloadUser, user.id);
 
     const updateQuery = this.buildQuery(updateUserDto);
 
