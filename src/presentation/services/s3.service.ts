@@ -1,4 +1,8 @@
-import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { Request } from 'express';
 import multer, { Multer } from 'multer';
 import multerS3 from 'multer-s3';
@@ -30,6 +34,8 @@ export class S3Service {
       bucket: this.bucket,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: (req: Request, file, cb) => {
+        console.log({ file });
+
         const fileName = `${folder}/${req.user.id}/${req.user.name}_${file.originalname}`;
         cb(null, fileName);
       },
@@ -49,6 +55,14 @@ export class S3Service {
     cb(null, true);
   }
 
+  private checkFilesType(
+    req: Request,
+    files: Express.MulterS3.File[],
+    cb: multer.FileFilterCallback
+  ) {
+    files.forEach((file) => this.checkFileType(req, file, cb));
+  }
+
   public uploadSingle(folder: string) {
     const storage = this.multerStorage(folder);
 
@@ -61,10 +75,38 @@ export class S3Service {
     return util.promisify(uploadSingleFile);
   }
 
+  public uploadMultiple(folder: string) {
+    const storage = this.multerStorage(folder);
+    let uploadMultipleFiles = multer({
+      storage,
+      limits: { fileSize: 1024 * 1024 * 3 },
+      fileFilter: this.checkFileType,
+    }).array('images');
+
+    return util.promisify(uploadMultipleFiles);
+  }
+
   public async deleteFile(file: string) {
     const command = new DeleteObjectCommand({
       Bucket: this.bucket,
       Key: file,
+    });
+
+    const response = await this.s3.send(command);
+
+    return response;
+  }
+
+  public async deleteFiles(files: string[]) {
+    const objects = files.map((file) => ({
+      Key: file,
+    }));
+
+    const command = new DeleteObjectsCommand({
+      Bucket: this.bucket,
+      Delete: {
+        Objects: objects,
+      },
     });
 
     const response = await this.s3.send(command);

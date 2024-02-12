@@ -45,13 +45,15 @@ export class UserController {
   updateUser = async (req: Request, res: Response) => {
     const { email } = req.params;
     const updates = req.body;
-    const { file, user } = req;
+    const { file, user, files } = req;
+
+    console.log({ files });
 
     const updatedUser = await this.userService.updateUser(
-      (file as Express.MulterS3.File)?.key,
       updates,
       user,
-      email
+      email,
+      files as Express.MulterS3.File[]
     );
 
     res

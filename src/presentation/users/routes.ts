@@ -48,7 +48,9 @@ export class UserRoutes {
       '/:email',
       authMiddleware.authenticateUser,
       ValidationMiddleware.validate(UpdateUserDto),
-      fileUploadMiddleware.single,
+      // fileUploadMiddleware.single,
+      fileUploadMiddleware.multiple,
+      // fileUploadMiddleware.multiUpload,
       userController.updateUser
     );
 

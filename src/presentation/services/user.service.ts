@@ -181,10 +181,10 @@ export class UserService {
   }
 
   public async updateUser(
-    avatar: string,
     updateUserDto: UpdateUserDto,
     payloadUser: PayloadUser,
-    email: string
+    email: string,
+    files?: Express.MulterS3.File[]
   ) {
     const user = await prisma.user.findUnique({ where: { email } });
 
@@ -194,7 +194,12 @@ export class UserService {
 
     const updateQuery = this.buildQuery(updateUserDto);
 
-    if (avatar) updateQuery.avatar = avatar;
+    if (files)
+      updateQuery.shelter.update.images = files.map((file) => file.key);
+
+    // if (files?.[0]?.key) updateQuery.avatar = files[0].key;
+
+    updateQuery.avatar = files?.[0]?.key ? files[0].key : 'avatar.png';
 
     const updatedUser = await prisma.user.update({
       where: { email },
