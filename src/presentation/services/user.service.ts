@@ -191,7 +191,7 @@ export class UserService {
 
     const updateQuery = this.buildQuery(updateUserDto);
 
-    updateQuery.avatar = avatar;
+    if (avatar) updateQuery.avatar = avatar;
 
     const updatedUser = await prisma.user.update({
       where: { email },

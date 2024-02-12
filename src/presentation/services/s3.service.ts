@@ -1,8 +1,9 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Request } from 'express';
-import multer from 'multer';
+import multer, { Multer } from 'multer';
 import multerS3 from 'multer-s3';
 import util from 'util';
+import { BadRequestError } from '../../domain';
 
 export class S3Service {
   private s3: S3Client;
@@ -37,11 +38,24 @@ export class S3Service {
     return storage;
   }
 
+  private checkFileType(
+    req: Request,
+    file: Express.MulterS3.File,
+    cb: multer.FileFilterCallback
+  ) {
+    if (!file.mimetype.startsWith('image/'))
+      return cb(new BadRequestError('Invalid file type: ' + file.mimetype));
+
+    cb(null, true);
+  }
+
   public uploadSingle(folder: string) {
     const storage = this.multerStorage(folder);
 
     let uploadSingleFile = multer({
       storage,
+      limits: { fileSize: 1024 * 1024 * 3 },
+      fileFilter: this.checkFileType,
     }).single('avatar');
 
     return util.promisify(uploadSingleFile);

@@ -48,7 +48,7 @@ export class UserController {
     const { file, user } = req;
 
     const updatedUser = await this.userService.updateUser(
-      (file as any)?.location || 'avatar.png',
+      (file as Express.MulterS3.File)?.location,
       updates,
       user,
       email
