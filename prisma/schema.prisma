@@ -94,7 +94,7 @@ model User {
   username          String
   firstName         String
   lastName          String
-  dni               String     @unique
+  dni               String
   emailValidated    Boolean    @default(false)
   verificationToken String     @default("")
   passwordToken     String     @default("")
@@ -135,7 +135,7 @@ model Token {
 model Shelter {
   id                   String       @id
   description          String       @default("")
-  cif                  String       @unique
+  cif                  String
   legalForms           legal_forms?
   veterinaryFacilities Boolean?
   facilities           facilities?
