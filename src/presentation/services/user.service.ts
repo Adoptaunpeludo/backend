@@ -61,6 +61,13 @@ export class UserService {
   public async deleteUser(user: PayloadUser) {
     const userToDelete = await prisma.user.findUnique({
       where: { email: user.email },
+      include: {
+        shelter: {
+          select: {
+            images: true,
+          },
+        },
+      },
     });
 
     if (!userToDelete) throw new NotFoundError('User not found');
@@ -68,6 +75,13 @@ export class UserService {
     CheckPermissions.check(user, userToDelete.id);
 
     await prisma.user.delete({ where: { email: userToDelete.email } });
+
+    const imagesToDelete =
+      userToDelete.shelter?.images.map(
+        (image) => `${userToDelete.id}/${image}`
+      ) || [];
+
+    await this.s3Service.deleteFiles(imagesToDelete);
   }
 
   public async changePassword(

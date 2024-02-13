@@ -34,7 +34,6 @@ export class S3Service {
       bucket: this.bucket,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: (req: Request, file, cb) => {
-        console.log({ file });
         const fileName = `${folder}/${req.user.id}/${req.user.name}_${file.originalname}`;
         cb(null, fileName);
       },
