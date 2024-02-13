@@ -77,11 +77,12 @@ export class UserService {
     await prisma.user.delete({ where: { email: userToDelete.email } });
 
     const imagesToDelete =
-      userToDelete.shelter?.images.map(
-        (image) => `${userToDelete.id}/${image}`
-      ) || [];
+      userToDelete.shelter?.images.map((image) => image) || [];
 
-    await this.s3Service.deleteFiles(imagesToDelete);
+    console.log({ imagesToDelete });
+
+    if (imagesToDelete.length > 0)
+      await this.s3Service.deleteFiles(imagesToDelete);
   }
 
   public async changePassword(
