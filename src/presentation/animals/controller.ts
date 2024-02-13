@@ -79,4 +79,27 @@ export class AnimalController {
 
     res.status(HttpCodes.OK).json({ message: 'Animal deleted' });
   };
+
+  uploadImages = async (req: Request, res: Response) => {
+    const { files, user } = req;
+    const { deleteImages } = req.body;
+    const { term } = req.params;
+
+    let imagesToDelete: string[] = [];
+
+    //* Normalize images to an array (in case there is only one image)
+    if (deleteImages)
+      imagesToDelete = Array.isArray(deleteImages)
+        ? deleteImages
+        : [deleteImages];
+
+    await this.animalService.updateImages(
+      term,
+      files as Express.MulterS3.File[],
+      user,
+      imagesToDelete
+    );
+
+    res.status(HttpCodes.OK).json({ message: 'Images updated successfully' });
+  };
 }

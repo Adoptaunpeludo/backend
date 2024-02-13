@@ -259,7 +259,11 @@ export class UserService {
 
     if (deleteImages.length > 0) await this.s3Service.deleteFiles(deleteImages);
 
-    let updateQuery: any = {
+    let updateQuery: {
+      avatar: string;
+      shelter: { update: { images: string[] } };
+    } = {
+      avatar: 'avatar.png',
       shelter: {
         update: {
           images: [],
@@ -272,33 +276,18 @@ export class UserService {
       resultImages = [...resultImages, ...uploadedImages];
     }
 
+    //* Remove duplicates
     resultImages = resultImages.filter(
       (image, index, array) => array.indexOf(image) === index
     );
 
     updateQuery.shelter.update.images = resultImages;
 
-    updateQuery.avatar = resultImages[0] ? resultImages[0] : 'avatar.png';
+    updateQuery.avatar = resultImages[0] ? resultImages[0] : updateQuery.avatar;
 
     await prisma.user.update({
-      where: {
-        email: user.email,
-      },
+      where: { email: user.email },
       data: updateQuery,
-      include: {
-        contactInfo: {
-          include: {
-            city: true,
-          },
-        },
-        shelter: {
-          include: {
-            socialMedia: true,
-            animals: { include: { cat: true, dog: true } },
-          },
-        },
-        animals: true,
-      },
     });
   }
 }

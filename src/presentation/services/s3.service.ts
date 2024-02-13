@@ -4,7 +4,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Request } from 'express';
-import multer, { Multer } from 'multer';
+import multer from 'multer';
 import multerS3 from 'multer-s3';
 import util from 'util';
 import { BadRequestError } from '../../domain';
@@ -27,14 +27,14 @@ export class S3Service {
     });
   }
 
-  private multerStorage(folder: string) {
+  private multerStorage(folder: string, id: string, name: string) {
     const storage = multerS3({
       s3: this.s3,
       acl: 'public-read',
       bucket: this.bucket,
       contentType: multerS3.AUTO_CONTENT_TYPE,
-      key: (req: Request, file, cb) => {
-        const fileName = `${folder}/${req.user.id}/${req.user.name}_${file.originalname}`;
+      key: (_req: Request, file, cb) => {
+        const fileName = `${folder}/${id}/${name}_${file.originalname}`;
         cb(null, fileName);
       },
     });
@@ -43,7 +43,7 @@ export class S3Service {
   }
 
   private checkFileType(
-    req: Request,
+    _req: Request,
     file: Express.MulterS3.File,
     cb: multer.FileFilterCallback
   ) {
@@ -53,16 +53,8 @@ export class S3Service {
     cb(null, true);
   }
 
-  private checkFilesType(
-    req: Request,
-    files: Express.MulterS3.File[],
-    cb: multer.FileFilterCallback
-  ) {
-    files.forEach((file) => this.checkFileType(req, file, cb));
-  }
-
-  public uploadSingle(folder: string) {
-    const storage = this.multerStorage(folder);
+  public uploadSingle(folder: string, id: string, name: string) {
+    const storage = this.multerStorage(folder, id, name);
 
     let uploadSingleFile = multer({
       storage,
@@ -73,8 +65,8 @@ export class S3Service {
     return util.promisify(uploadSingleFile);
   }
 
-  public uploadMultiple(folder: string) {
-    const storage = this.multerStorage(folder);
+  public uploadMultiple(folder: string, id: string, name: string) {
+    const storage = this.multerStorage(folder, id, name);
     let uploadMultipleFiles = multer({
       storage,
       limits: { fileSize: 1024 * 1024 * 3 },

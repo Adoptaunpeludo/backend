@@ -55,7 +55,7 @@ export class UserRoutes {
       '/upload-images',
       authMiddleware.authenticateUser,
       ValidationMiddleware.validate(FileUploadDto),
-      fileUploadMiddleware.multiple,
+      fileUploadMiddleware.multiple('users'),
       userController.uploadImages
     );
 
