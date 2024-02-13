@@ -232,6 +232,30 @@ export class UserService {
     return userEntity;
   }
 
+  private async buildImages(
+    images: string[],
+    deleteImages: string[],
+    files: Express.MulterS3.File[]
+  ) {
+    let resultImages: string[] = [];
+
+    if (images)
+      resultImages = images.filter((image) => !deleteImages.includes(image));
+
+    if (deleteImages.length > 0) await this.s3Service.deleteFiles(deleteImages);
+
+    if (files && files.length > 0) {
+      const uploadedImages = files.map((file) => file.key);
+      resultImages = [...resultImages, ...uploadedImages];
+    }
+
+    resultImages = resultImages.filter(
+      (image, index, array) => array.indexOf(image) === index
+    );
+
+    return resultImages;
+  }
+
   public async updateImages(
     files: Express.MulterS3.File[],
     user: PayloadUser,
@@ -248,14 +272,12 @@ export class UserService {
       },
     });
 
-    const images = userToUpdate?.shelter?.images;
+    if (!userToUpdate) throw new NotFoundError('User not found');
 
-    let resultImages: string[] = [];
+    if (!userToUpdate.shelter)
+      throw new BadRequestError('User is not a shelter');
 
-    if (images)
-      resultImages = images.filter((image) => !deleteImages.includes(image));
-
-    if (deleteImages.length > 0) await this.s3Service.deleteFiles(deleteImages);
+    const images = userToUpdate.shelter.images;
 
     let updateQuery: {
       avatar: string;
@@ -269,15 +291,7 @@ export class UserService {
       },
     };
 
-    if (files && files.length > 0) {
-      const uploadedImages = files.map((file) => file.key);
-      resultImages = [...resultImages, ...uploadedImages];
-    }
-
-    //* Remove duplicates
-    resultImages = resultImages.filter(
-      (image, index, array) => array.indexOf(image) === index
-    );
+    const resultImages = await this.buildImages(images, deleteImages, files);
 
     updateQuery.shelter.update.images = resultImages;
 

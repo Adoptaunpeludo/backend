@@ -258,18 +258,11 @@ export class AnimalService {
       await this.s3Service.deleteFiles(imagesToDelete);
   }
 
-  public async updateImages(
-    term: string,
-    files: Express.MulterS3.File[],
-    user: PayloadUser,
-    deleteImages: string[]
+  private async buildImages(
+    images: string[],
+    deleteImages: string[],
+    files: Express.MulterS3.File[]
   ) {
-    const animal = await this.getAnimalFromTerm(term);
-
-    CheckPermissions.check(user, animal.createdBy);
-
-    const images = animal.images;
-
     let resultImages: string[] = [];
 
     if (images)
@@ -285,6 +278,23 @@ export class AnimalService {
     resultImages = resultImages.filter(
       (image, index, array) => array.indexOf(image) === index
     );
+
+    return resultImages;
+  }
+
+  public async updateImages(
+    term: string,
+    files: Express.MulterS3.File[],
+    user: PayloadUser,
+    deleteImages: string[]
+  ) {
+    const animal = await this.getAnimalFromTerm(term);
+
+    CheckPermissions.check(user, animal.createdBy);
+
+    const images = animal.images;
+
+    const resultImages = await this.buildImages(images, deleteImages, files);
 
     await prisma.animal.update({
       where: { id: animal.id },
