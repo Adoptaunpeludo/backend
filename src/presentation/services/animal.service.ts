@@ -251,6 +251,11 @@ export class AnimalService {
     CheckPermissions.check(user, animal.createdBy);
 
     await prisma.animal.delete({ where: { id: animal.id } });
+
+    const imagesToDelete = animal.images.map((image) => image) || [];
+
+    if (imagesToDelete.length > 0)
+      await this.s3Service.deleteFiles(imagesToDelete);
   }
 
   public async updateImages(

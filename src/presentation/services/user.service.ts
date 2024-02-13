@@ -79,8 +79,6 @@ export class UserService {
     const imagesToDelete =
       userToDelete.shelter?.images.map((image) => image) || [];
 
-    console.log({ imagesToDelete });
-
     if (imagesToDelete.length > 0)
       await this.s3Service.deleteFiles(imagesToDelete);
   }
