@@ -42,7 +42,7 @@ export class S3Service {
     return storage;
   }
 
-  private checkFileType(
+  public checkFileType(
     _req: Request,
     file: Express.MulterS3.File,
     cb: multer.FileFilterCallback
@@ -53,17 +53,17 @@ export class S3Service {
     cb(null, true);
   }
 
-  public uploadSingle(folder: string, id: string, name: string) {
-    const storage = this.multerStorage(folder, id, name);
+  // public uploadSingle(folder: string, id: string, name: string) {
+  //   const storage = this.multerStorage(folder, id, name);
 
-    let uploadSingleFile = multer({
-      storage,
-      limits: { fileSize: 1024 * 1024 * 3 },
-      fileFilter: this.checkFileType,
-    }).single('avatar');
+  //   let uploadSingleFile = multer({
+  //     storage,
+  //     limits: { fileSize: 1024 * 1024 * 3 },
+  //     fileFilter: this.checkFileType,
+  //   }).single('avatar');
 
-    return util.promisify(uploadSingleFile);
-  }
+  //   return util.promisify(uploadSingleFile);
+  // }
 
   public uploadMultiple(folder: string, id: string, name: string) {
     const storage = this.multerStorage(folder, id, name);

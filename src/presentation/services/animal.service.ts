@@ -8,7 +8,6 @@ import {
   PaginationDto,
 } from '../../domain/dtos';
 import { AnimalResponse } from '../../domain/interfaces';
-import { IsUUID } from 'class-validator';
 import { PayloadUser } from '../../domain/interfaces/payload-user.interface';
 import { CheckPermissions } from '../../utils';
 import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';

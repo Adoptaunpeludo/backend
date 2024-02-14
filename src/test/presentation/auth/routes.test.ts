@@ -8,14 +8,7 @@ import { testServer } from '../../../presentation/test-server';
 import { UserRoles } from '../../../domain/interfaces';
 
 export const cleanDB = async () => {
-  await prisma.$transaction([
-    prisma.socialMedia.deleteMany(),
-    prisma.contactInfo.deleteMany(),
-    prisma.shelter.deleteMany(),
-    prisma.admin.deleteMany(),
-    prisma.token.deleteMany(),
-    prisma.user.deleteMany(),
-  ]);
+  await prisma.$transaction([prisma.user.deleteMany()]);
 };
 
 export interface TestUser {

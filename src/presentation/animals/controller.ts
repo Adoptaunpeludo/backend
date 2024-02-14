@@ -20,7 +20,7 @@ export class AnimalController {
       animal
     );
 
-    res.status(HttpCodes.OK).json(cat);
+    res.status(HttpCodes.CREATED).json(cat);
   };
 
   createDog = async (req: Request, res: Response) => {
@@ -36,7 +36,7 @@ export class AnimalController {
       animal
     );
 
-    res.status(HttpCodes.OK).json(dog);
+    res.status(HttpCodes.CREATED).json(dog);
   };
 
   getAll = async (req: Request, res: Response) => {

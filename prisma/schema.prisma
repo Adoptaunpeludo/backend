@@ -203,7 +203,7 @@ model Animal {
   cityId    Int
 
   adopter User?   @relation(name: "adopted", fields: [adoptedBy], references: [id])
-  shelter Shelter @relation(fields: [createdBy], references: [id])
+  shelter Shelter @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   city    City    @relation(fields: [cityId], references: [id])
   userFav User[]  @relation(name: "userFav")
   dog     Dog?
