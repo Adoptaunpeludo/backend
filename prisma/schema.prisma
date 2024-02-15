@@ -1,10 +1,170 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["views"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String       @id @default(uuid())
+  email             String       @unique
+  password          String
+  username          String
+  emailValidated    Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @default(now())
+  avatar            String       @default("avatar.png")
+  role              user_roles
+  verificationToken String       @default("")
+  passwordToken     String       @default("")
+  dni               String
+  firstName         String
+  isOnline          Boolean      @default(false)
+  lastName          String
+  verifiedAt        DateTime?
+  admin             Admin?
+  animals           Animal[]     @relation("adopted")
+  contactInfo       ContactInfo?
+  shelter           Shelter?
+  Token             Token?
+  userFav           Animal[]     @relation("userFav")
+}
+
+model Token {
+  id           String  @id @default(uuid())
+  refreshToken String
+  ip           String
+  userAgent    String
+  isValid      Boolean @default(true)
+  userId       String  @unique
+  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Shelter {
+  id                   String        @id
+  description          String        @default("")
+  cif                  String
+  facilities           facilities?
+  images               String[]
+  legalForms           legal_forms?
+  ownVet               Boolean?
+  veterinaryFacilities Boolean?
+  animals              Animal[]
+  user                 User          @relation(fields: [id], references: [id], onDelete: Cascade)
+  socialMedia          SocialMedia[]
+}
+
+model Admin {
+  id   String @id
+  name String
+  user User   @relation(fields: [id], references: [id])
+}
+
+model ContactInfo {
+  id          String @id
+  phoneNumber String
+  address     String
+  cityId      Int
+  city        City   @relation(fields: [cityId], references: [id])
+  user        User   @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model SocialMedia {
+  name      social_media_enum
+  url       String
+  shelterId String
+  shelter   Shelter           @relation(fields: [shelterId], references: [id], onDelete: Cascade)
+
+  @@id([shelterId, name])
+}
+
+model City {
+  id          Int           @id @default(autoincrement())
+  name        String
+  animal      Animal[]
+  contactInfo ContactInfo[]
+}
+
+model Animal {
+  id            String                  @id @default(uuid())
+  name          String
+  slug          String                  @unique
+  age           Float
+  description   String                  @default("")
+  breed         String
+  size          animal_size
+  publishStatus adoption_publish_status @default(pending)
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @default(now())
+  adoptedBy     String?
+  createdBy     String
+  cityId        Int
+  images        String[]
+  easyTrain     Boolean
+  energyLevel   energy
+  moltingAmount molting
+  status        status_pet              @default(awaiting_home)
+  type          animal_type
+  gender        gender_enum
+  adopter       User?                   @relation("adopted", fields: [adoptedBy], references: [id])
+  city          City                    @relation(fields: [cityId], references: [id])
+  shelter       Shelter                 @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  cat           Cat?
+  dog           Dog?
+  userFav       User[]                  @relation("userFav")
+
+  @@index([gender])
+  @@index([name])
+  @@index([age])
+  @@index([size])
+  @@index([createdBy])
+}
+
+model Dog {
+  id                String    @id
+  departmentAdapted Boolean
+  droolingPotential potential
+  bark              potential
+  animal            Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model Cat {
+  id               String    @id
+  playLevel        potential
+  kidsFriendly     Boolean
+  scratchPotential potential
+  toiletTrained    Boolean
+  animal           Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+view UserInfo {
+  id                   String             @unique
+  email                String?
+  username             String?
+  firstName            String?
+  lastName             String?
+  dni                  String?
+  role                 user_roles?
+  createdAt            DateTime?
+  updatedAt            DateTime?
+  verifiedAt           DateTime?
+  avatar               String?
+  isOnline             Boolean?
+  description          String?
+  cif                  String?
+  legalForms           legal_forms?
+  veterinaryFacilities Boolean?
+  facilities           facilities?
+  ownVet               Boolean?
+  images               String[]
+  phoneNumber          String?
+  address              String?
+  city                 String?
+  name                 social_media_enum?
+  url                  String?
 }
 
 enum user_roles {
@@ -84,151 +244,4 @@ enum potential {
 enum animal_type {
   cat
   dog
-}
-
-//* TODO ONDELETE CASCADE
-model User {
-  id                String     @id @default(uuid())
-  email             String     @unique
-  password          String
-  username          String
-  firstName         String
-  lastName          String
-  dni               String
-  emailValidated    Boolean    @default(false)
-  verificationToken String     @default("")
-  passwordToken     String     @default("")
-  role              user_roles
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @default(now())
-  verifiedAt        DateTime?
-  avatar            String     @default("avatar.png")
-  isOnline          Boolean    @default(false)
-
-  shelter     Shelter?
-  admin       Admin?
-  animals     Animal[]     @relation(name: "adopted")
-  contactInfo ContactInfo?
-  Token       Token?
-  userFav     Animal[]     @relation(name: "userFav")
-}
-
-// model UserFav {
-//   User     User?   @relation(fields: [userId], references: [id])
-//   userId   String
-//   Animal   Animal? @relation(fields: [animalId], references: [id])
-//   animalId String
-
-//   @@id([userId, animalId])
-// }
-
-model Token {
-  id           String  @id @default(uuid())
-  refreshToken String
-  ip           String
-  userAgent    String
-  isValid      Boolean @default(true)
-  userId       String  @unique
-  user         User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Shelter {
-  id                   String       @id
-  description          String       @default("")
-  cif                  String
-  legalForms           legal_forms?
-  veterinaryFacilities Boolean?
-  facilities           facilities?
-  ownVet               Boolean?
-  images               String[]
-
-  user        User          @relation(fields: [id], references: [id], onDelete: Cascade)
-  socialMedia SocialMedia[]
-  animals     Animal[]
-}
-
-model Admin {
-  id   String @id
-  name String
-  user User   @relation(fields: [id], references: [id])
-}
-
-model ContactInfo {
-  id          String @id
-  phoneNumber String
-  address     String
-  cityId      Int
-  user        User   @relation(fields: [id], references: [id], onDelete: Cascade)
-  city        City   @relation(fields: [cityId], references: [id])
-}
-
-model SocialMedia {
-  name      social_media_enum
-  url       String
-  shelterId String
-  shelter   Shelter           @relation(fields: [shelterId], references: [id], onDelete: Cascade)
-
-  @@id([shelterId, name])
-}
-
-model City {
-  id          Int           @id @default(autoincrement())
-  name        String
-  contactInfo ContactInfo[]
-  animal      Animal[]
-}
-
-model Animal {
-  id            String                  @id @default(uuid())
-  gender        gender_enum
-  name          String
-  type          animal_type
-  slug          String                  @unique
-  age           Float
-  description   String                  @default("")
-  breed         String
-  size          animal_size
-  publishStatus adoption_publish_status @default(pending)
-  status        status_pet              @default(awaiting_home)
-  easyTrain     Boolean
-  energyLevel   energy
-  moltingAmount molting
-  images        String[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  adoptedBy String?
-  createdBy String
-  cityId    Int
-
-  adopter User?   @relation(name: "adopted", fields: [adoptedBy], references: [id])
-  shelter Shelter @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  city    City    @relation(fields: [cityId], references: [id])
-  userFav User[]  @relation(name: "userFav")
-  dog     Dog?
-  cat     Cat?
-
-  @@index([gender])
-  @@index([name])
-  @@index([age])
-  @@index([size])
-  @@index([createdBy])
-}
-
-model Dog {
-  id                String    @id
-  departmentAdapted Boolean
-  droolingPotential potential
-  bark              potential
-  animal            Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
-}
-
-model Cat {
-  id               String    @id
-  playLevel        potential
-  kidsFriendly     Boolean
-  toiletTrained    Boolean
-  scratchPotential potential
-  animal           Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
 }

@@ -55,6 +55,12 @@ export class UserService {
 
     if (!user) throw new NotFoundError('User not found');
 
+    const viewUser = await prisma.userInfo.findUnique({
+      where: { id: user.id },
+    });
+
+    console.log({ viewUser });
+
     return user;
   }
 
