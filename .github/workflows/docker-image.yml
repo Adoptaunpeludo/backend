@@ -77,15 +77,15 @@ jobs:
 
     - name: Move to project folder
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'cd backend/ && sudo docker compose down'
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'cd backend/ && sudo docker compose down'
 
     - name: Remove old image
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'sudo docker image rm -f backend-aup-backend:latest'
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'sudo docker image rm -f backend-aup-backend:latest'
 
     - name: Run new containers
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.82.157.13 'cd backend/ && git pull && sudo docker compose up -d'
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'cd backend/ && git pull && sudo docker compose up -d'
     
     
 
