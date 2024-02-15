@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 
 import { CustomAPIError } from '../../domain/errors';
 import { HttpCodes } from '../../config';
+import { MulterError } from 'multer';
 
 export class ErrorHandlerMiddleware {
   static handle(err: Error, _req: Request, res: Response, _next: NextFunction) {
@@ -16,6 +17,11 @@ export class ErrorHandlerMiddleware {
 
     if (err instanceof CustomAPIError) {
       statusCode = err.statusCode;
+      message = err.message;
+    }
+
+    if (err instanceof MulterError) {
+      statusCode = HttpCodes.BAD_REQUEST;
       message = err.message;
     }
 

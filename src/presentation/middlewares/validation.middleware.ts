@@ -9,7 +9,8 @@ import { AnimalFilterDto, PaginationDto } from '../../domain';
 export class ValidationMiddleware {
   static validate(type: any, skipMissingProperties = false): RequestHandler {
     return (req, res, next) => {
-      const { user, ...body } = req.body;
+      const body = req.body;
+      const user = req.user;
       const { page, limit, ...filters } = req.query;
 
       let dtoObj = {};
@@ -51,7 +52,7 @@ export class ValidationMiddleware {
             req.query = { ...dtoObj, ...{ page, limit } };
           } else req.body = dtoObj;
 
-          req.body.user = user;
+          req.user = user;
           next();
         }
       });

@@ -1,11 +1,11 @@
 import 'express-async-errors';
 import express, { Request, Response, Router } from 'express';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
 import { envs } from '../config';
 import { prisma } from '../data/postgres';
-import path from 'path';
 
 interface Options {
   port: number;
@@ -15,7 +15,7 @@ interface Options {
 
 export class Server {
   public readonly app = express();
-  private serverListener?: any;
+  public serverListener?: any;
   private readonly port: number;
   private readonly publicPath: string;
   private readonly routes: Router;

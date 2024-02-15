@@ -15,9 +15,9 @@ export class UserController {
   };
 
   getUser = async (req: Request, res: Response) => {
-    const { email, role } = req.body.user;
+    const { email, role } = req.user;
 
-    const user = await this.userService.getCurrentUser(email, role);
+    const user = await this.userService.getCurrentUser(email, role!);
 
     const userEntity = UserEntity.fromObject(user);
 
@@ -25,9 +25,7 @@ export class UserController {
   };
 
   deleteUser = async (req: Request, res: Response) => {
-    const { email } = req.params;
-
-    await this.userService.deleteUser(req.body.user, email);
+    await this.userService.deleteUser(req.user);
 
     res.cookie('refreshToken', 'logout', {
       httpOnly: true,
@@ -43,10 +41,10 @@ export class UserController {
   };
 
   updateUser = async (req: Request, res: Response) => {
-    const { email } = req.params;
-    const { user, ...updates } = req.body;
+    const updates = req.body;
+    const { user } = req;
 
-    const updatedUser = await this.userService.updateUser(updates, user, email);
+    const updatedUser = await this.userService.updateUser(updates, user);
 
     res
       .status(HttpCodes.OK)
@@ -55,20 +53,41 @@ export class UserController {
 
   changePassword = async (req: Request, res: Response) => {
     const { oldPassword, newPassword } = req.body;
-    const { id } = req.body.user;
+    const { id } = req.user;
 
-    await this.userService.changePassword(oldPassword, newPassword, id);
+    await this.userService.changePassword(oldPassword, newPassword, id!);
 
     res.status(HttpCodes.OK).json({ message: 'Password updated' });
   };
 
   updateSocialMedia = async (req: Request, res: Response) => {
-    const { user, ...socialMediaDto } = req.body;
+    const updates = req.body;
+    const user = req.user;
 
-    await this.userService.updateSocialMedia(socialMediaDto, user.email);
+    await this.userService.updateSocialMedia(updates, user);
 
     res
       .status(HttpCodes.OK)
       .json({ message: 'Social media updated successfully' });
+  };
+
+  uploadImages = async (req: Request, res: Response) => {
+    const { files, user } = req;
+    const { deleteImages } = req.body;
+
+    let imagesToDelete: string[] = [];
+
+    if (deleteImages)
+      imagesToDelete = Array.isArray(deleteImages)
+        ? deleteImages
+        : [deleteImages];
+
+    await this.userService.updateImages(
+      files as Express.MulterS3.File[],
+      user,
+      imagesToDelete
+    );
+
+    res.status(HttpCodes.OK).json({ message: 'Images updated successfully' });
   };
 }

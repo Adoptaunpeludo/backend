@@ -270,7 +270,7 @@ describe('Api user routes testing', () => {
       const [accessToken, refreshToken] = loginResponse.headers['set-cookie'];
 
       const { body } = await request(testServer.app)
-        .delete(`${deleteUserRoute}/${user.email}`)
+        .delete(deleteUserRoute)
         .set('Cookie', accessToken)
         .set('Cookie', refreshToken)
         .expect(200);
@@ -306,51 +306,12 @@ describe('Api user routes testing', () => {
       const [accessToken, refreshToken] = loginResponse.headers['set-cookie'];
 
       const { body } = await request(testServer.app)
-        .delete(`${deleteUserRoute}/${user2.email}`)
+        .delete(deleteUserRoute)
         .set('Cookie', accessToken)
         .set('Cookie', refreshToken)
         .expect(200);
 
       expect(body).toEqual({ message: 'User deleted successfully' });
-    });
-
-    test('Should return an Unauthorized error any user, tries that is not admin, tries to delete an user diferent from him', async () => {
-      await prisma.user.create({
-        data: {
-          ...user2Rest,
-          emailValidated: true,
-          password: BcryptAdapter.hash(user2.password),
-        },
-      });
-      await prisma.user.create({
-        data: {
-          ...adminRest,
-          role: 'admin',
-          emailValidated: true,
-          password: BcryptAdapter.hash(admin.password),
-        },
-      });
-
-      const loginResponse = await request(testServer.app)
-        .post(loginRoute)
-        .send({
-          email: user2.email,
-          password: user2.password,
-        })
-        .expect(200);
-
-      const [accessToken, refreshToken] = loginResponse.headers['set-cookie'];
-
-      const { body } = await request(testServer.app)
-        .delete(`${deleteUserRoute}/${admin.email}`)
-        .set('Cookie', accessToken)
-        .set('Cookie', refreshToken)
-        .expect(403);
-
-      expect(body).toEqual({
-        name: 'Unauthorized',
-        message: 'Not authorized to access this route',
-      });
     });
   });
 
@@ -388,7 +349,7 @@ describe('Api user routes testing', () => {
       const [accessToken, refreshToken] = loginResponse.headers['set-cookie'];
 
       const { body } = await request(testServer.app)
-        .put(`${usersRoute}/${user.email}`)
+        .put(usersRoute)
         .set('Cookie', accessToken)
         .set('Cookie', refreshToken)
         .send({
@@ -426,7 +387,7 @@ describe('Api user routes testing', () => {
       const newPassword = 'testuser';
 
       const { body } = await request(testServer.app)
-        .post(changePasswordRoute)
+        .put(changePasswordRoute)
         .set('Cookie', accessToken)
         .set('Cookie', refreshToken)
         .send({ oldPassword: user.password, newPassword })

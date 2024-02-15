@@ -16,22 +16,11 @@ export class JWTAdapter {
     payload: JWTAdapterPayload,
 
     duration: string = '2h'
-  ): Promise<string | null> {
-    return new Promise((resolve) => {
-      jwt.sign(payload, this.seed, { expiresIn: duration }, (err, token) => {
-        if (err) return resolve(null);
-
-        if (token) resolve(token);
-      });
-    });
+  ) {
+    return jwt.sign(payload, this.seed, { expiresIn: duration });
   }
 
-  public validateToken(token: string): Promise<JWTAdapterPayload | null> {
-    return new Promise((resolve) => {
-      jwt.verify(token, this.seed, (err, decoded) => {
-        if (err) return resolve(null);
-        resolve(decoded as JWTAdapterPayload);
-      });
-    });
+  public validateToken(token: string): JWTAdapterPayload {
+    return jwt.verify(token, this.seed) as JWTAdapterPayload;
   }
 }

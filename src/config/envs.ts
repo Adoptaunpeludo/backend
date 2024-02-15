@@ -27,4 +27,11 @@ export const envs = {
   RABBITMQ_USER: get('RABBITMQ_USER').required().asString(),
   RABBITMQ_PASS: get('RABBITMQ_PASS').required().asString(),
   RABBITMQ_URL: get('RABBITMQ_URL').required().asString(),
+
+  //* AWS S3 BUCKET
+  AWS_ACCESS_KEY_ID: get('AWS_ACCESS_KEY_ID').required().asString(),
+  AWS_SECRET_ACCESS_KEY: get('AWS_SECRET_ACCESS_KEY').required().asString(),
+  AWS_REGION: get('AWS_REGION').required().asString(),
+  AWS_BUCKET: get('AWS_BUCKET').required().asString(),
+  AWS_BUCKET_URL: get('AWS_BUCKET_URL').required().asString(),
 };

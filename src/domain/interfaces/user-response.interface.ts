@@ -71,7 +71,7 @@ export interface Shelter {
   ownVet: boolean | null;
   images: any[];
   socialMedia: SocialMedia[];
-  animals: AnimalResponse[];
+  animals?: AnimalResponse[];
 }
 
 export interface SocialMedia {

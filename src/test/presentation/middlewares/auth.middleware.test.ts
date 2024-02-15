@@ -24,7 +24,7 @@ describe('auth.middleware.ts', () => {
   const jwt = new JWTAdapter('secret');
 
   test('should extract token from signed cookies, validate it using JWTAdapter, add user payload to request body, and call next()', async () => {
-    jwt.validateToken = jest.fn().mockResolvedValue({
+    jwt.validateToken = jest.fn().mockReturnValue({
       user: {
         id: '1',
         email: 'test@example.com',
@@ -41,12 +41,12 @@ describe('auth.middleware.ts', () => {
         accessToken: 'validAccessToken',
       },
       body: {},
-    } as Request;
+    } as unknown as Request;
 
     await authMiddleware.authenticateUser(req, res, next);
 
     expect(jwt.validateToken).toHaveBeenCalledWith('validAccessToken');
-    expect(req.body.user).toEqual({
+    expect((req as any).user).toEqual({
       id: '1',
       email: 'test@example.com',
       name: 'Test User',
@@ -56,7 +56,7 @@ describe('auth.middleware.ts', () => {
   });
 
   test('should attach new accessToken and refreshToken cookies to the response when only refreshToken cookie is present', async () => {
-    jwt.validateToken = jest.fn().mockResolvedValue({
+    jwt.validateToken = jest.fn().mockReturnValue({
       user: {
         id: '1',
         email: 'test@example.com',
@@ -65,7 +65,7 @@ describe('auth.middleware.ts', () => {
       },
     });
 
-    jwt.generateToken = jest.fn().mockResolvedValue('newToken');
+    jwt.generateToken = jest.fn().mockReturnValue('newToken');
 
     const authMiddleware = new AuthMiddleware(jwt);
 
@@ -96,12 +96,10 @@ describe('auth.middleware.ts', () => {
 
   test('should authorize user with admin role to access resource', () => {
     const req = {
-      body: {
-        user: {
-          role: 'admin',
-        },
+      user: {
+        role: 'admin',
       },
-    } as Request;
+    } as unknown as Request;
 
     const authMiddleware = new AuthMiddleware({} as JWTAdapter);
 
@@ -112,12 +110,10 @@ describe('auth.middleware.ts', () => {
 
   test('should authorize user with specified roles to access resource', () => {
     const req = {
-      body: {
-        user: {
-          role: 'adopter',
-        },
+      user: {
+        role: 'adopter',
       },
-    } as Request;
+    } as unknown as Request;
 
     const authMiddleware = new AuthMiddleware({} as JWTAdapter);
 
@@ -128,12 +124,10 @@ describe('auth.middleware.ts', () => {
 
   test('should not authorize user with specified roles to access resource', () => {
     const req = {
-      body: {
-        user: {
-          role: 'shelter',
-        },
+      user: {
+        role: 'shelter',
       },
-    } as Request;
+    } as unknown as Request;
 
     const authMiddleware = new AuthMiddleware({} as JWTAdapter);
 

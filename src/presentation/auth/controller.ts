@@ -42,7 +42,7 @@ export class AuthController {
   };
 
   logout = async (req: Request, res: Response) => {
-    await this.authService.logout(req.body.user.id);
+    await this.authService.logout(req.user.id!);
 
     res.cookie('refreshToken', 'logout', {
       httpOnly: true,

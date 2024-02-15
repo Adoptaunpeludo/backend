@@ -8,13 +8,13 @@ import {
   PaginationDto,
 } from '../../domain/dtos';
 import { AnimalResponse } from '../../domain/interfaces';
-import { IsUUID } from 'class-validator';
 import { PayloadUser } from '../../domain/interfaces/payload-user.interface';
 import { CheckPermissions } from '../../utils';
 import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
+import { S3Service } from './s3.service';
 
 export class AnimalService {
-  constructor() {}
+  constructor(private readonly s3Service: S3Service) {}
 
   public async createCat(
     userId: string,
@@ -111,6 +111,7 @@ export class AnimalService {
 
     return animal;
   }
+
   public async getSingle(term: string) {
     const animal = this.getAnimalFromTerm(term);
 
@@ -242,11 +243,61 @@ export class AnimalService {
 
     return 'Update Animal';
   }
+
   public async delete(user: PayloadUser, term: string) {
     const animal = await this.getAnimalFromTerm(term);
 
     CheckPermissions.check(user, animal.createdBy);
 
     await prisma.animal.delete({ where: { id: animal.id } });
+
+    const imagesToDelete = animal.images.map((image) => image) || [];
+
+    if (imagesToDelete.length > 0)
+      await this.s3Service.deleteFiles(imagesToDelete);
+  }
+
+  private async buildImages(
+    images: string[],
+    deleteImages: string[],
+    files: Express.MulterS3.File[]
+  ) {
+    let resultImages: string[] = [];
+
+    if (images)
+      resultImages = images.filter((image) => !deleteImages.includes(image));
+
+    if (deleteImages.length > 0) await this.s3Service.deleteFiles(deleteImages);
+
+    if (files && files.length > 0) {
+      const uploadedImages = files.map((file) => file.key);
+      resultImages = [...resultImages, ...uploadedImages];
+    }
+
+    resultImages = resultImages.filter(
+      (image, index, array) => array.indexOf(image) === index
+    );
+
+    return resultImages;
+  }
+
+  public async updateImages(
+    term: string,
+    files: Express.MulterS3.File[],
+    user: PayloadUser,
+    deleteImages: string[]
+  ) {
+    const animal = await this.getAnimalFromTerm(term);
+
+    CheckPermissions.check(user, animal.createdBy);
+
+    const images = animal.images;
+
+    const resultImages = await this.buildImages(images, deleteImages, files);
+
+    await prisma.animal.update({
+      where: { id: animal.id },
+      data: { images: resultImages },
+    });
   }
 }
