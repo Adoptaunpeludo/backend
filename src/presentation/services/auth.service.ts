@@ -35,6 +35,7 @@ export class AuthService {
       where: { email },
     });
 
+
     if (user)
       throw new BadRequestError(
         `Email ${registerUserDto.email} already exists, try another one`

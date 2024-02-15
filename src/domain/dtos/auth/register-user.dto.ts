@@ -18,7 +18,7 @@ enum UserTypes {
 export class RegisterUserDto {
   @IsString()
   @Trim()
-  @MinLength(3, { message: 'username should be minimum of 5 characters' })
+  @MinLength(3, { message: 'username should be minimum of 3 characters' })
   username!: string;
 
   @IsEmail({}, { message: 'email should be a valid email address' })
