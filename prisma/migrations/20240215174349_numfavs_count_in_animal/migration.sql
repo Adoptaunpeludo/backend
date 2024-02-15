@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Animal" ADD COLUMN     "numFavs" INTEGER NOT NULL DEFAULT 0;

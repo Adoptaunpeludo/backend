@@ -104,6 +104,7 @@ model Animal {
   cityId        Int
   images        String[]
   easyTrain     Boolean
+  numFavs       Int                     @default(0)
   energyLevel   energy
   moltingAmount molting
   status        status_pet              @default(awaiting_home)

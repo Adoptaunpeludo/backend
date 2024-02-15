@@ -234,14 +234,12 @@ export class AnimalService {
 
     const updateQuery = this.buildQuery(updateAnimalDto);
 
-    console.log({ updateQuery });
-
     const updatedAnimal = await prisma.animal.update({
       where: { id: animal.id },
       data: updateQuery,
     });
 
-    return 'Update Animal';
+    return updatedAnimal;
   }
 
   public async delete(user: PayloadUser, term: string) {
@@ -299,5 +297,22 @@ export class AnimalService {
       where: { id: animal.id },
       data: { images: resultImages },
     });
+  }
+
+  public async addToFavorites(animalId: string, userId: string) {
+    const animal = await prisma.animal.findUnique({ where: { id: animalId } });
+
+    if (!animal) throw new NotFoundError('Animal not found');
+
+    const newFav = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        userFav: {
+          connect: { id: animalId },
+        },
+      },
+    });
+
+    return newFav;
   }
 }
