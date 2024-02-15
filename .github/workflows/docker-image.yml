@@ -45,12 +45,10 @@ jobs:
         context: ./
         push: true
         dockerfile: ./Dockerfile
-        tags: jaderodev/aup-backend:$NEW_VERSION
+        tags: jaderodev/aup-backend:${{ env.NEW_VERSION }}
         
     - name: Build and push Docker Image
       uses: docker/build-push-action@v2
-      env: 
-        NEW_VERSION: ${{ steps.version.outputs.version }}
       with:
         context: ./
         push: true
