@@ -40,6 +40,18 @@ export class AnimalRoutes {
     router.get('/:term', animalController.getSingle);
 
     router.post(
+      '/add-favorite/:id',
+      authMiddleware.authenticateUser,
+      animalController.addFavorite
+    );
+
+    router.post(
+      '/remove-favorite/:id',
+      authMiddleware.authenticateUser,
+      animalController.removeFavorite
+    );
+
+    router.post(
       '/upload-images/:term',
       authMiddleware.authenticateUser,
       ValidationMiddleware.validate(FileUploadDto),
