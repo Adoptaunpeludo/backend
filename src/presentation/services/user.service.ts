@@ -1,4 +1,3 @@
-import { PrismaClient } from '@prisma/client';
 import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 import {
   BadRequestError,
@@ -33,7 +32,7 @@ export class UserService {
     });
   }
 
-  public async getCurrentUser(email: string, role: UserRoles) {
+  public async getCurrentUser(email: string) {
     const user = await prisma.user.findUnique({
       where: {
         email,
@@ -55,11 +54,34 @@ export class UserService {
 
     if (!user) throw new NotFoundError('User not found');
 
-    const viewUser = await prisma.userInfo.findUnique({
-      where: { id: user.id },
+    // const viewUser = await prisma.userInfo.findUnique({
+    //   where: { id: user.id },
+    // });
+
+    // console.log({ viewUser });
+
+    return user;
+  }
+
+  public async getSingleUser(id: string) {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      include: {
+        contactInfo: {
+          include: {
+            city: true,
+          },
+        },
+        shelter: {
+          include: {
+            socialMedia: true,
+            animals: { include: { cat: true, dog: true } },
+          },
+        },
+      },
     });
 
-    console.log({ viewUser });
+    if (!user) throw new NotFoundError('User not found');
 
     return user;
   }
@@ -233,9 +255,7 @@ export class UserService {
       },
     });
 
-    const userEntity = UserEntity.fromObject(updatedUser);
-
-    return userEntity;
+    return updatedUser;
   }
 
   private async buildImages(

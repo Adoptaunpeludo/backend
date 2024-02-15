@@ -27,33 +27,28 @@ export class UserRoutes {
     const userController = new UserController(userService);
     const fileUploadMiddleware = new FileUploadMiddleware(s3Service);
 
-    router.get('/me', authMiddleware.authenticateUser, userController.getUser);
+    router.use(authMiddleware.authenticateUser);
+
+    router.get('/me', userController.getCurrentUser);
+
+    router.get('/:id', userController.getSingleUser);
 
     router.get(
       '/',
-      authMiddleware.authenticateUser,
       // authMiddleware.authorizePermissions('admin'),
       userController.getAllUsers
     );
 
-    //* TODO: getSingle
-
-    router.delete(
-      '/',
-      authMiddleware.authenticateUser,
-      userController.deleteUser
-    );
+    router.delete('/', userController.deleteUser);
 
     router.put(
       '/',
-      authMiddleware.authenticateUser,
       ValidationMiddleware.validate(UpdateUserDto),
       userController.updateUser
     );
 
     router.post(
       '/upload-images',
-      authMiddleware.authenticateUser,
       ValidationMiddleware.validate(FileUploadDto),
       fileUploadMiddleware.multiple('users'),
       userController.uploadImages
@@ -61,14 +56,12 @@ export class UserRoutes {
 
     router.put(
       '/change-password',
-      authMiddleware.authenticateUser,
       ValidationMiddleware.validate(UpdatePasswordDto),
       userController.changePassword
     );
 
     router.put(
       '/update-social-media',
-      authMiddleware.authenticateUser,
       authMiddleware.authorizePermissions('shelter'),
       ValidationMiddleware.validate(UpdateSocialMediaDto),
       userController.updateSocialMedia
