@@ -28,7 +28,7 @@ export class AnimalEntity {
   }
 
   static fromObject(animalResponse: AnimalResponse) {
-    const { name: cityName } = animalResponse.city!;
+    const { name: city } = animalResponse.city!;
     const { avatar, username, isOnline } = animalResponse.shelter!.user!;
 
     const { id, images, name, age, gender, size, type, slug, numFavs } =
@@ -42,7 +42,7 @@ export class AnimalEntity {
       gender,
       size,
       type,
-      cityName,
+      city,
       images,
       numFavs,
       shelter: { avatar, username, isOnline },
