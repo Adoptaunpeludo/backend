@@ -31,7 +31,8 @@ export class AnimalEntity {
     const { name: cityName } = animalResponse.city!;
     const { avatar, username, isOnline } = animalResponse.shelter!.user!;
 
-    const { id, images, name, age, gender, size, type, slug } = animalResponse;
+    const { id, images, name, age, gender, size, type, slug, numFavs } =
+      animalResponse;
 
     return {
       id,
@@ -43,6 +44,7 @@ export class AnimalEntity {
       type,
       cityName,
       images,
+      numFavs,
       shelter: { avatar, username, isOnline },
     };
   }
