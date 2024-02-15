@@ -41,7 +41,7 @@ jobs:
 
     - name: Print Version
       run: |
-        echo "New version: $NEW_VERSION
+        echo "New version: $NEW_VERSION !!!!!!!!!!!!!!!!"
 
 
 
