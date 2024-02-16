@@ -321,6 +321,7 @@ export class AnimalService {
     if (alreadyFav && alreadyFav.userFav.length > 0)
       throw new BadRequestError('Already in favorites');
 
+    //* TODO: Prisma transition
     await prisma.animal.update({
       where: { id: animalId },
       data: {
@@ -355,6 +356,7 @@ export class AnimalService {
     if (notFav && notFav.userFav.length === 0)
       throw new BadRequestError('Not in favorites yet');
 
+    //* TODO: Prisma transition
     await prisma.animal.update({
       where: { id: animalId },
       data: {
