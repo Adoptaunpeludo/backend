@@ -8,6 +8,7 @@ FROM node:21-alpine as builder
 WORKDIR /app
 COPY --from=deps /app/node_modules node_modules
 COPY . .
+RUN npm run migrate dev
 RUN npm run build
 
 FROM node:21-alpine as backend
@@ -17,6 +18,5 @@ COPY ./package.json .
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/public ./dist/public
-RUN npm run migrate dev
 CMD ["node", "dist/app.js"]
 
