@@ -18,7 +18,7 @@ export class AuthRoutes {
       envs.MAILER_SECRET_KEY
     );
 
-    const producer = new ProducerService(envs.RABBITMQ_URL, 'email-service');
+    const producer = new ProducerService(envs.RABBITMQ_URL);
 
     const authService = new AuthService(
       jwt,
