@@ -107,7 +107,7 @@ export class UserService {
     await prisma.user.delete({ where: { email: userToDelete.email } });
 
     const imagesToDelete =
-      userToDelete.shelter?.images.map((image) => image) || [];
+      userToDelete.shelter?.images.map((image: string) => image) || [];
 
     if (imagesToDelete.length > 0)
       await this.s3Service.deleteFiles(imagesToDelete);

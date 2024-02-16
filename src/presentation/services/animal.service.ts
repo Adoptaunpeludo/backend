@@ -252,7 +252,7 @@ export class AnimalService {
 
     const emails = (favs && favs.userFav.map((user) => user.email)) || [];
 
-    emails?.forEach((email) =>
+    emails?.forEach((email: string) =>
       this.producerService.addToEmailQueue(
         { ...updateQuery, email },
         'animal-changed-notification'
