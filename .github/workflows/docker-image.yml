@@ -22,68 +22,72 @@ jobs:
         
     - name: Git Semantic Version
       uses: PaulHatch/semantic-version@v5.4.0
-      with: 
+      with:
         major_pattern: "major:"
         minor_pattern: "feat:"
-        version_format: "${major}.${minor}.${patch}-prerelease${increment}"
+        format: "${major}.${minor}.${patch}-prerelease${increment}"
       id: version
       
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-      
-    - name: Docker auth
-      uses: docker/login-action@v1
-      with:
-        username: ${{ env.DOCKER_USER }}
-        password: ${{ env.DOCKER_PASSWORD }}
-
-    - name: Build and push Docker Image
-      uses: docker/build-push-action@v2
-      env: 
-        NEW_VERSION: ${{ steps.version.outputs.version }}
-      with:
-        context: ./
-        push: true
-        dockerfile: ./Dockerfile
-        tags: jaderodev/aup-backend:${{ env.NEW_VERSION }}
+    - name: Echo
+      run: |
+        echo ${{ steps.version.outputs.version }}
         
-    - name: Build and push Docker Image
-      uses: docker/build-push-action@v2
-      with:
-        context: ./
-        push: true
-        dockerfile: ./Dockerfile
-        tags: jaderodev/aup-backend:latest
+    # - name: Set up Docker Buildx
+    #   uses: docker/setup-buildx-action@v1
+      
+  #   - name: Docker auth
+  #     uses: docker/login-action@v1
+  #     with:
+  #       username: ${{ env.DOCKER_USER }}
+  #       password: ${{ env.DOCKER_PASSWORD }}
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+  #   - name: Build and push Docker Image
+  #     uses: docker/build-push-action@v2
+  #     env: 
+  #       NEW_VERSION: ${{ steps.version.outputs.version }}
+  #     with:
+  #       context: ./
+  #       push: true
+  #       dockerfile: ./Dockerfile
+  #       tags: jaderodev/aup-backend:${{ env.NEW_VERSION }}
+        
+  #   - name: Build and push Docker Image
+  #     uses: docker/build-push-action@v2
+  #     with:
+  #       context: ./
+  #       push: true
+  #       dockerfile: ./Dockerfile
+  #       tags: jaderodev/aup-backend:latest
 
-    - name: Docker auth
-      uses: docker/login-action@v1
-      with:
-        username: ${{ env.DOCKER_USER }}
-        password: ${{ env.DOCKER_PASSWORD }}
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v3
 
-    - name: Set permissions for private key
-      run: |
-        echo "${{ secrets.AWS_PRIVATE_KEY }}" > key.pem
-        chmod 600 key.pem
+  #   - name: Docker auth
+  #     uses: docker/login-action@v1
+  #     with:
+  #       username: ${{ env.DOCKER_USER }}
+  #       password: ${{ env.DOCKER_PASSWORD }}
 
-    - name: Move to project folder
-      run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'cd backend/ && sudo docker compose down'
+  #   - name: Set permissions for private key
+  #     run: |
+  #       echo "${{ secrets.AWS_PRIVATE_KEY }}" > key.pem
+  #       chmod 600 key.pem
 
-    - name: Remove old image
-      run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'sudo docker image rm -f backend-aup-backend:latest'
+  #   - name: Move to project folder
+  #     run: |
+  #       ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'cd backend/ && sudo docker compose down'
 
-    - name: Run new containers
-      run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'cd backend/ && git pull && sudo docker compose up -d'
+  #   - name: Remove old image
+  #     run: |
+  #       ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'sudo docker image rm -f backend-aup-backend:latest'
+
+  #   - name: Run new containers
+  #     run: |
+  #       ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'cd backend/ && git pull && sudo docker compose up -d'
     
     
 
