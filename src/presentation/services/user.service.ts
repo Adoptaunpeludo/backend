@@ -362,6 +362,7 @@ export class UserService {
         take: limit,
         where: {
           ...filters,
+          userFav: { some: { id: user.id } },
         },
         include: {
           shelter: {

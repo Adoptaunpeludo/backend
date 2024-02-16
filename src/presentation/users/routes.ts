@@ -9,7 +9,6 @@ import { UpdatePasswordDto } from '../../domain/dtos/auth/update-password.dto';
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { S3Service } from '../services/s3.service';
 import { FileUploadMiddleware } from '../middlewares/file-upload.middleware';
-import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 
 export class UserRoutes {
   static get routes() {

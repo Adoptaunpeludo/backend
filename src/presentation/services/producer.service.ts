@@ -16,15 +16,11 @@ export class ProducerService {
         });
       },
     });
+    console.log('email-request Exchange created');
   }
 
   async addToEmailQueue(payload: any, queue: string) {
     try {
-      // await this.channelWrapper.sendToQueue(
-      //   queue,
-      //   Buffer.from(JSON.stringify(payload)),
-      //   { persistent: true }
-      // );
       await this.channelWrapper.publish(
         this.EXCHANGE,
         queue,
