@@ -234,14 +234,12 @@ export class AnimalService {
 
     const updateQuery = this.buildQuery(updateAnimalDto);
 
-    console.log({ updateQuery });
-
     const updatedAnimal = await prisma.animal.update({
       where: { id: animal.id },
       data: updateQuery,
     });
 
-    return 'Update Animal';
+    return updatedAnimal;
   }
 
   public async delete(user: PayloadUser, term: string) {
@@ -302,6 +300,7 @@ export class AnimalService {
   }
 
   public async addFavorite(userId: string, animalId: string) {
+
     const animal = await prisma.animal.findUnique({ where: { id: animalId } });
 
     if (!animal) throw new NotFoundError('Animal not found');

@@ -90,6 +90,12 @@ export class AnimalRoutes {
       animalController.delete
     );
 
+    router.post(
+      '/:id/add-favorite',
+      authMiddleware.authenticateUser,
+      animalController.addToFavorites
+    );
+
     return router;
   }
 }
