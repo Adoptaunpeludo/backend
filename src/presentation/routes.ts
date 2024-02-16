@@ -1,5 +1,4 @@
-import { AuthMiddleware } from './middlewares/auth.middleware';
-import { Response, Router } from 'express';
+import { Router } from 'express';
 import { AuthRoutes } from './auth/routes';
 import { UserRoutes } from './users/routes';
 import { AnimalRoutes } from './animals/routes';

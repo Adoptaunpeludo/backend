@@ -14,10 +14,20 @@ export class UserController {
     res.status(HttpCodes.OK).json(userEntities);
   };
 
-  getUser = async (req: Request, res: Response) => {
-    const { email, role } = req.user;
+  getCurrentUser = async (req: Request, res: Response) => {
+    const { email } = req.user;
 
-    const user = await this.userService.getCurrentUser(email, role!);
+    const user = await this.userService.getCurrentUser(email);
+
+    const userEntity = UserEntity.fromObject(user);
+
+    res.status(HttpCodes.OK).json(userEntity);
+  };
+
+  getSingleUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const user = await this.userService.getSingleUser(id);
 
     const userEntity = UserEntity.fromObject(user);
 
@@ -46,9 +56,11 @@ export class UserController {
 
     const updatedUser = await this.userService.updateUser(updates, user);
 
+    const userEntity = UserEntity.fromObject(updatedUser);
+
     res
       .status(HttpCodes.OK)
-      .json({ message: 'User updated successfully', user: updatedUser });
+      .json({ message: 'User updated successfully', user: userEntity });
   };
 
   changePassword = async (req: Request, res: Response) => {

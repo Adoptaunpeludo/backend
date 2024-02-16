@@ -103,10 +103,18 @@ export class AnimalController {
     res.status(HttpCodes.OK).json({ message: 'Images updated successfully' });
   };
 
-  addToFavorites = async (req: Request, res: Response) => {
+  addFavorite = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    const response = await this.animalService.addToFavorites(id, req.user.id!);
+    const response = await this.animalService.addFavorite(req.user.id!, id);
+
+    res.status(HttpCodes.OK).json(response);
+  };
+
+  removeFavorite = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    const response = await this.animalService.removeFavorite(req.user.id!, id);
 
     res.status(HttpCodes.OK).json(response);
   };

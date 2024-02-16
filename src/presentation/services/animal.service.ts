@@ -1,6 +1,6 @@
 import { UUID } from '../../config/uuid.adapter';
 import { prismaWithSlugExtension as prisma } from '../../data/postgres';
-import { NotFoundError } from '../../domain';
+import { BadRequestError, NotFoundError } from '../../domain';
 import {
   AnimalFilterDto,
   CreateCatDto,
@@ -299,20 +299,77 @@ export class AnimalService {
     });
   }
 
-  public async addToFavorites(animalId: string, userId: string) {
+  public async addFavorite(userId: string, animalId: string) {
+
     const animal = await prisma.animal.findUnique({ where: { id: animalId } });
 
     if (!animal) throw new NotFoundError('Animal not found');
 
-    const newFav = await prisma.user.update({
-      where: { id: userId },
-      data: {
+    if (animal.createdBy === userId)
+      throw new BadRequestError('Cant add own animal to favorites');
+
+    const alreadyFav = await prisma.animal.findUnique({
+      where: { id: animalId },
+      include: {
         userFav: {
-          connect: { id: animalId },
+          where: { id: userId },
         },
       },
     });
 
-    return newFav;
+    if (alreadyFav && alreadyFav.userFav.length > 0)
+      throw new BadRequestError('Already in favorites');
+
+    //* TODO: Prisma transition
+    await prisma.animal.update({
+      where: { id: animalId },
+      data: {
+        userFav: {
+          connect: { id: userId },
+        },
+      },
+    });
+
+    const updatedFavs = await prisma.animal.update({
+      where: { id: animalId },
+      data: { numFavs: { increment: 1 } },
+    });
+
+    return updatedFavs;
+  }
+
+  public async removeFavorite(userId: string, animalId: string) {
+    const animal = await prisma.animal.findUnique({ where: { id: animalId } });
+
+    if (!animal) throw new NotFoundError('Animal not found');
+
+    const notFav = await prisma.animal.findUnique({
+      where: { id: animalId },
+      include: {
+        userFav: {
+          where: { id: userId },
+        },
+      },
+    });
+
+    if (notFav && notFav.userFav.length === 0)
+      throw new BadRequestError('Not in favorites yet');
+
+    //* TODO: Prisma transition
+    await prisma.animal.update({
+      where: { id: animalId },
+      data: {
+        userFav: {
+          disconnect: { id: userId },
+        },
+      },
+    });
+
+    const updatedFavs = await prisma.animal.update({
+      where: { id: animalId },
+      data: { numFavs: { decrement: 1 } },
+    });
+
+    return updatedFavs;
   }
 }

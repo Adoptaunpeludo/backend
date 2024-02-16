@@ -66,6 +66,7 @@ export interface AnimalResponse {
   breed: string;
   size: animalSize;
   publishStatus: animalPublishStatus;
+  numFavs: number;
   status: string;
   easyTrain: boolean;
   energyLevel: animalEnergy;
