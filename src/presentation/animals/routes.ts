@@ -52,7 +52,7 @@ export class AnimalRoutes {
       animalController.addFavorite
     );
 
-    router.post(
+    router.delete(
       '/remove-favorite/:id',
       authMiddleware.authenticateUser,
       animalController.removeFavorite

@@ -397,7 +397,7 @@ export class UserService {
   }
 
   public async getUserAnimals(
-    user: PayloadUser,
+    id: string,
     paginationDto: PaginationDto,
     animalFilterDto: AnimalFilterDto
   ) {
@@ -406,13 +406,13 @@ export class UserService {
     const filters = this.mapFilters(animalFilterDto);
 
     const [total, animals] = await prisma.$transaction([
-      prisma.animal.count({ where: { ...filters, createdBy: user.id } }),
+      prisma.animal.count({ where: { ...filters, createdBy: id } }),
       prisma.animal.findMany({
         skip: (page - 1) * limit,
         take: limit,
         where: {
           ...filters,
-          createdBy: user.id,
+          createdBy: id,
         },
         include: {
           shelter: {

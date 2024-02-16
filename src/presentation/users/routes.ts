@@ -43,7 +43,7 @@ export class UserRoutes {
     );
 
     router.get(
-      '/user-animals',
+      '/user-animals/:id',
       authMiddleware.authenticateUser,
       // authMiddleware.authorizePermissions('shelter'),
       userController.getUserAnimals
