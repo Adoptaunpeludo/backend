@@ -117,4 +117,18 @@ export class UserController {
 
     res.status(HttpCodes.OK).json({ ...pagination, animalsEntities });
   };
+
+  getUserAnimals = async (req: Request, res: Response) => {
+    const { limit = 10, page = 1, ...filters } = req.query;
+
+    const { animals, ...pagination } = await this.userService.getUserAnimals(
+      req.user,
+      { limit: +limit, page: +page },
+      filters
+    );
+
+    const animalsEntities = AnimalEntity.fromArray(animals);
+
+    res.status(HttpCodes.OK).json({ ...pagination, animalsEntities });
+  };
 }

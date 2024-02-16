@@ -395,4 +395,54 @@ export class UserService {
       animals,
     };
   }
+
+  public async getUserAnimals(
+    user: PayloadUser,
+    paginationDto: PaginationDto,
+    animalFilterDto: AnimalFilterDto
+  ) {
+    const { limit = 10, page = 1 } = paginationDto;
+
+    const filters = this.mapFilters(animalFilterDto);
+
+    const [total, animals] = await prisma.$transaction([
+      prisma.animal.count({ where: { ...filters, createdBy: user.id } }),
+      prisma.animal.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where: {
+          ...filters,
+          createdBy: user.id,
+        },
+        include: {
+          shelter: {
+            include: {
+              user: {
+                select: { avatar: true, username: true, isOnline: true },
+              },
+            },
+          },
+          city: true,
+          cat: true,
+          dog: true,
+        },
+      }),
+    ]);
+
+    const maxPages = Math.ceil(total / limit);
+
+    return {
+      currentPage: page,
+      maxPages,
+      limit,
+      total,
+      next:
+        page + 1 <= maxPages
+          ? `/api/animals?page=${page + 1}&limit=${limit}`
+          : null,
+      prev:
+        page - 1 > 0 ? `/api/animals?page=${page - 1}&limit=${limit}` : null,
+      animals,
+    };
+  }
 }

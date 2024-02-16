@@ -36,6 +36,12 @@ export class UserRoutes {
       userController.getUserFavorites
     );
 
+    router.get(
+      '/user-animals',
+      authMiddleware.authenticateUser,
+      userController.getUserAnimals
+    );
+
     router.get('/:id', userController.getSingleUser);
 
     router.get(
