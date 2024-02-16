@@ -9,3 +9,4 @@ export * from './animals/create-animal.dto';
 export * from './shared/pagination/pagination.dto';
 export * from './animals/animal-filter.dto';
 export * from './shared/file-upload/file-upload.dto';
+export * from './animals/update-animal.dto';

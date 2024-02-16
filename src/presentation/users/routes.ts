@@ -1,14 +1,19 @@
 import { Router } from 'express';
+
 import { UserController } from './controller';
 import { JWTAdapter, envs } from '../../config';
-import { AuthMiddleware } from '../middlewares/auth.middleware';
-import { UserService } from '../services';
-import { ValidationMiddleware } from '../middlewares';
-import { FileUploadDto, UpdateUserDto } from '../../domain';
-import { UpdatePasswordDto } from '../../domain/dtos/auth/update-password.dto';
-import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
-import { S3Service } from '../services/s3.service';
-import { FileUploadMiddleware } from '../middlewares/file-upload.middleware';
+import {
+  AuthMiddleware,
+  ValidationMiddleware,
+  FileUploadMiddleware,
+} from '../middlewares';
+import {
+  FileUploadDto,
+  UpdateUserDto,
+  UpdatePasswordDto,
+  UpdateSocialMediaDto,
+} from '../../domain';
+import { UserService, S3Service } from '../services';
 
 export class UserRoutes {
   static get routes() {
@@ -33,12 +38,14 @@ export class UserRoutes {
     router.get(
       '/favorites',
       authMiddleware.authenticateUser,
+      // authMiddleware.authorizePermissions('adopter'),
       userController.getUserFavorites
     );
 
     router.get(
       '/user-animals',
       authMiddleware.authenticateUser,
+      // authMiddleware.authorizePermissions('shelter'),
       userController.getUserAnimals
     );
 
@@ -60,8 +67,10 @@ export class UserRoutes {
 
     router.post(
       '/upload-images',
-      ValidationMiddleware.validate(FileUploadDto),
-      fileUploadMiddleware.multiple('users'),
+      [
+        ValidationMiddleware.validate(FileUploadDto),
+        fileUploadMiddleware.multiple('users'),
+      ],
       userController.uploadImages
     );
 
@@ -73,8 +82,10 @@ export class UserRoutes {
 
     router.put(
       '/update-social-media',
-      authMiddleware.authorizePermissions('shelter'),
-      ValidationMiddleware.validate(UpdateSocialMediaDto),
+      [
+        authMiddleware.authorizePermissions('shelter'),
+        ValidationMiddleware.validate(UpdateSocialMediaDto),
+      ],
       userController.updateSocialMedia
     );
 

@@ -1,18 +1,22 @@
 import { Router } from 'express';
+
 import { AnimalController } from './controller';
 import { AnimalService } from '../services/animal.service';
 import { JWTAdapter, envs } from '../../config';
-import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
+import {
+  AuthMiddleware,
+  ValidationMiddleware,
+  FileUploadMiddleware,
+} from '../middlewares';
 import {
   AnimalFilterDto,
   CreateCatDto,
   CreateDogDto,
   FileUploadDto,
   PaginationDto,
+  UpdateAnimalDto,
 } from '../../domain';
-import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
 import { ProducerService, S3Service } from '../services';
-import { FileUploadMiddleware } from '../middlewares/file-upload.middleware';
 
 export class AnimalRoutes {
   static get routes() {
@@ -33,8 +37,10 @@ export class AnimalRoutes {
 
     router.get(
       '/',
-      ValidationMiddleware.validate(PaginationDto),
-      ValidationMiddleware.validate(AnimalFilterDto),
+      [
+        ValidationMiddleware.validate(PaginationDto),
+        ValidationMiddleware.validate(AnimalFilterDto),
+      ],
       animalController.getAll
     );
 
@@ -54,40 +60,50 @@ export class AnimalRoutes {
 
     router.post(
       '/upload-images/:term',
-      authMiddleware.authenticateUser,
-      ValidationMiddleware.validate(FileUploadDto),
-      fileUploadMiddleware.multiple('animals'),
+      [
+        authMiddleware.authenticateUser,
+        ValidationMiddleware.validate(FileUploadDto),
+        fileUploadMiddleware.multiple('animals'),
+      ],
       animalController.uploadImages
     );
 
     router.post(
       '/cat',
-      authMiddleware.authenticateUser,
-      authMiddleware.authorizePermissions('shelter'),
-      ValidationMiddleware.validate(CreateCatDto),
+      [
+        authMiddleware.authenticateUser,
+        authMiddleware.authorizePermissions('shelter'),
+        ValidationMiddleware.validate(CreateCatDto),
+      ],
       animalController.createCat
     );
 
     router.post(
       '/dog',
-      authMiddleware.authenticateUser,
-      authMiddleware.authorizePermissions('shelter'),
-      ValidationMiddleware.validate(CreateDogDto),
+      [
+        authMiddleware.authenticateUser,
+        authMiddleware.authorizePermissions('shelter'),
+        ValidationMiddleware.validate(CreateDogDto),
+      ],
       animalController.createDog
     );
 
     router.put(
       '/:term',
-      authMiddleware.authenticateUser,
-      authMiddleware.authorizePermissions('shelter'),
-      ValidationMiddleware.validate(UpdateAnimalDto),
+      [
+        authMiddleware.authenticateUser,
+        authMiddleware.authorizePermissions('shelter'),
+        ValidationMiddleware.validate(UpdateAnimalDto),
+      ],
       animalController.update
     );
 
     router.delete(
       '/:term',
-      authMiddleware.authenticateUser,
-      authMiddleware.authorizePermissions('shelter'),
+      [
+        authMiddleware.authenticateUser,
+        authMiddleware.authorizePermissions('shelter'),
+      ],
       animalController.delete
     );
 

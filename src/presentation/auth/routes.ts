@@ -4,8 +4,12 @@ import { AuthController } from './controller';
 import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
 import { AuthService, EmailService, ProducerService } from '../services';
 import { JWTAdapter, envs } from '../../config';
-import { LoginUserDto, RegisterUserDto } from '../../domain';
-import { ForgotPasswordDto, ResetPasswordDto } from '../../domain/dtos';
+import {
+  LoginUserDto,
+  RegisterUserDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+} from '../../domain';
 
 export class AuthRoutes {
   static get routes() {
