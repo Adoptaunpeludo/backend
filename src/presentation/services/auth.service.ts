@@ -35,7 +35,6 @@ export class AuthService {
       where: { email },
     });
 
-
     if (user)
       throw new BadRequestError(
         `Email ${registerUserDto.email} already exists, try another one`
@@ -81,11 +80,14 @@ export class AuthService {
       },
     });
 
-    await this.producerService.addToEmailQueue({
-      email: createdUser.email,
-      verificationToken,
-      type: 'email',
-    });
+    await this.producerService.addToEmailQueue(
+      {
+        email: createdUser.email,
+        verificationToken,
+        type: 'email',
+      },
+      'verify-email'
+    );
 
     // Rollback in case there is an error sending the validation email
     // try {
@@ -103,7 +105,6 @@ export class AuthService {
   }
 
   private async validateCredentials(loginUserDto: LoginUserDto) {
-
     const user = await prisma.user.findUnique({
       where: { email: loginUserDto.email },
     });
@@ -247,11 +248,14 @@ export class AuthService {
 
     await prisma.user.update({ data: { passwordToken }, where: { email } });
 
-    await this.producerService.addToEmailQueue({
-      email,
-      passwordToken,
-      type: 'password',
-    });
+    await this.producerService.addToEmailQueue(
+      {
+        email,
+        passwordToken,
+        type: 'password',
+      },
+      'change-password'
+    );
 
     // try {
     //   await this.sendEmailValidationLink(email, passwordToken, 'password');
