@@ -79,19 +79,19 @@ services:
       AWS_BUCKET: ${AWS_BUCKET}
       AWS_BUCKET_URL: ${AWS_BUCKET_URL}
 
-  proxy:
-    build: ./nginx
-    depends_on:
-      - aup-backend
-    container_name: aup-backend-proxy
-    restart: always
-    ports:
-      - 80:80
-      - 443:443
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
-      - ./nginx/passwd/:/etc/nginx/passwd:ro
-      - ./nginx/letsencrypt/:/etc/letsencrypt/:ro
-      - ./nginx/certificates/certs/:/etc/nginx/certs:ro
-      - ./nginx/certificates/private/:/etc/nginx/private:ro
-      - ./nginx/logs/:/var/log/nginx/
+  # proxy:
+  #   build: ./nginx
+  #   depends_on:
+  #     - aup-backend
+  #   container_name: aup-backend-proxy
+  #   restart: always
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+  #     - ./nginx/passwd/:/etc/nginx/passwd:ro
+  #     - ./nginx/letsencrypt/:/etc/letsencrypt/:ro
+  #     - ./nginx/certificates/certs/:/etc/nginx/certs:ro
+  #     - ./nginx/certificates/private/:/etc/nginx/private:ro
+  #     - ./nginx/logs/:/var/log/nginx/
