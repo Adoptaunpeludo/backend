@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
 import { UserEntity } from '../../domain/entities/user.entity';
 import { UserService } from '../services/user.service';
+import { AnimalEntity } from '../../domain/entities/animals.entity';
 
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -112,6 +113,8 @@ export class UserController {
       filters
     );
 
-    res.status(HttpCodes.OK).json({ ...pagination, animals });
+    const animalsEntities = AnimalEntity.fromArray(animals);
+
+    res.status(HttpCodes.OK).json({ ...pagination, animalsEntities });
   };
 }
