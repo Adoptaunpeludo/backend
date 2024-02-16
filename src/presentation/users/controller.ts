@@ -102,4 +102,16 @@ export class UserController {
 
     res.status(HttpCodes.OK).json({ message: 'Images updated successfully' });
   };
+
+  getUserFavorites = async (req: Request, res: Response) => {
+    const { limit = 10, page = 1, ...filters } = req.query;
+
+    const { animals, ...pagination } = await this.userService.getFavorites(
+      req.user,
+      { limit: +limit, page: +page },
+      filters
+    );
+
+    res.status(HttpCodes.OK).json({ ...pagination, animals });
+  };
 }

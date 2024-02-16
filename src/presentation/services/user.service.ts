@@ -1,8 +1,10 @@
 import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 import {
+  AnimalFilterDto,
   BadRequestError,
   FileUploadDto,
   NotFoundError,
+  PaginationDto,
   UpdateUserDto,
   UserEntity,
 } from '../../domain';
@@ -327,5 +329,69 @@ export class UserService {
       where: { email: user.email },
       data: updateQuery,
     });
+  }
+
+  private mapFilters(animalFilterDto: AnimalFilterDto) {
+    let filters: any = {};
+
+    Object.entries(animalFilterDto).forEach(([key, value]) => {
+      if (key === 'age') {
+        if (value === 'puppy') filters.age = { gte: 0, lte: 2 };
+        if (value === 'adult') filters.age = { gte: 2, lte: 10 };
+        if (value === 'senior') filters.age = { gt: 10 };
+      }
+      filters[key] = value;
+    });
+
+    return filters;
+  }
+
+  async getFavorites(
+    user: PayloadUser,
+    paginationDto: PaginationDto,
+    animalFilterDto: AnimalFilterDto
+  ) {
+    const { limit = 10, page = 1 } = paginationDto;
+
+    const filters = this.mapFilters(animalFilterDto);
+
+    const [total, animals] = await prisma.$transaction([
+      prisma.animal.count({ where: { ...filters, createdBy: user.id } }),
+      prisma.animal.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where: {
+          ...filters,
+        },
+        include: {
+          shelter: {
+            include: {
+              user: {
+                select: { avatar: true, username: true, isOnline: true },
+              },
+            },
+          },
+          city: true,
+          cat: true,
+          dog: true,
+        },
+      }),
+    ]);
+
+    const maxPages = Math.ceil(total / limit);
+
+    return {
+      currentPage: page,
+      maxPages,
+      limit,
+      total,
+      next:
+        page + 1 <= maxPages
+          ? `/api/animals?page=${page + 1}&limit=${limit}`
+          : null,
+      prev:
+        page - 1 > 0 ? `/api/animals?page=${page - 1}&limit=${limit}` : null,
+      animals,
+    };
   }
 }
