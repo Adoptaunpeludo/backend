@@ -24,8 +24,8 @@ jobs:
       uses: PaulHatch/semantic-version@v5.4.0
       with:
         major_pattern: "major:"
-
-        format: "${major}.${minor}.${patch}-prerelease${increment}"
+        minor_pattern: "feat:"
+        version_format: "${major}.${minor}.${patch}-prerelease${increment}"
         search_commit_body: true
         change_path: "./"
       id: version
