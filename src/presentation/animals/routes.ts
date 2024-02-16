@@ -11,7 +11,7 @@ import {
   PaginationDto,
 } from '../../domain';
 import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
-import { S3Service } from '../services';
+import { ProducerService, S3Service } from '../services';
 import { FileUploadMiddleware } from '../middlewares/file-upload.middleware';
 
 export class AnimalRoutes {
@@ -26,8 +26,9 @@ export class AnimalRoutes {
       envs.AWS_SECRET_ACCESS_KEY,
       envs.AWS_BUCKET
     );
+    const producer = new ProducerService(envs.RABBITMQ_URL);
     const fileUploadMiddleware = new FileUploadMiddleware(s3Service);
-    const animalService = new AnimalService(s3Service);
+    const animalService = new AnimalService(s3Service, producer);
     const animalController = new AnimalController(animalService);
 
     router.get(

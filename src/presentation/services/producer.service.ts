@@ -18,7 +18,7 @@ export class ProducerService {
     });
   }
 
-  async addToEmailQueue(payload: any) {
+  async addToEmailQueue(payload: any, queue: string) {
     try {
       // await this.channelWrapper.sendToQueue(
       //   queue,
@@ -27,7 +27,7 @@ export class ProducerService {
       // );
       await this.channelWrapper.publish(
         this.EXCHANGE,
-        'verify-email',
+        queue,
         Buffer.from(JSON.stringify(payload)),
         { persistent: true }
       );

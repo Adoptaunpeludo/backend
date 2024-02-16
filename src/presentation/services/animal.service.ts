@@ -12,9 +12,13 @@ import { PayloadUser } from '../../domain/interfaces/payload-user.interface';
 import { CheckPermissions } from '../../utils';
 import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
 import { S3Service } from './s3.service';
+import { ProducerService } from './producer.service';
 
 export class AnimalService {
-  constructor(private readonly s3Service: S3Service) {}
+  constructor(
+    private readonly s3Service: S3Service,
+    private readonly producerService: ProducerService
+  ) {}
 
   public async createCat(
     userId: string,
@@ -239,6 +243,22 @@ export class AnimalService {
       data: updateQuery,
     });
 
+    const favs = await prisma.animal.findUnique({
+      where: { id: updatedAnimal.id },
+      include: {
+        userFav: true,
+      },
+    });
+
+    const emails = (favs && favs.userFav.map((user) => user.email)) || [];
+
+    emails?.forEach((email) =>
+      this.producerService.addToEmailQueue(
+        { ...updateQuery, email },
+        'animal-changed-notification'
+      )
+    );
+
     return updatedAnimal;
   }
 
@@ -300,7 +320,6 @@ export class AnimalService {
   }
 
   public async addFavorite(userId: string, animalId: string) {
-
     const animal = await prisma.animal.findUnique({ where: { id: animalId } });
 
     if (!animal) throw new NotFoundError('Animal not found');
