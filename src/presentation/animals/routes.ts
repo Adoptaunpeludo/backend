@@ -30,9 +30,20 @@ export class AnimalRoutes {
       envs.AWS_SECRET_ACCESS_KEY,
       envs.AWS_BUCKET
     );
-    const producer = new ProducerService(envs.RABBITMQ_URL);
+    const emailService = new ProducerService(
+      envs.RABBITMQ_URL,
+      'email-request'
+    );
+    const notificationService = new ProducerService(
+      envs.RABBITMQ_URL,
+      'notification-request'
+    );
     const fileUploadMiddleware = new FileUploadMiddleware(s3Service);
-    const animalService = new AnimalService(s3Service, producer);
+    const animalService = new AnimalService(
+      s3Service,
+      emailService,
+      notificationService
+    );
     const animalController = new AnimalController(animalService);
 
     router.get(
