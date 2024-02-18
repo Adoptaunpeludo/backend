@@ -66,5 +66,8 @@ const slugExtension = Prisma.defineExtension({
   },
 });
 
+export type PrismaSlugExtension = ReturnType<typeof slugExtension>;
+export type PrismaPasswordExtension = ReturnType<typeof passwordExtension>;
+
 export const prismaWithSlugExtension = prisma.$extends(slugExtension);
 export const prismaWithPasswordExtension = prisma.$extends(passwordExtension);

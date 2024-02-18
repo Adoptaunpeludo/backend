@@ -37,14 +37,12 @@ export class UserRoutes {
 
     router.get(
       '/favorites',
-      authMiddleware.authenticateUser,
       // authMiddleware.authorizePermissions('adopter'),
       userController.getUserFavorites
     );
 
     router.get(
       '/user-animals/:id',
-      authMiddleware.authenticateUser,
       // authMiddleware.authorizePermissions('shelter'),
       userController.getUserAnimals
     );

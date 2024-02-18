@@ -17,7 +17,8 @@ import { ProducerService } from './producer.service';
 export class AnimalService {
   constructor(
     private readonly s3Service: S3Service,
-    private readonly producerService: ProducerService
+    private readonly emailService: ProducerService,
+    private readonly notificationService: ProducerService
   ) {}
 
   public async createCat(
@@ -227,6 +228,38 @@ export class AnimalService {
     return query;
   }
 
+  //* TODO: Strong Type Query
+  private async sendNotifications(animalId: string, query: any) {
+    const favs = await prisma.animal.findUnique({
+      where: { id: animalId },
+      include: {
+        userFav: true,
+      },
+    });
+
+    const userData =
+      (favs &&
+        favs.userFav.map((user) => ({
+          email: user.email,
+          userId: user.id,
+          isOnline: user.isOnline,
+        }))) ||
+      [];
+
+    userData?.forEach(({ email, userId, isOnline }) => {
+      this.notificationService.addMessageToQueue(
+        { message: `Animal ${animalId} has changed`, userId },
+        'animal-changed-push-notification'
+      );
+
+      if (!isOnline)
+        this.emailService.addMessageToQueue(
+          { ...query, email },
+          'animal-changed-notification'
+        );
+    });
+  }
+
   public async update(
     updateAnimalDto: UpdateAnimalDto,
     user: PayloadUser,
@@ -243,21 +276,7 @@ export class AnimalService {
       data: updateQuery,
     });
 
-    const favs = await prisma.animal.findUnique({
-      where: { id: updatedAnimal.id },
-      include: {
-        userFav: true,
-      },
-    });
-
-    const emails = (favs && favs.userFav.map((user) => user.email)) || [];
-
-    emails?.forEach((email: string) =>
-      this.producerService.addToEmailQueue(
-        { ...updateQuery, email },
-        'animal-changed-notification'
-      )
-    );
+    await this.sendNotifications(updatedAnimal.id, updateQuery);
 
     return updatedAnimal;
   }

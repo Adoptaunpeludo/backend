@@ -23,10 +23,9 @@ type TokenType = 'passwordToken' | 'verificationToken';
 export class AuthService {
   constructor(
     private readonly jwt: JWTAdapter,
-    private readonly producerService: ProducerService,
-    private readonly emailService?: EmailService,
-    private readonly webServiceUrl?: string
-  ) {}
+    private readonly emailService: ProducerService // private readonly emailService?: EmailService,
+  ) // private readonly webServiceUrl?: string
+  {}
 
   public async registerUser(registerUserDto: RegisterUserDto) {
     const { email } = registerUserDto;
@@ -80,7 +79,7 @@ export class AuthService {
       },
     });
 
-    await this.producerService.addToEmailQueue(
+    await this.emailService.addMessageToQueue(
       {
         email: createdUser.email,
         verificationToken,
@@ -248,7 +247,7 @@ export class AuthService {
 
     await prisma.user.update({ data: { passwordToken }, where: { email } });
 
-    await this.producerService.addToEmailQueue(
+    await this.emailService.addMessageToQueue(
       {
         email,
         passwordToken,
