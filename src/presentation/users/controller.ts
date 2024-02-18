@@ -120,4 +120,12 @@ export class UserController {
 
     res.status(HttpCodes.OK).json({ ...pagination, animals });
   };
+
+  getUserNotifications = async (req: Request, res: Response) => {
+    const user = req.user;
+
+    const notifications = await this.userService.getNotifications(user.id!);
+
+    res.status(HttpCodes.OK).json(notifications);
+  };
 }

@@ -41,6 +41,8 @@ export class UserRoutes {
       userController.getUserFavorites
     );
 
+    router.get('/user-notifications', userController.getUserNotifications);
+
     router.get(
       '/user-animals/:id',
       // authMiddleware.authorizePermissions('shelter'),

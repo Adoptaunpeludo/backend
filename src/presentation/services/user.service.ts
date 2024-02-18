@@ -454,4 +454,14 @@ export class UserService {
       animals: animalsEntities,
     };
   }
+
+  public async getNotifications(id: string) {
+    const notifications = await prisma.notification.findMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    return notifications;
+  }
 }
