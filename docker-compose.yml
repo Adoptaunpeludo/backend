@@ -49,8 +49,24 @@ services:
       MAILER_SECRET_KEY: ${MAILER_SECRET_KEY}
       WEBSERVICE_URL: ${WEBSERVICE_URL}
 
+  # notification-service:
+  #   image: jaderodev/email-service:latest
+  #   restart: on-failure
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   container_name: email-service
+  #   environment:
+  #     RABBITMQ_USER: ${RABBITMQ_USER}
+  #     RABBITMQ_PASS: ${RABBITMQ_PASS}
+  #     RABBITMQ_URL: ${DOCK_RABBITMQ_URL}
+  #     MAIL_SERVICE: ${MAIL_SERVICE}
+  #     MAILER_EMAIL: ${MAILER_EMAIL}
+  #     MAILER_SECRET_KEY: ${MAILER_SECRET_KEY}
+  #     WEBSERVICE_URL: ${WEBSERVICE_URL}
+
   aup-backend:
-    build: .
+    image: jaderodev/aup-backend:latest
     restart: on-failure
     depends_on:
       rabbitmq:
