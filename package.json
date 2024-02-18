@@ -1,6 +1,6 @@
 {
   "name": "adoptaunpeludo-backend",
-  "version": "2.2.1",
+  "version": "2.5",
   "description": "Backend para adoptaunpeludo",
   "main": "index.js",
   "scripts": {
