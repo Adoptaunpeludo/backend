@@ -7,11 +7,10 @@ import {
   UnauthorizedError,
 } from '../../domain';
 import { JWTAdapter } from '../../config';
-import { EmailService } from './email.service';
 import { InternalServerError, UnauthenticatedError } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
 import { ProducerService } from './producer.service';
-import { PartialUserResponse, UserResponse } from '../../domain/interfaces';
+import { PartialUserResponse } from '../../domain/interfaces';
 
 interface Options {
   userAgent: string;
@@ -23,9 +22,42 @@ type TokenType = 'passwordToken' | 'verificationToken';
 export class AuthService {
   constructor(
     private readonly jwt: JWTAdapter,
-    private readonly emailService: ProducerService // private readonly emailService?: EmailService,
-  ) // private readonly webServiceUrl?: string
-  {}
+    private readonly emailService: ProducerService // private readonly emailService?: EmailService, // private readonly webServiceUrl?: string
+  ) {}
+
+  private buildDataQuery(
+    registerUserDto: RegisterUserDto,
+    hashedPassword: string,
+    verificationToken: string
+  ) {
+    return {
+      email: registerUserDto.email,
+      password: hashedPassword,
+      role: registerUserDto.role,
+      username: registerUserDto.username,
+      dni: registerUserDto.dni,
+      firstName: registerUserDto.firstName,
+      lastName: registerUserDto.lastName,
+      verificationToken: verificationToken,
+      shelter:
+        registerUserDto.role === 'shelter'
+          ? {
+              create: {
+                cif: '',
+                description: '',
+                images: [],
+              },
+            }
+          : undefined,
+      contactInfo: {
+        create: {
+          phoneNumber: registerUserDto.phoneNumber,
+          address: registerUserDto.address,
+          cityId: registerUserDto.cityId,
+        },
+      },
+    };
+  }
 
   public async registerUser(registerUserDto: RegisterUserDto) {
     const { email } = registerUserDto;
@@ -49,34 +81,14 @@ export class AuthService {
     if (!verificationToken)
       throw new InternalServerError('JWT token error, check server logs');
 
+    const data = this.buildDataQuery(
+      registerUserDto,
+      hashedPassword,
+      verificationToken
+    );
+
     const createdUser = await prisma.user.create({
-      data: {
-        email: registerUserDto.email,
-        password: hashedPassword,
-        role: registerUserDto.role,
-        username: registerUserDto.username,
-        dni: registerUserDto.dni,
-        firstName: registerUserDto.firstName,
-        lastName: registerUserDto.lastName,
-        verificationToken: verificationToken,
-        shelter:
-          registerUserDto.role === 'shelter'
-            ? {
-                create: {
-                  cif: '',
-                  description: '',
-                  images: [],
-                },
-              }
-            : undefined,
-        contactInfo: {
-          create: {
-            phoneNumber: registerUserDto.phoneNumber,
-            address: registerUserDto.address,
-            cityId: registerUserDto.cityId,
-          },
-        },
-      },
+      data,
     });
 
     await this.emailService.addMessageToQueue(
@@ -87,18 +99,6 @@ export class AuthService {
       },
       'verify-email'
     );
-
-    // Rollback in case there is an error sending the validation email
-    // try {
-    //   await this.sendEmailValidationLink(
-    //     createdUser.email,
-    //     verificationToken,
-    //     'email'
-    //   );
-    // } catch (error) {
-    //   await prisma.user.delete({ where: { email: createdUser.email } });
-    //   throw error;
-    // }
 
     return createdUser;
   }
@@ -255,16 +255,6 @@ export class AuthService {
       },
       'change-password'
     );
-
-    // try {
-    //   await this.sendEmailValidationLink(email, passwordToken, 'password');
-    // } catch (error) {
-    //   await prisma.user.update({
-    //     data: { passwordToken: '' },
-    //     where: { email },
-    //   });
-    //   throw error;
-    // }
 
     return passwordToken;
   }
