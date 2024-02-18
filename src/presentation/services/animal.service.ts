@@ -246,6 +246,8 @@ export class AnimalService {
         }))) ||
       [];
 
+    const ids = userData.map((user) => user.userId);
+
     userData?.forEach(({ email, userId, isOnline }) => {
       this.notificationService.addMessageToQueue(
         { message: `Animal ${animalId} has changed`, userId },

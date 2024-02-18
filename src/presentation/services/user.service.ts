@@ -9,6 +9,7 @@ import {
   UserEntity,
 } from '../../domain';
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
+import { AnimalEntity } from '../../domain/entities/animals.entity';
 import { PayloadUser, UserRoles } from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
 import { S3Service } from './s3.service';
@@ -17,7 +18,7 @@ export class UserService {
   constructor(private readonly s3Service: S3Service) {}
 
   public async getAllUsers() {
-    return await prisma.user.findMany({
+    const users = await prisma.user.findMany({
       include: {
         shelter: {
           include: {
@@ -32,6 +33,10 @@ export class UserService {
         animals: true,
       },
     });
+
+    const userEntities = users.map((user: any) => UserEntity.fromObject(user));
+
+    return userEntities;
   }
 
   public async getCurrentUser(email: string) {
@@ -56,13 +61,9 @@ export class UserService {
 
     if (!user) throw new NotFoundError('User not found');
 
-    // const viewUser = await prisma.userInfo.findUnique({
-    //   where: { id: user.id },
-    // });
+    const userEntity = UserEntity.fromObject(user);
 
-    // console.log({ viewUser });
-
-    return user;
+    return userEntity;
   }
 
   public async getSingleUser(id: string) {
@@ -85,7 +86,9 @@ export class UserService {
 
     if (!user) throw new NotFoundError('User not found');
 
-    return user;
+    const userEntity = UserEntity.fromObject(user);
+
+    return userEntity;
   }
 
   public async deleteUser(user: PayloadUser) {
@@ -257,7 +260,9 @@ export class UserService {
       },
     });
 
-    return updatedUser;
+    const userEntity = UserEntity.fromObject(updatedUser);
+
+    return userEntity;
   }
 
   private async buildImages(
@@ -381,6 +386,8 @@ export class UserService {
 
     const maxPages = Math.ceil(total / limit);
 
+    const animalsEntities = AnimalEntity.fromArray(animals);
+
     return {
       currentPage: page,
       maxPages,
@@ -392,7 +399,7 @@ export class UserService {
           : null,
       prev:
         page - 1 > 0 ? `/api/animals?page=${page - 1}&limit=${limit}` : null,
-      animals,
+      animals: animalsEntities,
     };
   }
 
@@ -431,6 +438,8 @@ export class UserService {
 
     const maxPages = Math.ceil(total / limit);
 
+    const animalsEntities = AnimalEntity.fromArray(animals);
+
     return {
       currentPage: page,
       maxPages,
@@ -442,7 +451,7 @@ export class UserService {
           : null,
       prev:
         page - 1 > 0 ? `/api/animals?page=${page - 1}&limit=${limit}` : null,
-      animals,
+      animals: animalsEntities,
     };
   }
 }

@@ -10,9 +10,7 @@ export class UserController {
   getAllUsers = async (_req: Request, res: Response) => {
     const users = await this.userService.getAllUsers();
 
-    const userEntities = users.map((user: any) => UserEntity.fromObject(user));
-
-    res.status(HttpCodes.OK).json(userEntities);
+    res.status(HttpCodes.OK).json(users);
   };
 
   getCurrentUser = async (req: Request, res: Response) => {
@@ -20,9 +18,7 @@ export class UserController {
 
     const user = await this.userService.getCurrentUser(email);
 
-    const userEntity = UserEntity.fromObject(user);
-
-    res.status(HttpCodes.OK).json(userEntity);
+    res.status(HttpCodes.OK).json(user);
   };
 
   getSingleUser = async (req: Request, res: Response) => {
@@ -30,9 +26,7 @@ export class UserController {
 
     const user = await this.userService.getSingleUser(id);
 
-    const userEntity = UserEntity.fromObject(user);
-
-    res.status(HttpCodes.OK).json(userEntity);
+    res.status(HttpCodes.OK).json(user);
   };
 
   deleteUser = async (req: Request, res: Response) => {
@@ -57,11 +51,9 @@ export class UserController {
 
     const updatedUser = await this.userService.updateUser(updates, user);
 
-    const userEntity = UserEntity.fromObject(updatedUser);
-
     res
       .status(HttpCodes.OK)
-      .json({ message: 'User updated successfully', user: userEntity });
+      .json({ message: 'User updated successfully', updatedUser });
   };
 
   changePassword = async (req: Request, res: Response) => {
@@ -113,9 +105,7 @@ export class UserController {
       filters
     );
 
-    const animalsEntities = AnimalEntity.fromArray(animals);
-
-    res.status(HttpCodes.OK).json({ ...pagination, animalsEntities });
+    res.status(HttpCodes.OK).json({ ...pagination, animals });
   };
 
   getUserAnimals = async (req: Request, res: Response) => {
@@ -128,8 +118,6 @@ export class UserController {
       filters
     );
 
-    const animalsEntities = AnimalEntity.fromArray(animals);
-
-    res.status(HttpCodes.OK).json({ ...pagination, animalsEntities });
+    res.status(HttpCodes.OK).json({ ...pagination, animals });
   };
 }

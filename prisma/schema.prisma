@@ -9,28 +9,40 @@ datasource db {
 }
 
 model User {
-  id                String       @id @default(uuid())
-  email             String       @unique
+  id                String         @id @default(uuid())
+  email             String         @unique
   password          String
   username          String
-  emailValidated    Boolean      @default(false)
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @default(now())
-  avatar            String       @default("avatar.png")
+  emailValidated    Boolean        @default(false)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @default(now())
+  avatar            String         @default("avatar.png")
   role              user_roles
-  verificationToken String       @default("")
-  passwordToken     String       @default("")
+  verificationToken String         @default("")
+  passwordToken     String         @default("")
   dni               String
   firstName         String
-  isOnline          Boolean      @default(false)
+  isOnline          Boolean        @default(false)
   lastName          String
   verifiedAt        DateTime?
   admin             Admin?
-  animals           Animal[]     @relation("adopted")
+  animals           Animal[]       @relation("adopted")
   contactInfo       ContactInfo?
   shelter           Shelter?
   Token             Token?
-  userFav           Animal[]     @relation("userFav")
+  userFav           Animal[]       @relation("userFav")
+  notifications     Notification[]
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  message   String
+  readed    Boolean
+  createdAt DateTime @default(now())
+  readedAt  DateTime
+  queue     String
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Token {
