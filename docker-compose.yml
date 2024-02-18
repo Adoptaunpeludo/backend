@@ -50,7 +50,7 @@ services:
       WEBSERVICE_URL: ${WEBSERVICE_URL}
 
   notification-service:
-    image: jaderodev/email-service:latest
+    image: jaderodev/notification-service:latest
     restart: on-failure
     depends_on:
       rabbitmq:
