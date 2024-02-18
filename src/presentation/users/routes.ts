@@ -41,10 +41,10 @@ export class UserRoutes {
       userController.getUserFavorites
     );
 
-    router.get('/user-notifications', userController.getUserNotifications);
+    router.get('/notifications', userController.getUserNotifications);
 
     router.get(
-      '/user-animals/:id',
+      '/animals/',
       // authMiddleware.authorizePermissions('shelter'),
       userController.getUserAnimals
     );

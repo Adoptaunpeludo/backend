@@ -110,10 +110,10 @@ export class UserController {
 
   getUserAnimals = async (req: Request, res: Response) => {
     const { limit = 10, page = 1, ...filters } = req.query;
-    const { id } = req.params;
+    const { id } = req.user;
 
     const { animals, ...pagination } = await this.userService.getUserAnimals(
-      id,
+      id!,
       { limit: +limit, page: +page },
       filters
     );
