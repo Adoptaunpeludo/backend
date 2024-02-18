@@ -13,6 +13,7 @@ import { CheckPermissions } from '../../utils';
 import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
 import { S3Service } from './s3.service';
 import { ProducerService } from './producer.service';
+import { AnimalEntity } from '../../domain/entities/animals.entity';
 
 export class AnimalService {
   constructor(
@@ -118,11 +119,13 @@ export class AnimalService {
   }
 
   public async getSingle(term: string) {
-    const animal = this.getAnimalFromTerm(term);
+    const animal = await this.getAnimalFromTerm(term);
 
     if (!animal) throw new NotFoundError('Animal not found');
 
-    return animal;
+    const animalDetail = AnimalEntity.fromObjectDetail(animal);
+
+    return animalDetail;
   }
 
   private mapFilters(animalFilterDto: AnimalFilterDto) {
@@ -171,6 +174,8 @@ export class AnimalService {
 
     const maxPages = Math.ceil(total / limit);
 
+    const animalsEntity = AnimalEntity.fromArray(animals);
+
     return {
       currentPage: page,
       maxPages,
@@ -182,7 +187,7 @@ export class AnimalService {
           : null,
       prev:
         page - 1 > 0 ? `/api/animals?page=${page - 1}&limit=${limit}` : null,
-      animals,
+      animals: animalsEntity,
     };
   }
 
