@@ -55,7 +55,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-    container_name: email-service
+    container_name: notification-service
     environment:
       RABBITMQ_USER: ${RABBITMQ_USER}
       RABBITMQ_PASS: ${RABBITMQ_PASS}
