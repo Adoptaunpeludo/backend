@@ -13,11 +13,13 @@ import { CheckPermissions } from '../../utils';
 import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
 import { S3Service } from './s3.service';
 import { ProducerService } from './producer.service';
+import { AnimalEntity } from '../../domain/entities/animals.entity';
 
 export class AnimalService {
   constructor(
     private readonly s3Service: S3Service,
-    private readonly producerService: ProducerService
+    private readonly emailService: ProducerService,
+    private readonly notificationService: ProducerService
   ) {}
 
   public async createCat(
@@ -117,11 +119,13 @@ export class AnimalService {
   }
 
   public async getSingle(term: string) {
-    const animal = this.getAnimalFromTerm(term);
+    const animal = await this.getAnimalFromTerm(term);
 
     if (!animal) throw new NotFoundError('Animal not found');
 
-    return animal;
+    const animalDetail = AnimalEntity.fromObjectDetail(animal);
+
+    return animalDetail;
   }
 
   private mapFilters(animalFilterDto: AnimalFilterDto) {
@@ -170,6 +174,8 @@ export class AnimalService {
 
     const maxPages = Math.ceil(total / limit);
 
+    const animalsEntity = AnimalEntity.fromArray(animals);
+
     return {
       currentPage: page,
       maxPages,
@@ -181,7 +187,7 @@ export class AnimalService {
           : null,
       prev:
         page - 1 > 0 ? `/api/animals?page=${page - 1}&limit=${limit}` : null,
-      animals,
+      animals: animalsEntity,
     };
   }
 
@@ -227,6 +233,40 @@ export class AnimalService {
     return query;
   }
 
+  //* TODO: Strong Type Query
+  private async sendNotifications(animalId: string, query: any) {
+    const favs = await prisma.animal.findUnique({
+      where: { id: animalId },
+      include: {
+        userFav: true,
+      },
+    });
+
+    const userData =
+      (favs &&
+        favs.userFav.map((user) => ({
+          email: user.email,
+          userId: user.id,
+          isOnline: user.isOnline,
+        }))) ||
+      [];
+
+    const ids = userData.map((user) => user.userId);
+
+    userData?.forEach(({ email, userId, isOnline }) => {
+      this.notificationService.addMessageToQueue(
+        { message: `Animal ${animalId} has changed`, userId },
+        'animal-changed-push-notification'
+      );
+
+      if (!isOnline)
+        this.emailService.addMessageToQueue(
+          { ...query, email },
+          'animal-changed-notification'
+        );
+    });
+  }
+
   public async update(
     updateAnimalDto: UpdateAnimalDto,
     user: PayloadUser,
@@ -243,21 +283,7 @@ export class AnimalService {
       data: updateQuery,
     });
 
-    const favs = await prisma.animal.findUnique({
-      where: { id: updatedAnimal.id },
-      include: {
-        userFav: true,
-      },
-    });
-
-    const emails = (favs && favs.userFav.map((user) => user.email)) || [];
-
-    emails?.forEach((email: string) =>
-      this.producerService.addToEmailQueue(
-        { ...updateQuery, email },
-        'animal-changed-notification'
-      )
-    );
+    await this.sendNotifications(updatedAnimal.id, updateQuery);
 
     return updatedAnimal;
   }

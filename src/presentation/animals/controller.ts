@@ -47,8 +47,7 @@ export class AnimalController {
       filters
     );
 
-    const animalsEntity = AnimalEntity.fromArray(animals);
-    res.status(HttpCodes.OK).json({ ...pagination, animalsEntity });
+    res.status(HttpCodes.OK).json({ ...pagination, animals });
   };
 
   getSingle = async (req: Request, res: Response) => {
@@ -56,9 +55,7 @@ export class AnimalController {
 
     const animal = await this.animalService.getSingle(term);
 
-    const detail = AnimalEntity.fromObjectDetail(animal);
-
-    res.status(HttpCodes.OK).json(detail);
+    res.status(HttpCodes.OK).json(animal);
   };
 
   update = async (req: Request, res: Response) => {

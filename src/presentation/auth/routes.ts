@@ -16,20 +16,13 @@ export class AuthRoutes {
     const router = Router();
 
     const jwt = new JWTAdapter(envs.JWT_SEED);
-    const emailService = new EmailService(
-      envs.MAIL_SERVICE,
-      envs.MAILER_EMAIL,
-      envs.MAILER_SECRET_KEY
+
+    const emailService = new ProducerService(
+      envs.RABBITMQ_URL,
+      'email-request'
     );
 
-    const producer = new ProducerService(envs.RABBITMQ_URL);
-
-    const authService = new AuthService(
-      jwt,
-      producer,
-      emailService,
-      envs.WEBSERVICE_URL
-    );
+    const authService = new AuthService(jwt, emailService);
     const authController = new AuthController(authService);
     const authMiddleware = new AuthMiddleware(jwt);
 

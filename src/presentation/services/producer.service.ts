@@ -3,34 +3,34 @@ import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 
 export class ProducerService {
   private channelWrapper: ChannelWrapper;
-  private EXCHANGE: string;
 
-  constructor(private readonly rabbitmqUrl: string) {
-    this.EXCHANGE = 'email-request';
+  constructor(
+    private readonly rabbitmqUrl: string,
+    private readonly exchange: string
+  ) {
     const connection = amqp.connect(this.rabbitmqUrl);
     this.channelWrapper = connection.createChannel({
       setup: (channel: Channel) => {
-        // return channel.assertQueue(queue, { durable: true });
-        return channel.assertExchange(this.EXCHANGE, 'direct', {
+        return channel.assertExchange(exchange, 'direct', {
           durable: true,
         });
       },
     });
-    console.log('email-request Exchange created');
+    console.log(`${this.exchange} exchange created`);
   }
 
-  async addToEmailQueue(payload: any, queue: string) {
+  async addMessageToQueue(payload: any, queue: string) {
     try {
       await this.channelWrapper.publish(
-        this.EXCHANGE,
+        this.exchange,
         queue,
         Buffer.from(JSON.stringify(payload)),
         { persistent: true }
       );
 
-      console.log('Email sent to queue');
+      console.log('Message sent to queue');
     } catch (error) {
-      console.log('Error sending email to queue', error);
+      console.log('Error sending message to queue', error);
     }
   }
 }

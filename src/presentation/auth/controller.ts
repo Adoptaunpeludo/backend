@@ -36,6 +36,7 @@ export class AuthController {
       }
     );
 
+    //* TODO: Private method
     AttachCookiesToResponse.attach({ res, accessToken, refreshToken });
 
     res.status(HttpCodes.OK).json({ message: 'User successfully logged in.' });
