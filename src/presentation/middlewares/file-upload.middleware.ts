@@ -5,7 +5,14 @@ import { BadRequestError, NotFoundError } from '../../domain';
 import { CheckPermissions } from '../../utils';
 import { prisma } from '../../data/postgres/index';
 
+/**
+ * Middleware class for handling file uploads.
+ */
 export class FileUploadMiddleware {
+  /**
+   * Constructor to inject dependencies.
+   * @param s3Service - The S3Service instance.
+   */
   constructor(private readonly s3Service: S3Service) {}
 
   // public multiUpload = async (
@@ -44,6 +51,11 @@ export class FileUploadMiddleware {
   //   next();
   // };
 
+  /**
+   * Middleware function for handling multiple file uploads.
+   * @param resource - The type of resource ('users' or 'animals').
+   * @returns Middleware function.
+   */
   public multiple =
     (resource: string) =>
     async (req: Request, res: Response, next: NextFunction) => {

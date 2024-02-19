@@ -6,9 +6,19 @@ import { UnauthenticatedError, UnauthorizedError } from '../../domain';
 import { prisma } from '../../data/postgres';
 import { AttachCookiesToResponse } from '../../utils/response-cookies';
 
+/**
+ * Middleware class for authentication and authorization.
+ */
 export class AuthMiddleware {
+  /**
+   * Constructs an instance of AuthMiddleware.
+   * @param jwt - Instance of JWTAdapter for handling JSON Web Tokens.
+   */
   constructor(private readonly jwt: JWTAdapter) {}
 
+  /**
+   * Middleware for authenticating user requests.
+   */
   public authenticateUser = async (
     req: Request,
     res: Response,
@@ -16,16 +26,19 @@ export class AuthMiddleware {
   ) => {
     const { refreshToken, accessToken } = req.signedCookies;
 
+    // Check if refresh token and access token are present
     if (!refreshToken && !accessToken)
       throw new UnauthenticatedError('Please first login');
 
     if (accessToken) {
+      // Validate access token
       const payload = this.jwt.validateToken(accessToken);
       if (!payload) throw new UnauthorizedError('Invalid token validation');
       req.user = payload.user;
       return next();
     }
 
+    // Validate refresh token
     const payload = this.jwt.validateToken(refreshToken);
     if (!payload) throw new UnauthorizedError('Invalid token validation');
 
@@ -33,17 +46,20 @@ export class AuthMiddleware {
       where: { userId: payload.user.id, refreshToken: payload.refreshToken },
     });
 
+    // Check if existing token is valid
     if (!existingToken || !existingToken?.isValid)
       throw new UnauthenticatedError('Authentication Invalid');
 
     const { user } = payload;
 
+    // Generate new tokens
     const accessTokenJWT = this.jwt.generateToken({ user }, '15m');
     const refreshTokenJWT = this.jwt.generateToken(
       { user, refreshToken: existingToken.refreshToken },
       '1d'
     );
 
+    // Attach new tokens to response cookies
     AttachCookiesToResponse.attach({
       res,
       accessToken: accessTokenJWT!,
@@ -54,6 +70,10 @@ export class AuthMiddleware {
     next();
   };
 
+  /**
+   * Middleware for authorizing user permissions based on roles.
+   * @param roles - Roles allowed to access the resource.
+   */
   public authorizePermissions = (...roles: UserRoles[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
       const { role } = req.user;
