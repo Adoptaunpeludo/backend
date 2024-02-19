@@ -1,15 +1,25 @@
 import { Channel } from 'amqplib';
 import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 
+/**
+ * ProducerService class for sending messages to RabbitMQ queues.
+ */
 export class ProducerService {
   private channelWrapper: ChannelWrapper;
 
+  /**
+   * Constructs an instance of ProducerService.
+   * @param rabbitmqUrl - URL of the RabbitMQ server.
+   * @param exchange - Name of the exchange to publish messages.
+   */
   constructor(
     private readonly rabbitmqUrl: string,
     private readonly exchange: string
   ) {
+    // Establishes connection to RabbitMQ server and creates a channel wrapper.
     const connection = amqp.connect(this.rabbitmqUrl);
     this.channelWrapper = connection.createChannel({
+      // Ensures the exchange is declared upon channel creation.
       setup: (channel: Channel) => {
         return channel.assertExchange(exchange, 'direct', {
           durable: true,
@@ -19,8 +29,14 @@ export class ProducerService {
     console.log(`${this.exchange} exchange created`);
   }
 
+  /**
+   * Adds a message to the specified queue in the exchange.
+   * @param payload - Data to be sent in the message.
+   * @param queue - Name of the queue to send the message.
+   */
   async addMessageToQueue(payload: any, queue: string) {
     try {
+      // Publishes the message to the specified queue in the exchange.
       await this.channelWrapper.publish(
         this.exchange,
         queue,
