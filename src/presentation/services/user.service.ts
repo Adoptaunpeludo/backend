@@ -2,7 +2,6 @@ import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 import {
   AnimalFilterDto,
   BadRequestError,
-  FileUploadDto,
   NotFoundError,
   PaginationDto,
   UpdateUserDto,
@@ -10,12 +9,16 @@ import {
 } from '../../domain';
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { AnimalEntity } from '../../domain/entities/animals.entity';
-import { PayloadUser, UserRoles } from '../../domain/interfaces';
+import { AnimalResponse, PayloadUser } from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
+import { ProducerService } from './producer.service';
 import { S3Service } from './s3.service';
 
 export class UserService {
-  constructor(private readonly s3Service: S3Service) {}
+  constructor(
+    private readonly s3Service: S3Service,
+    private readonly notificationService: ProducerService
+  ) {}
 
   public async getAllUsers() {
     const users = await prisma.user.findMany({
@@ -91,29 +94,74 @@ export class UserService {
     return userEntity;
   }
 
-  public async deleteUser(user: PayloadUser) {
-    const userToDelete = await prisma.user.findUnique({
-      where: { email: user.email },
-      include: {
-        shelter: {
-          select: {
-            images: true,
+  private async notifyDeletedAnimalsToUsers(animalsCreated: AnimalResponse[]) {
+    const deletedAnimalsIds = animalsCreated.map((animal) => animal.id);
+
+    const usersWithFavs = await prisma.user.findMany({
+      where: {
+        userFav: {
+          some: {
+            id: {
+              in: deletedAnimalsIds,
+            },
           },
         },
       },
+      include: {
+        userFav: true,
+      },
     });
+
+    usersWithFavs.forEach((user) => {
+      user.userFav.forEach((animal) => {
+        if (deletedAnimalsIds.includes(animal.id))
+          this.notificationService.addMessageToQueue(
+            {
+              message: `Animal with id: ${animal.id} and name: ${animal.name} was deleted`,
+              userId: user.id,
+            },
+            'animal-changed-push-notification'
+          );
+      });
+    });
+  }
+
+  public async deleteUser(user: PayloadUser) {
+    const [userToDelete, animalsCreated] = await prisma.$transaction([
+      prisma.user.findUnique({
+        where: { email: user.email },
+        include: {
+          shelter: {
+            select: {
+              images: true,
+            },
+          },
+        },
+      }),
+      prisma.animal.findMany({
+        where: {
+          createdBy: user.id,
+        },
+        include: {
+          cat: true,
+          dog: true,
+        },
+      }),
+    ]);
 
     if (!userToDelete) throw new NotFoundError('User not found');
 
     CheckPermissions.check(user, userToDelete.id);
 
-    await prisma.user.delete({ where: { email: userToDelete.email } });
+    await this.notifyDeletedAnimalsToUsers(animalsCreated);
 
     const imagesToDelete =
       userToDelete.shelter?.images.map((image: string) => image) || [];
 
     if (imagesToDelete.length > 0)
       await this.s3Service.deleteFiles(imagesToDelete);
+
+    await prisma.user.delete({ where: { email: userToDelete.email } });
   }
 
   public async changePassword(

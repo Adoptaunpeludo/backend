@@ -13,7 +13,7 @@ import {
   UpdatePasswordDto,
   UpdateSocialMediaDto,
 } from '../../domain';
-import { UserService, S3Service } from '../services';
+import { UserService, S3Service, ProducerService } from '../services';
 
 export class UserRoutes {
   static get routes() {
@@ -27,7 +27,11 @@ export class UserRoutes {
       envs.AWS_SECRET_ACCESS_KEY,
       envs.AWS_BUCKET
     );
-    const userService = new UserService(s3Service);
+    const notificationService = new ProducerService(
+      envs.RABBITMQ_URL,
+      'notification-request'
+    );
+    const userService = new UserService(s3Service, notificationService);
     const userController = new UserController(userService);
     const fileUploadMiddleware = new FileUploadMiddleware(s3Service);
 
