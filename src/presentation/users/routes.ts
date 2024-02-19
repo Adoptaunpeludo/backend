@@ -36,18 +36,41 @@ export class UserRoutes {
     router.get('/me', userController.getCurrentUser);
 
     router.get(
-      '/favorites',
+      '/me/favorites',
       // authMiddleware.authorizePermissions('adopter'),
       userController.getUserFavorites
     );
 
-    router.get('/notifications', userController.getUserNotifications);
+    router.get('/me/notifications', userController.getUserNotifications);
 
     router.get(
-      '/animals/',
+      '/me/animals/',
       // authMiddleware.authorizePermissions('shelter'),
       userController.getUserAnimals
     );
+
+    router.put(
+      '/me',
+      ValidationMiddleware.validate(UpdateUserDto),
+      userController.updateUser
+    );
+
+    router.put(
+      '/me/change-password',
+      ValidationMiddleware.validate(UpdatePasswordDto),
+      userController.changePassword
+    );
+
+    router.put(
+      '/me/update-social-media',
+      [
+        authMiddleware.authorizePermissions('shelter'),
+        ValidationMiddleware.validate(UpdateSocialMediaDto),
+      ],
+      userController.updateSocialMedia
+    );
+
+    router.delete('/me', userController.deleteUser);
 
     router.get('/:id', userController.getSingleUser);
 
@@ -57,14 +80,6 @@ export class UserRoutes {
       userController.getAllUsers
     );
 
-    router.delete('/', userController.deleteUser);
-
-    router.put(
-      '/',
-      ValidationMiddleware.validate(UpdateUserDto),
-      userController.updateUser
-    );
-
     router.post(
       '/upload-images',
       [
@@ -72,21 +87,6 @@ export class UserRoutes {
         fileUploadMiddleware.multiple('users'),
       ],
       userController.uploadImages
-    );
-
-    router.put(
-      '/change-password',
-      ValidationMiddleware.validate(UpdatePasswordDto),
-      userController.changePassword
-    );
-
-    router.put(
-      '/update-social-media',
-      [
-        authMiddleware.authorizePermissions('shelter'),
-        ValidationMiddleware.validate(UpdateSocialMediaDto),
-      ],
-      userController.updateSocialMedia
     );
 
     return router;
