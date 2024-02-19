@@ -4,9 +4,19 @@ import { AnimalService } from '../services/animal.service';
 import { BadRequestError } from '../../domain';
 import { AnimalEntity } from '../../domain/entities/animals.entity';
 
+/**
+ * Controller class for handling animal-related HTTP requests.
+ */
 export class AnimalController {
+  /**
+   * Constructs an instance of AnimalController.
+   * @param animalService - Instance of AnimalService for handling animal-related operations.
+   */
   constructor(private readonly animalService: AnimalService) {}
 
+  /**
+   * Creates a new cat.
+   */
   createCat = async (req: Request, res: Response) => {
     const animal = req.body;
     const user = req.user;
@@ -23,6 +33,9 @@ export class AnimalController {
     res.status(HttpCodes.CREATED).json(cat);
   };
 
+  /**
+   * Creates a new dog.
+   */
   createDog = async (req: Request, res: Response) => {
     const animal = req.body;
     const user = req.user;
@@ -39,6 +52,9 @@ export class AnimalController {
     res.status(HttpCodes.CREATED).json(dog);
   };
 
+  /**
+   * Retrieves a list of animals.
+   */
   getAll = async (req: Request, res: Response) => {
     const { limit = 10, page = 1, ...filters } = req.query;
 
@@ -50,6 +66,9 @@ export class AnimalController {
     res.status(HttpCodes.OK).json({ ...pagination, animals });
   };
 
+  /**
+   * Retrieves a single animal by term.
+   */
   getSingle = async (req: Request, res: Response) => {
     const { term } = req.params;
 
@@ -58,16 +77,22 @@ export class AnimalController {
     res.status(HttpCodes.OK).json(animal);
   };
 
+  /**
+   * Updates an animal.
+   */
   update = async (req: Request, res: Response) => {
     const { term } = req.params;
     const updates = req.body;
     const user = req.user;
 
-    await this.animalService.update(updates, user, term);
+    await this.animalService.update(user, term, updates);
 
     res.status(HttpCodes.OK).json({ message: 'Animal updated' });
   };
 
+  /**
+   * Deletes an animal.
+   */
   delete = async (req: Request, res: Response) => {
     const { term } = req.params;
     const user = req.user;
@@ -77,6 +102,9 @@ export class AnimalController {
     res.status(HttpCodes.OK).json({ message: 'Animal deleted' });
   };
 
+  /**
+   * Uploads images for an animal.
+   */
   uploadImages = async (req: Request, res: Response) => {
     const { files, user } = req;
     const { deleteImages } = req.body;
@@ -91,15 +119,18 @@ export class AnimalController {
         : [deleteImages];
 
     await this.animalService.updateImages(
+      user,
       term,
       files as Express.MulterS3.File[],
-      user,
       imagesToDelete
     );
 
     res.status(HttpCodes.OK).json({ message: 'Images updated successfully' });
   };
 
+  /**
+   * Adds an animal to favorites for a user.
+   */
   addFavorite = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -108,6 +139,9 @@ export class AnimalController {
     res.status(HttpCodes.OK).json(response);
   };
 
+  /**
+   * Removes an animal from favorites for a user.
+   */
   removeFavorite = async (req: Request, res: Response) => {
     const { id } = req.params;
 
