@@ -9,9 +9,19 @@ import multerS3 from 'multer-s3';
 import util from 'util';
 import { BadRequestError } from '../../domain';
 
+/**
+ * S3Service class handles interactions with AWS S3 bucket including file uploads and deletions.
+ */
 export class S3Service {
   private s3: S3Client;
 
+  /**
+   * Constructs an instance of S3Service.
+   * @param region - AWS region where the S3 bucket is located.
+   * @param accessKeyId - Access key ID for AWS credentials.
+   * @param secretAccessKey - Secret access key for AWS credentials.
+   * @param bucket - Name of the S3 bucket.
+   */
   constructor(
     private readonly region: string,
     private readonly accessKeyId: string,
@@ -27,6 +37,13 @@ export class S3Service {
     });
   }
 
+  /**
+   * Creates multer storage configuration for uploading files to S3.
+   * @param folder - Folder in the bucket where the file will be stored.
+   * @param id - ID used to identify the file.
+   * @param name - Name of the file.
+   * @returns Multer storage configuration.
+   */
   private multerStorage(folder: string, id: string, name: string) {
     const storage = multerS3({
       s3: this.s3,
@@ -42,6 +59,12 @@ export class S3Service {
     return storage;
   }
 
+  /**
+   * Checks if the uploaded file has a valid image MIME type.
+   * @param _req - Express request object.
+   * @param file - Uploaded file object.
+   * @param cb - Multer callback function.
+   */
   public checkFileType(
     _req: Request,
     file: Express.MulterS3.File,
@@ -65,6 +88,13 @@ export class S3Service {
   //   return util.promisify(uploadSingleFile);
   // }
 
+  /**
+   * Uploads multiple files to the S3 bucket.
+   * @param folder - Folder in the bucket where the files will be stored.
+   * @param id - ID used to identify the files.
+   * @param name - Name of the files.
+   * @returns Promise of a function to upload multiple files.
+   */
   public uploadMultiple(folder: string, id: string, name: string) {
     const storage = this.multerStorage(folder, id, name);
     let uploadMultipleFiles = multer({
@@ -76,6 +106,11 @@ export class S3Service {
     return util.promisify(uploadMultipleFiles);
   }
 
+  /**
+   * Deletes a single file from the S3 bucket.
+   * @param file - Key of the file to be deleted.
+   * @returns Promise of the deletion response.
+   */
   public async deleteFile(file: string) {
     const command = new DeleteObjectCommand({
       Bucket: this.bucket,
@@ -87,6 +122,11 @@ export class S3Service {
     return response;
   }
 
+  /**
+   * Deletes multiple files from the S3 bucket.
+   * @param files - Array of keys of files to be deleted.
+   * @returns Promise of the deletion response.
+   */
   public async deleteFiles(files: string[]) {
     const objects = files.map((file) => ({
       Key: file,
