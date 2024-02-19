@@ -360,7 +360,9 @@ describe('Api user routes testing', () => {
         })
         .expect(200);
 
-      expect(body.user.username).toBe('testuser');
+      console.log({ body });
+
+      expect(body.updatedUser.username).toBe('testuser');
     });
   });
 

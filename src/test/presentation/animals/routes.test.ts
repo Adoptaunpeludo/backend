@@ -113,6 +113,7 @@ describe('Api animals routes testing', () => {
         description: 'Cold as Hell',
         breed: 'Unknown',
         size: 'medium',
+        numFavs: 0,
         publishStatus: 'pending',
         status: 'awaiting_home',
         easyTrain: false,
@@ -153,6 +154,7 @@ describe('Api animals routes testing', () => {
         description: 'Cold as Hell',
         breed: 'Unknown',
         size: 'medium',
+        numFavs: 0,
         publishStatus: 'pending',
         status: 'awaiting_home',
         easyTrain: false,
@@ -198,7 +200,9 @@ describe('Api animals routes testing', () => {
         .get(animalsRoute)
         .expect(200);
 
-      expect(body.animalsEntity[0].slug).not.toBe(body.animalsEntity[1].slug);
+      console.log({ body });
+
+      expect(body.animals[0].slug).not.toBe(body.animals[1].slug);
 
       expect(body).toEqual({
         currentPage: 1,
@@ -207,7 +211,7 @@ describe('Api animals routes testing', () => {
         total: 2,
         next: null,
         prev: null,
-        animalsEntity: [
+        animals: [
           {
             id: expect.any(String),
             slug: expect.any(String),
@@ -215,8 +219,9 @@ describe('Api animals routes testing', () => {
             age: 14,
             gender: 'male',
             size: 'medium',
+            numFavs: 0,
             type: expect.any(String),
-            cityName: 'Málaga',
+            city: 'Málaga',
             images: expect.any(Array),
             shelter: expect.any(Object),
           },
@@ -227,8 +232,9 @@ describe('Api animals routes testing', () => {
             age: 14,
             gender: 'male',
             size: 'medium',
+            numFavs: 0,
             type: expect.any(String),
-            cityName: 'Málaga',
+            city: 'Málaga',
             images: expect.any(Array),
             shelter: expect.any(Object),
           },

@@ -3,7 +3,6 @@ import { JWTAdapter } from '../../../config';
 import { prisma } from '../../../data/postgres';
 import { InternalServerError, RegisterUserDto } from '../../../domain';
 import { AuthService } from '../../../presentation/services/auth.service';
-import { EmailService } from '../../../presentation/services/email.service';
 import { ProducerService } from '../../../presentation/services/producer.service';
 
 jest.mock('../../../presentation/services/producer.service');
@@ -37,12 +36,7 @@ describe('auth.service.ts', () => {
 
     jwt.generateToken = jest.fn().mockReturnValue(null);
 
-    const authService = new AuthService(
-      jwt,
-      new ProducerService('', ''),
-      new EmailService('', '', ''),
-      'https://example.com'
-    );
+    const authService = new AuthService(jwt, new ProducerService('', ''));
 
     await expect(authService.registerUser(registerUserDto)).rejects.toThrow(
       InternalServerError
