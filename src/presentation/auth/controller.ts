@@ -24,6 +24,19 @@ export class AuthController {
     });
   };
 
+  resendVerificationToken = async (req: Request, res: Response) => {
+    const { email } = req.params;
+
+    const verificationToken = await this.authService.resendValidationEmail(
+      email
+    );
+
+    res.status(HttpCodes.OK).json({
+      message: 'Success!, Please check your email to verify your account',
+      token: verificationToken,
+    });
+  };
+
   login = async (req: Request, res: Response) => {
     const userAgent = req.headers['user-agent'] || '';
     const ip = req.ip || '';
