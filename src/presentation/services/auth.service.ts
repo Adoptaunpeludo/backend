@@ -7,7 +7,11 @@ import {
   UnauthorizedError,
 } from '../../domain';
 import { JWTAdapter } from '../../config';
-import { InternalServerError, UnauthenticatedError } from '../../domain/errors';
+import {
+  InternalServerError,
+  NotFoundError,
+  UnauthenticatedError,
+} from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
 import { ProducerService } from './producer.service';
 import { PartialUserResponse } from '../../domain/interfaces';
@@ -101,6 +105,43 @@ export class AuthService {
     );
 
     return createdUser;
+  }
+
+  public async resendValidationEmail(email: string) {
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) throw new NotFoundError('User not found');
+
+    if (user.emailValidated)
+      throw new BadRequestError('Email already validated');
+
+    const verificationToken = this.jwt.generateToken(
+      { user: { email } },
+      '15m'
+    );
+
+    if (!verificationToken)
+      throw new InternalServerError('JWT token error, check server logs');
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        verificationToken,
+      },
+    });
+
+    await this.emailService.addMessageToQueue(
+      {
+        email,
+        verificationToken,
+        type: 'email',
+      },
+      'verify-email'
+    );
+
+    return verificationToken;
   }
 
   private async validateCredentials(loginUserDto: LoginUserDto) {

@@ -45,6 +45,11 @@ export class AuthRoutes {
     );
 
     router.post(
+      '/resend-validation-email/:email',
+      authController.resendVerificationToken
+    );
+
+    router.post(
       '/forgot-password',
       ValidationMiddleware.validate(ForgotPasswordDto),
       authController.forgotPassword
