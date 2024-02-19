@@ -71,7 +71,7 @@ export class AuthService {
    * @param verificationToken - Token for email verification.
    * @returns Data object for user creation.
    */
-  private buildDataQuery(
+  private buildQuery(
     registerUserDto: RegisterUserDto,
     hashedPassword: string,
     verificationToken: string
@@ -190,7 +190,7 @@ export class AuthService {
       throw new InternalServerError('JWT token error, check server logs');
 
     //* Build query for user creation and create user
-    const data = this.buildDataQuery(
+    const data = this.buildQuery(
       registerUserDto,
       hashedPassword,
       verificationToken
