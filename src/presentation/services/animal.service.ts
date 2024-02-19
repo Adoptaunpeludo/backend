@@ -15,6 +15,10 @@ import { S3Service } from './s3.service';
 import { ProducerService } from './producer.service';
 import { AnimalEntity } from '../../domain/entities/animals.entity';
 
+/**
+ * AnimalService class handles animal-related operations such as creating, updating,
+ * and deleting animals, as well as managing favorites and notifications.
+ */
 export class AnimalService {
   constructor(
     private readonly s3Service: S3Service,
@@ -22,70 +26,43 @@ export class AnimalService {
     private readonly notificationService: ProducerService
   ) {}
 
-  public async createCat(
-    userId: string,
-    username: string,
-    createCatDto: CreateCatDto
+  /**
+   * Builds the array of images for an animal based on input files and existing images.
+   * @param images - Array of existing images.
+   * @param deleteImages - Array of images to delete.
+   * @param files - Array of files uploaded by the user.
+   * @returns Array of updated images.
+   */
+  private async buildImages(
+    images: string[],
+    deleteImages: string[],
+    files: Express.MulterS3.File[]
   ) {
-    const {
-      playLevel,
-      kidsFriendly,
-      toiletTrained,
-      scratchPotential,
-      ...rest
-    } = createCatDto;
+    let resultImages: string[] = [];
 
-    const slug = await prisma.animal.generateUniqueSlug({
-      name: rest.name,
-      shelter: username,
-    });
+    if (images)
+      resultImages = images.filter((image) => !deleteImages.includes(image));
 
-    const animal = await prisma.animal.create({
-      data: {
-        ...rest,
-        createdBy: userId,
-        slug,
-        cat: {
-          create: { playLevel, kidsFriendly, toiletTrained, scratchPotential },
-        },
-      },
-    });
+    if (deleteImages.length > 0) await this.s3Service.deleteFiles(deleteImages);
 
-    return animal;
+    if (files && files.length > 0) {
+      const uploadedImages = files.map((file) => file.key);
+      resultImages = [...resultImages, ...uploadedImages];
+    }
+
+    resultImages = resultImages.filter(
+      (image, index, array) => array.indexOf(image) === index
+    );
+
+    return resultImages;
   }
 
-  public async createDog(
-    userId: string,
-    username: string,
-    createDogDto: CreateDogDto
-  ) {
-    const {
-      departmentAdapted,
-      droolingPotential,
-      bark,
-
-      ...rest
-    } = createDogDto;
-
-    const slug = await prisma.animal.generateUniqueSlug({
-      name: rest.name,
-      shelter: username,
-    });
-
-    const animal = await prisma.animal.create({
-      data: {
-        ...rest,
-        createdBy: userId,
-        slug,
-        dog: {
-          create: { departmentAdapted, droolingPotential, bark },
-        },
-      },
-    });
-
-    return animal;
-  }
-
+  /**
+   * Retrieves an animal based on term (UUID or slug).
+   * @param term - Term representing the animal (UUID or slug).
+   * @returns Animal response object.
+   * @throws NotFoundError if the animal is not found.
+   */
   private async getAnimalFromTerm(term: string) {
     let animal: AnimalResponse | null = null;
 
@@ -118,16 +95,11 @@ export class AnimalService {
     return animal;
   }
 
-  public async getSingle(term: string) {
-    const animal = await this.getAnimalFromTerm(term);
-
-    if (!animal) throw new NotFoundError('Animal not found');
-
-    const animalDetail = AnimalEntity.fromObjectDetail(animal);
-
-    return animalDetail;
-  }
-
+  /**
+   * Maps animal filter DTO to Prisma compatible filter object.
+   * @param animalFilterDto - DTO containing animal filter criteria.
+   * @returns Prisma compatible filter object.
+   */
   private mapFilters(animalFilterDto: AnimalFilterDto) {
     let filters: any = {};
 
@@ -143,6 +115,152 @@ export class AnimalService {
     return filters;
   }
 
+  /**
+   * Builds the update query for updating animal information.
+   * @param updateAnimalDto - DTO containing updated animal information.
+   * @returns Update query object.
+   */
+  private buildQuery(updateAnimalDto: UpdateAnimalDto) {
+    const updatedAt = new Date();
+
+    let query: any;
+
+    const {
+      departmentAdapted,
+      droolingPotential,
+      bark,
+      playLevel,
+      kidsFriendly,
+      toiletTrained,
+      scratchPotential,
+      type,
+      ...common
+    } = updateAnimalDto;
+
+    query = {
+      ...common,
+      updatedAt,
+      cat:
+        type === 'cat'
+          ? {
+              playLevel,
+              kidsFriendly,
+              toiletTrained,
+              scratchPotential,
+            }
+          : undefined,
+      dog:
+        type === 'dog'
+          ? {
+              droolingPotential,
+              departmentAdapted,
+              bark,
+            }
+          : undefined,
+    };
+
+    return query;
+  }
+
+  /**
+   * Creates a new cat animal.
+   * @param userId - ID of the user creating the cat.
+   * @param username - Username of the user creating the cat.
+   * @param createCatDto - DTO containing cat information.
+   * @returns Created cat object.
+   */
+  public async createCat(
+    userId: string,
+    username: string,
+    createCatDto: CreateCatDto
+  ) {
+    const {
+      playLevel,
+      kidsFriendly,
+      toiletTrained,
+      scratchPotential,
+      ...rest
+    } = createCatDto;
+
+    const slug = await prisma.animal.generateUniqueSlug({
+      name: rest.name,
+      shelter: username,
+    });
+
+    const animal = await prisma.animal.create({
+      data: {
+        ...rest,
+        createdBy: userId,
+        slug,
+        cat: {
+          create: { playLevel, kidsFriendly, toiletTrained, scratchPotential },
+        },
+      },
+    });
+
+    return animal;
+  }
+
+  /**
+   * Fetches detailed information of a single animal.
+   * @param term - Term representing the animal (UUID or slug).
+   * @returns Animal entity object.
+   * @throws NotFoundError if the animal is not found.
+   */
+  public async createDog(
+    userId: string,
+    username: string,
+    createDogDto: CreateDogDto
+  ) {
+    const {
+      departmentAdapted,
+      droolingPotential,
+      bark,
+
+      ...rest
+    } = createDogDto;
+
+    const slug = await prisma.animal.generateUniqueSlug({
+      name: rest.name,
+      shelter: username,
+    });
+
+    const animal = await prisma.animal.create({
+      data: {
+        ...rest,
+        createdBy: userId,
+        slug,
+        dog: {
+          create: { departmentAdapted, droolingPotential, bark },
+        },
+      },
+    });
+
+    return animal;
+  }
+
+  /**
+   * Fetches detailed information of a single animal.
+   * @param term - Term representing the animal (UUID or slug).
+   * @returns Animal entity object.
+   * @throws NotFoundError if the animal is not found.
+   */
+  public async getSingle(term: string) {
+    const animal = await this.getAnimalFromTerm(term);
+
+    if (!animal) throw new NotFoundError('Animal not found');
+
+    const animalDetail = AnimalEntity.fromObjectDetail(animal);
+
+    return animalDetail;
+  }
+
+  /**
+   * Fetches a paginated list of animals based on filter criteria.
+   * @param paginationDto - DTO containing pagination parameters.
+   * @param animalFilterDto - DTO containing animal filter criteria.
+   * @returns Object containing paginated list of animals.
+   */
   public async getAll(
     paginationDto: PaginationDto,
     animalFilterDto: AnimalFilterDto
@@ -191,49 +309,12 @@ export class AnimalService {
     };
   }
 
-  private buildQuery(updateAnimalDto: UpdateAnimalDto) {
-    const updatedAt = new Date();
-
-    let query: any;
-
-    const {
-      departmentAdapted,
-      droolingPotential,
-      bark,
-      playLevel,
-      kidsFriendly,
-      toiletTrained,
-      scratchPotential,
-      type,
-      ...common
-    } = updateAnimalDto;
-
-    query = {
-      ...common,
-      updatedAt,
-      cat:
-        type === 'cat'
-          ? {
-              playLevel,
-              kidsFriendly,
-              toiletTrained,
-              scratchPotential,
-            }
-          : undefined,
-      dog:
-        type === 'dog'
-          ? {
-              droolingPotential,
-              departmentAdapted,
-              bark,
-            }
-          : undefined,
-    };
-
-    return query;
-  }
-
   //* TODO: Strong Type Query
+  /**
+   * Sends notifications for an updated animal.
+   * @param animalId - ID of the updated animal.
+   * @param query - Query object containing notification details.
+   */
   private async sendNotifications(animalId: string, query: any) {
     const favs = await prisma.animal.findUnique({
       where: { id: animalId },
@@ -267,10 +348,17 @@ export class AnimalService {
     });
   }
 
+  /**
+   * Updates information of an existing animal.
+   * @param updateAnimalDto - DTO containing updated animal information.
+   * @param user - PayloadUser object representing the user updating the animal.
+   * @param term - Term representing the animal (UUID or slug).
+   * @returns Updated animal object.
+   */
   public async update(
-    updateAnimalDto: UpdateAnimalDto,
     user: PayloadUser,
-    term: string
+    term: string,
+    updateAnimalDto: UpdateAnimalDto
   ) {
     const animal = await this.getAnimalFromTerm(term);
 
@@ -288,6 +376,11 @@ export class AnimalService {
     return updatedAnimal;
   }
 
+  /**
+   * Deletes an animal.
+   * @param user - PayloadUser object representing the user deleting the animal.
+   * @param term - Term representing the animal (UUID or slug).
+   */
   public async delete(user: PayloadUser, term: string) {
     const animal = await this.getAnimalFromTerm(term);
 
@@ -301,34 +394,17 @@ export class AnimalService {
       await this.s3Service.deleteFiles(imagesToDelete);
   }
 
-  private async buildImages(
-    images: string[],
-    deleteImages: string[],
-    files: Express.MulterS3.File[]
-  ) {
-    let resultImages: string[] = [];
-
-    if (images)
-      resultImages = images.filter((image) => !deleteImages.includes(image));
-
-    if (deleteImages.length > 0) await this.s3Service.deleteFiles(deleteImages);
-
-    if (files && files.length > 0) {
-      const uploadedImages = files.map((file) => file.key);
-      resultImages = [...resultImages, ...uploadedImages];
-    }
-
-    resultImages = resultImages.filter(
-      (image, index, array) => array.indexOf(image) === index
-    );
-
-    return resultImages;
-  }
-
+  /**
+   * Updates images of an existing animal.
+   * @param term - Term representing the animal (UUID or slug).
+   * @param files - Array of files representing new images.
+   * @param user - PayloadUser object representing the user updating the images.
+   * @param deleteImages - Array of image URLs to delete.
+   */
   public async updateImages(
+    user: PayloadUser,
     term: string,
     files: Express.MulterS3.File[],
-    user: PayloadUser,
     deleteImages: string[]
   ) {
     const animal = await this.getAnimalFromTerm(term);
@@ -345,6 +421,12 @@ export class AnimalService {
     });
   }
 
+  /**
+   * Adds an animal to user's favorites.
+   * @param userId - ID of the user.
+   * @param animalId - ID of the animal to add to favorites.
+   * @returns Updated animal object.
+   */
   public async addFavorite(userId: string, animalId: string) {
     const animal = await prisma.animal.findUnique({ where: { id: animalId } });
 
@@ -383,6 +465,12 @@ export class AnimalService {
     return updatedFavs;
   }
 
+  /**
+   * Removes an animal from user's favorites.
+   * @param userId - ID of the user.
+   * @param animalId - ID of the animal to remove from favorites.
+   * @returns Updated animal object.
+   */
   public async removeFavorite(userId: string, animalId: string) {
     const animal = await prisma.animal.findUnique({ where: { id: animalId } });
 
@@ -401,19 +489,21 @@ export class AnimalService {
       throw new BadRequestError('Not in favorites yet');
 
     //* TODO: Prisma transition
-    await prisma.animal.update({
-      where: { id: animalId },
-      data: {
-        userFav: {
-          disconnect: { id: userId },
-        },
-      },
-    });
 
-    const updatedFavs = await prisma.animal.update({
-      where: { id: animalId },
-      data: { numFavs: { decrement: 1 } },
-    });
+    const [_, updatedFavs] = await prisma.$transaction([
+      prisma.animal.update({
+        where: { id: animalId },
+        data: {
+          userFav: {
+            disconnect: { id: userId },
+          },
+        },
+      }),
+      prisma.animal.update({
+        where: { id: animalId },
+        data: { numFavs: { decrement: 1 } },
+      }),
+    ]);
 
     return updatedFavs;
   }
