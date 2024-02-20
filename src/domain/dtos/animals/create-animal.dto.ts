@@ -15,6 +15,9 @@ import {
   type,
 } from '../../interfaces/animal.interface';
 
+/**
+ * DTO (Data Transfer Object) for creating animals.
+ */
 export class CreateAnimalDto {
   @IsEnum(type)
   @Trim()
