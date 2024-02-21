@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config';
-import { AnimalService } from '../services/animal.service';
 import { BadRequestError } from '../../domain';
-import { AnimalEntity } from '../../domain/entities/animals.entity';
+import { AnimalService } from './service';
 
 /**
  * Controller class for handling animal-related HTTP requests.

@@ -13,7 +13,7 @@ import {
   UnauthenticatedError,
 } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
-import { ProducerService } from './producer.service';
+import { ProducerService } from '../common/services/producer.service';
 import { PartialUserResponse } from '../../domain/interfaces';
 
 interface Options {

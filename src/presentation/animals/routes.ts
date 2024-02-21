@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { AnimalController } from './controller';
-import { AnimalService } from '../services/animal.service';
+import { AnimalService } from './service';
 import { JWTAdapter, envs } from '../../config';
 import {
   AuthMiddleware,
@@ -16,7 +16,7 @@ import {
   PaginationDto,
   UpdateAnimalDto,
 } from '../../domain';
-import { ProducerService, S3Service } from '../services';
+import { ProducerService, S3Service } from '../common/services';
 
 export class AnimalRoutes {
   static get routes() {

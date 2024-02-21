@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
-import { UserEntity } from '../../domain/entities/user.entity';
-import { UserService } from '../services/user.service';
-import { AnimalEntity } from '../../domain/entities/animals.entity';
+import { UserService } from './service';
 
 /**
  * Controller class for handling user-related HTTP requests.

@@ -13,7 +13,8 @@ import {
   UpdatePasswordDto,
   UpdateSocialMediaDto,
 } from '../../domain';
-import { UserService, S3Service, ProducerService } from '../services';
+import { S3Service, ProducerService } from '../common/services';
+import { UserService } from './service';
 
 export class UserRoutes {
   static get routes() {

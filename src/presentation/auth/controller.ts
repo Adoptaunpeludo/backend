@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
-
-import { AuthService } from '../services';
-import { HttpCodes, envs } from '../../config/';
+import { AuthService } from './service';
+import { HttpCodes } from '../../config/';
 import { BadRequestError } from '../../domain';
 import { AttachCookiesToResponse } from '../../utils/response-cookies';
 

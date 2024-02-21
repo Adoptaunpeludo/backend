@@ -7,7 +7,7 @@ import { Request } from 'express';
 import multer from 'multer';
 import multerS3 from 'multer-s3';
 import util from 'util';
-import { BadRequestError } from '../../domain';
+import { BadRequestError } from '../../../domain';
 
 /**
  * S3Service class handles interactions with AWS S3 bucket including file uploads and deletions.
