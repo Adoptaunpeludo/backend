@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { AuthController } from './controller';
 import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
-import { ProducerService } from '../common/services';
+import { QueueService } from '../common/services';
 import { AuthService } from './service';
 import { JWTAdapter, envs } from '../../config';
 import {
@@ -18,10 +18,7 @@ export class AuthRoutes {
 
     const jwt = new JWTAdapter(envs.JWT_SEED);
 
-    const emailService = new ProducerService(
-      envs.RABBITMQ_URL,
-      'email-request'
-    );
+    const emailService = new QueueService(envs.RABBITMQ_URL, 'email-request');
 
     const authService = new AuthService(jwt, emailService);
     const authController = new AuthController(authService);

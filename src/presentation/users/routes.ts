@@ -13,7 +13,7 @@ import {
   UpdatePasswordDto,
   UpdateSocialMediaDto,
 } from '../../domain';
-import { S3Service, ProducerService } from '../common/services';
+import { S3Service, QueueService } from '../common/services';
 import { UserService } from './service';
 
 export class UserRoutes {
@@ -28,7 +28,7 @@ export class UserRoutes {
       envs.AWS_SECRET_ACCESS_KEY,
       envs.AWS_BUCKET
     );
-    const notificationService = new ProducerService(
+    const notificationService = new QueueService(
       envs.RABBITMQ_URL,
       'notification-request'
     );

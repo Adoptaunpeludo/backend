@@ -599,15 +599,39 @@ export class UserService {
   /**
    * Fetches notifications for a user.
    * @param id - ID of the user.
-   * @returns Array of notification objects.
+   * @param paginationDto - DTO containing pagination parameters.
+   * @returns Object containing paginated list of user's notifications.
    */
-  public async getNotifications(id: string) {
-    const notifications = await prisma.notification.findMany({
-      where: {
-        userId: id,
-      },
-    });
+  public async getNotifications(id: string, paginationDto: PaginationDto) {
+    const { limit = 5, page = 1 } = paginationDto;
 
-    return notifications;
+    const [total, notifications] = await prisma.$transaction([
+      prisma.notification.count({ where: { userId: id } }),
+      prisma.notification.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where: {
+          userId: id,
+        },
+      }),
+    ]);
+
+    const maxPages = Math.ceil(total / limit);
+
+    return {
+      currentPage: page,
+      maxPages,
+      limit,
+      total,
+      next:
+        page + 1 <= maxPages
+          ? `/api/users/me/notifications?page=${page + 1}&limit=${limit}`
+          : null,
+      prev:
+        page - 1 > 0
+          ? `/api/users/me/notifications?page=${page - 1}&limit=${limit}`
+          : null,
+      notifications,
+    };
   }
 }
