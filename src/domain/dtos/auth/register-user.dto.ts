@@ -15,6 +15,10 @@ enum UserTypes {
   SHELTER = 'shelter',
   ADOPTER = 'adopter',
 }
+
+/**
+ * DTO (Data Transfer Object) for register users.
+ */
 export class RegisterUserDto {
   @IsString()
   @Trim()

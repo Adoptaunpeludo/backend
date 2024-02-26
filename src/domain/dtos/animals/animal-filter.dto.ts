@@ -20,6 +20,9 @@ enum ageRange {
   S = 'senior',
 }
 
+/**
+ * DTO (Data Transfer Object) for filtering animals.
+ */
 export class AnimalFilterDto {
   @IsOptional()
   @Trim()

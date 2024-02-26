@@ -15,6 +15,9 @@ export enum AllowedMediaItems {
   Instagram = 'instagram',
 }
 
+/**
+ * DTO (Data Transfer Object) for Social Media.
+ */
 export class SocialMediaDto {
   @IsEnum(AllowedMediaItems)
   name!: AllowedMedia;
@@ -25,6 +28,9 @@ export class SocialMediaDto {
   url?: string;
 }
 
+/**
+ * DTO (Data Transfer Object) for updating Social Media.
+ */
 export class UpdateSocialMediaDto {
   @IsArray()
   @ValidateNested({ each: true })

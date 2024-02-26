@@ -27,6 +27,9 @@ enum enumFacilities {
   PR = 'private_residences',
 }
 
+/**
+ * DTO (Data Transfer Object) for updating user.
+ */
 export class UpdateUserDto {
   @IsOptional()
   @IsString()

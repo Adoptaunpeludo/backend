@@ -3,6 +3,9 @@ import { plainToClass, plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { SocialMediaDto, UpdateSocialMediaDto } from '../../domain/dtos';
 
+/**
+ * Middleware class for validating social media data.
+ */
 export class SocialMediaValidation {
   static async validate(req: Request, res: Response, next: NextFunction) {
     try {
@@ -10,9 +13,9 @@ export class SocialMediaValidation {
         SocialMediaDto,
         req.body.socialMedia
       );
-      
+
       const errors = await validate(updateSocialMediaDto);
-      
+
       if (errors.length > 0) {
         const validationErrors = errors
           .map((error) => (Object as any).values(error.constraints))

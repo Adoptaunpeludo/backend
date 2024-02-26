@@ -1,18 +1,29 @@
 import { Request, Response } from 'express';
 import { HttpCodes } from '../../config/http-status-codes.adapter';
-import { UserEntity } from '../../domain/entities/user.entity';
-import { UserService } from '../services/user.service';
-import { AnimalEntity } from '../../domain/entities/animals.entity';
+import { UserService } from './service';
 
+/**
+ * Controller class for handling user-related HTTP requests.
+ */
 export class UserController {
+  /**
+   * Constructs an instance of UserController.
+   * @param userService - Instance of UserService for handling user-related operations.
+   */
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * Retrieves all users.
+   */
   getAllUsers = async (_req: Request, res: Response) => {
     const users = await this.userService.getAllUsers();
 
     res.status(HttpCodes.OK).json(users);
   };
 
+  /**
+   * Retrieves the current user.
+   */
   getCurrentUser = async (req: Request, res: Response) => {
     const { email } = req.user;
 
@@ -21,6 +32,9 @@ export class UserController {
     res.status(HttpCodes.OK).json(user);
   };
 
+  /**
+   * Retrieves a single user by ID.
+   */
   getSingleUser = async (req: Request, res: Response) => {
     const { id } = req.params;
 
@@ -29,6 +43,9 @@ export class UserController {
     res.status(HttpCodes.OK).json(user);
   };
 
+  /**
+   * Deletes the current user.
+   */
   deleteUser = async (req: Request, res: Response) => {
     await this.userService.deleteUser(req.user);
 
@@ -45,6 +62,9 @@ export class UserController {
     res.status(HttpCodes.OK).json({ message: 'User deleted successfully' });
   };
 
+  /**
+   * Updates user information.
+   */
   updateUser = async (req: Request, res: Response) => {
     const updates = req.body;
     const { user } = req;
@@ -56,6 +76,9 @@ export class UserController {
       .json({ message: 'User updated successfully', updatedUser });
   };
 
+  /**
+   * Changes the user's password.
+   */
   changePassword = async (req: Request, res: Response) => {
     const { oldPassword, newPassword } = req.body;
     const { id } = req.user;
@@ -65,6 +88,9 @@ export class UserController {
     res.status(HttpCodes.OK).json({ message: 'Password updated' });
   };
 
+  /**
+   * Updates user's social media information.
+   */
   updateSocialMedia = async (req: Request, res: Response) => {
     const updates = req.body;
     const user = req.user;
@@ -76,6 +102,9 @@ export class UserController {
       .json({ message: 'Social media updated successfully' });
   };
 
+  /**
+   * Uploads user images.
+   */
   uploadImages = async (req: Request, res: Response) => {
     const { files, user } = req;
     const { deleteImages } = req.body;
@@ -96,6 +125,9 @@ export class UserController {
     res.status(HttpCodes.OK).json({ message: 'Images updated successfully' });
   };
 
+  /**
+   * Retrieves user's favorite animals.
+   */
   getUserFavorites = async (req: Request, res: Response) => {
     const { limit = 10, page = 1, ...filters } = req.query;
 
@@ -108,6 +140,9 @@ export class UserController {
     res.status(HttpCodes.OK).json({ ...pagination, animals });
   };
 
+  /**
+   * Retrieves user's animals.
+   */
   getUserAnimals = async (req: Request, res: Response) => {
     const { limit = 10, page = 1, ...filters } = req.query;
     const { id } = req.user;
@@ -121,6 +156,9 @@ export class UserController {
     res.status(HttpCodes.OK).json({ ...pagination, animals });
   };
 
+  /**
+   * Retrieves user's notifications.
+   */
   getUserNotifications = async (req: Request, res: Response) => {
     const user = req.user;
 

@@ -13,6 +13,9 @@ interface Options {
   publicPath?: string;
 }
 
+/**
+ * Server class to start and stop the Express server.
+ */
 export class Server {
   public readonly app = express();
   public serverListener?: any;
@@ -20,6 +23,10 @@ export class Server {
   private readonly publicPath: string;
   private readonly routes: Router;
 
+  /**
+   * Constructor to initialize the Server instance.
+   * @param options - Server options object.
+   */
   constructor(options: Options) {
     const { port, routes, publicPath = 'public' } = options;
 
@@ -28,6 +35,9 @@ export class Server {
     this.routes = routes;
   }
 
+  /**
+   * Method to start the server.
+   */
   async start() {
     //* Middlewares
     this.app.use(express.json()); // raw
@@ -51,6 +61,7 @@ export class Server {
     //* Error Handler Middleware
     this.app.use(ErrorHandlerMiddleware.handle);
 
+    //* Start the server and connect to the database
     this.serverListener = this.app.listen(this.port, async () => {
       try {
         await prisma.$connect();

@@ -1,6 +1,9 @@
 import { Trim } from 'class-sanitizer';
 import { IsString, MinLength } from 'class-validator';
 
+/**
+ * DTO (Data Transfer Object) for update password.
+ */
 export class UpdatePasswordDto {
   @IsString()
   @Trim()

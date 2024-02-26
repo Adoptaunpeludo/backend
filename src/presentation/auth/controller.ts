@@ -1,13 +1,22 @@
 import { Request, Response } from 'express';
-
-import { AuthService } from '../services';
-import { HttpCodes, envs } from '../../config/';
+import { AuthService } from './service';
+import { HttpCodes } from '../../config/';
 import { BadRequestError } from '../../domain';
 import { AttachCookiesToResponse } from '../../utils/response-cookies';
 
+/**
+ * Controller class for handling authentication-related HTTP requests.
+ */
 export class AuthController {
+  /**
+   * Constructs an instance of AuthController.
+   * @param authService - Instance of AuthService for handling authentication-related operations.
+   */
   constructor(private readonly authService: AuthService) {}
 
+  /**
+   * Registers a new user.
+   */
   register = async (req: Request, res: Response) => {
     const { role } = req.body;
 
@@ -24,6 +33,9 @@ export class AuthController {
     });
   };
 
+  /**
+   * Resends the verification token to a user's email.
+   */
   resendVerificationToken = async (req: Request, res: Response) => {
     const { email } = req.params;
 
@@ -37,6 +49,9 @@ export class AuthController {
     });
   };
 
+  /**
+   * Logs in a user.
+   */
   login = async (req: Request, res: Response) => {
     const userAgent = req.headers['user-agent'] || '';
     const ip = req.ip || '';
@@ -55,6 +70,9 @@ export class AuthController {
     res.status(HttpCodes.OK).json({ message: 'User successfully logged in.' });
   };
 
+  /**
+   * Logs out a user.
+   */
   logout = async (req: Request, res: Response) => {
     await this.authService.logout(req.user.id!);
 
@@ -71,6 +89,9 @@ export class AuthController {
     res.sendStatus(HttpCodes.OK);
   };
 
+  /**
+   * Verifies a user's email.
+   */
   verifyEmail = async (req: Request, res: Response) => {
     const { token } = req.params;
 
@@ -79,6 +100,9 @@ export class AuthController {
     res.status(HttpCodes.OK).json({ message: 'Email validated', token });
   };
 
+  /**
+   * Sends a reset password email to a user.
+   */
   forgotPassword = async (req: Request, res: Response) => {
     const { email } = req.body;
 
@@ -89,6 +113,9 @@ export class AuthController {
       .json({ message: 'Reset password email sent successfully', token });
   };
 
+  /**
+   * Resets a user's password.
+   */
   resetPassword = async (req: Request, res: Response) => {
     const { password } = req.body;
     const { token } = req.params;

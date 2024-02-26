@@ -1,6 +1,9 @@
 import { Trim } from 'class-sanitizer';
 import { IsEmail, IsString, MinLength } from 'class-validator';
 
+/**
+ * DTO (Data Transfer Object) for login users.
+ */
 export class LoginUserDto {
   @IsEmail()
   @Trim()

@@ -2,7 +2,8 @@ import { Router } from 'express';
 
 import { AuthController } from './controller';
 import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
-import { AuthService, ProducerService } from '../services';
+import { ProducerService } from '../common/services';
+import { AuthService } from './service';
 import { JWTAdapter, envs } from '../../config';
 import {
   LoginUserDto,

@@ -21,6 +21,9 @@ import {
 } from '../../interfaces/animal.interface';
 import { Transform, Type } from 'class-transformer';
 
+/**
+ * DTO (Data Transfer Object) for updating animals.
+ */
 export class UpdateAnimalDto {
   @IsOptional()
   @IsEnum(type)
