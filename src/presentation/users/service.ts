@@ -599,15 +599,81 @@ export class UserService {
   /**
    * Fetches notifications for a user.
    * @param id - ID of the user.
-   * @returns Array of notification objects.
+   * @param paginationDto - DTO containing pagination parameters.
+   * @returns Object containing paginated list of user's notifications.
    */
-  public async getNotifications(id: string) {
-    const notifications = await prisma.notification.findMany({
+  public async getNotifications(id: string, paginationDto: PaginationDto) {
+    const { limit = 5, page = 1 } = paginationDto;
+
+    const [total, notifications] = await prisma.$transaction([
+      prisma.notification.count({ where: { userId: id } }),
+      prisma.notification.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where: {
+          userId: id,
+        },
+      }),
+    ]);
+
+    const maxPages = Math.ceil(total / limit);
+
+    return {
+      currentPage: page,
+      maxPages,
+      limit,
+      total,
+      next:
+        page + 1 <= maxPages
+          ? `/api/users/me/notifications?page=${page + 1}&limit=${limit}`
+          : null,
+      prev:
+        page - 1 > 0
+          ? `/api/users/me/notifications?page=${page - 1}&limit=${limit}`
+          : null,
+      notifications,
+    };
+  }
+
+  /**
+   * Marks a notification as read for a user.
+   * @param user - PayloadUser object representing the user.
+   * @param id - ID of the notification to mark as read or 'all' to mark all notifications as read
+   */
+  public async readNotification(user: PayloadUser, id: string) {
+    if (id === 'all')
+      await prisma.notification.updateMany({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          isRead: true,
+          isReadAt: new Date(),
+        },
+      });
+
+    const notification = await prisma.notification.findUnique({
       where: {
-        userId: id,
+        id,
       },
     });
 
-    return notifications;
+    if (!notification) throw new NotFoundError('Notification not found');
+    if (notification.isRead)
+      throw new BadRequestError('Notification is already read');
+
+    CheckPermissions.check(user, notification.userId);
+
+    await prisma.notification.update({
+      where: {
+        id: id,
+      },
+      data: {
+        isRead: true,
+        isReadAt: new Date(),
+      },
+    });
+
+    return true;
   }
 }

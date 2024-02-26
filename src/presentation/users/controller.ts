@@ -160,10 +160,23 @@ export class UserController {
    * Retrieves user's notifications.
    */
   getUserNotifications = async (req: Request, res: Response) => {
+    const { limit = 5, page = 1 } = req.query;
     const user = req.user;
 
-    const notifications = await this.userService.getNotifications(user.id!);
+    const notifications = await this.userService.getNotifications(user.id!, {
+      limit: +limit,
+      page: +page,
+    });
 
     res.status(HttpCodes.OK).json(notifications);
+  };
+
+  readNotification = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user;
+
+    await this.userService.readNotification(user, id);
+
+    res.status(HttpCodes.OK).json({ message: 'Notification marked as read' });
   };
 }

@@ -38,9 +38,9 @@ model Notification {
   id        String    @id @default(uuid())
   userId    String
   message   String
-  readed    Boolean   @default(false)
+  isRead    Boolean   @default(false)
   createdAt DateTime  @default(now())
-  readedAt  DateTime?
+  isReadAt  DateTime?
   queue     String
   User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -78,7 +78,6 @@ model Admin {
 model ContactInfo {
   id          String @id
   phoneNumber String
-  address     String
   cityId      Int
   city        City   @relation(fields: [cityId], references: [id])
   user        User   @relation(fields: [id], references: [id], onDelete: Cascade)

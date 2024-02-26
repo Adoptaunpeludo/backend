@@ -13,7 +13,7 @@ import {
   UpdatePasswordDto,
   UpdateSocialMediaDto,
 } from '../../domain';
-import { S3Service, ProducerService } from '../common/services';
+import { S3Service, QueueService } from '../common/services';
 import { UserService } from './service';
 
 export class UserRoutes {
@@ -28,7 +28,7 @@ export class UserRoutes {
       envs.AWS_SECRET_ACCESS_KEY,
       envs.AWS_BUCKET
     );
-    const notificationService = new ProducerService(
+    const notificationService = new QueueService(
       envs.RABBITMQ_URL,
       'notification-request'
     );
@@ -38,21 +38,27 @@ export class UserRoutes {
 
     router.use(authMiddleware.authenticateUser);
 
-    router.get('/me', userController.getCurrentUser);
-
+    // Favorites
     router.get(
       '/me/favorites',
-      // authMiddleware.authorizePermissions('adopter'),
+      authMiddleware.authorizePermissions('adopter'),
       userController.getUserFavorites
     );
 
+    // Notifications
     router.get('/me/notifications', userController.getUserNotifications);
 
+    router.put('/me/notifications/read/:id', userController.readNotification);
+
+    // Animals
     router.get(
       '/me/animals/',
-      // authMiddleware.authorizePermissions('shelter'),
+      authMiddleware.authorizePermissions('shelter'),
       userController.getUserAnimals
     );
+
+    // Current User CRUD
+    router.get('/me', userController.getCurrentUser);
 
     router.put(
       '/me',
@@ -78,13 +84,16 @@ export class UserRoutes {
     router.delete('/me', userController.deleteUser);
 
     router.get('/:id', userController.getSingleUser);
+    // End Current User CRUD
 
+    // All users
     router.get(
       '/',
-      // authMiddleware.authorizePermissions('admin'),
+      authMiddleware.authorizePermissions('admin'),
       userController.getAllUsers
     );
 
+    // Images
     router.post(
       '/upload-images',
       [

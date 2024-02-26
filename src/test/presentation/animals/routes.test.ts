@@ -4,7 +4,6 @@ import { TestUser, cleanDB } from '../auth/routes.test';
 import request from 'supertest';
 import { CreateAnimalDto } from '../../../domain';
 import { gender } from '../../../domain/interfaces';
-import { S3Service } from '../../../presentation/services';
 
 jest.mock('../../../presentation/services/s3.service.ts');
 

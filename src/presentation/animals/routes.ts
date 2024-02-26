@@ -16,7 +16,7 @@ import {
   PaginationDto,
   UpdateAnimalDto,
 } from '../../domain';
-import { ProducerService, S3Service } from '../common/services';
+import { QueueService, S3Service } from '../common/services';
 
 export class AnimalRoutes {
   static get routes() {
@@ -30,11 +30,8 @@ export class AnimalRoutes {
       envs.AWS_SECRET_ACCESS_KEY,
       envs.AWS_BUCKET
     );
-    const emailService = new ProducerService(
-      envs.RABBITMQ_URL,
-      'email-request'
-    );
-    const notificationService = new ProducerService(
+    const emailService = new QueueService(envs.RABBITMQ_URL, 'email-request');
+    const notificationService = new QueueService(
       envs.RABBITMQ_URL,
       'notification-request'
     );
