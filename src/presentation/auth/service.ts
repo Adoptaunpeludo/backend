@@ -13,7 +13,7 @@ import {
   UnauthenticatedError,
 } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
-import { ProducerService } from '../common/services/producer.service';
+import { QueueService } from '../common/services';
 import { PartialUserResponse } from '../../domain/interfaces';
 
 interface Options {
@@ -31,7 +31,7 @@ type TokenType = 'passwordToken' | 'verificationToken';
 export class AuthService {
   constructor(
     private readonly jwt: JWTAdapter,
-    private readonly emailService: ProducerService
+    private readonly emailService: QueueService
   ) {}
 
   /**

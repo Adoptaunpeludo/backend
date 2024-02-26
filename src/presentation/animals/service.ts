@@ -11,7 +11,7 @@ import { AnimalResponse } from '../../domain/interfaces';
 import { PayloadUser } from '../../domain/interfaces/payload-user.interface';
 import { CheckPermissions } from '../../utils';
 import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
-import { S3Service, ProducerService } from '../common/services';
+import { S3Service, QueueService } from '../common/services';
 import { AnimalEntity } from '../../domain/entities/animals.entity';
 
 /**
@@ -21,8 +21,8 @@ import { AnimalEntity } from '../../domain/entities/animals.entity';
 export class AnimalService {
   constructor(
     private readonly s3Service: S3Service,
-    private readonly emailService: ProducerService,
-    private readonly notificationService: ProducerService
+    private readonly emailService: QueueService,
+    private readonly notificationService: QueueService
   ) {}
 
   /**

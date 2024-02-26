@@ -1,2 +1,2 @@
-export * from './producer.service';
+export * from './queue.service';
 export * from './s3.service';

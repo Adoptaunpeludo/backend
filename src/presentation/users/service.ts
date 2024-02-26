@@ -11,7 +11,7 @@ import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-medi
 import { AnimalEntity } from '../../domain/entities/animals.entity';
 import { AnimalResponse, PayloadUser } from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
-import { ProducerService, S3Service } from '../common/services';
+import { QueueService, S3Service } from '../common/services';
 
 /**
  * UserService class handles user-related operations such as fetching users,
@@ -20,7 +20,7 @@ import { ProducerService, S3Service } from '../common/services';
 export class UserService {
   constructor(
     private readonly s3Service: S3Service,
-    private readonly notificationService: ProducerService
+    private readonly notificationService: QueueService
   ) {}
 
   /**

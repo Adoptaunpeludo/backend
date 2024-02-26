@@ -4,7 +4,7 @@ import amqp, { ChannelWrapper } from 'amqp-connection-manager';
 /**
  * ProducerService class for sending messages to RabbitMQ queues.
  */
-export class ProducerService {
+export class QueueService {
   private channelWrapper: ChannelWrapper;
 
   /**
