@@ -170,4 +170,13 @@ export class UserController {
 
     res.status(HttpCodes.OK).json(notifications);
   };
+
+  readNotification = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user;
+
+    await this.userService.readNotification(user, id);
+
+    res.status(HttpCodes.OK).json({ message: 'Notification marked as read' });
+  };
 }

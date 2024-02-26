@@ -634,4 +634,46 @@ export class UserService {
       notifications,
     };
   }
+
+  /**
+   * Marks a notification as read for a user.
+   * @param user - PayloadUser object representing the user.
+   * @param id - ID of the notification to mark as read or 'all' to mark all notifications as read
+   */
+  public async readNotification(user: PayloadUser, id: string) {
+    if (id === 'all')
+      await prisma.notification.updateMany({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          isRead: true,
+          isReadAt: new Date(),
+        },
+      });
+
+    const notification = await prisma.notification.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!notification) throw new NotFoundError('Notification not found');
+    if (notification.isRead)
+      throw new BadRequestError('Notification is already read');
+
+    CheckPermissions.check(user, notification.userId);
+
+    await prisma.notification.update({
+      where: {
+        id: id,
+      },
+      data: {
+        isRead: true,
+        isReadAt: new Date(),
+      },
+    });
+
+    return true;
+  }
 }
