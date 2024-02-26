@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["views"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -12,7 +11,7 @@ model User {
   id                String         @id @default(uuid())
   email             String         @unique
   password          String
-  username          String
+  username          String         @unique
   emailValidated    Boolean        @default(false)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @default(now())
@@ -28,20 +27,20 @@ model User {
   admin             Admin?
   animals           Animal[]       @relation("adopted")
   contactInfo       ContactInfo?
+  notifications     Notification[]
   shelter           Shelter?
   Token             Token?
   userFav           Animal[]       @relation("userFav")
-  notifications     Notification[]
 }
 
 model Notification {
   id        String    @id @default(uuid())
   userId    String
   message   String
-  isRead    Boolean   @default(false)
   createdAt DateTime  @default(now())
-  isReadAt  DateTime?
   queue     String
+  isRead    Boolean   @default(false)
+  isReadAt  DateTime?
   User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
@@ -113,7 +112,6 @@ model Animal {
   adoptedBy     String?
   createdBy     String
   cityId        Int
-  numFavs       Int                     @default(0)
   images        String[]
   easyTrain     Boolean
   energyLevel   energy
@@ -121,6 +119,7 @@ model Animal {
   status        status_pet              @default(awaiting_home)
   type          animal_type
   gender        gender_enum
+  numFavs       Int                     @default(0)
   adopter       User?                   @relation("adopted", fields: [adoptedBy], references: [id])
   city          City                    @relation(fields: [cityId], references: [id])
   shelter       Shelter                 @relation(fields: [createdBy], references: [id], onDelete: Cascade)
@@ -150,33 +149,6 @@ model Cat {
   scratchPotential potential
   toiletTrained    Boolean
   animal           Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
-}
-
-view UserInfo {
-  id                   String             @unique
-  email                String?
-  username             String?
-  firstName            String?
-  lastName             String?
-  dni                  String?
-  role                 user_roles?
-  createdAt            DateTime?
-  updatedAt            DateTime?
-  verifiedAt           DateTime?
-  avatar               String?
-  isOnline             Boolean?
-  description          String?
-  cif                  String?
-  legalForms           legal_forms?
-  veterinaryFacilities Boolean?
-  facilities           facilities?
-  ownVet               Boolean?
-  images               String[]
-  phoneNumber          String?
-  address              String?
-  city                 String?
-  name                 social_media_enum?
-  url                  String?
 }
 
 enum user_roles {

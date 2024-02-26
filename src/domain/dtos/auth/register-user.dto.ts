@@ -37,27 +37,27 @@ export class RegisterUserDto {
   @IsEnum(UserTypes)
   role!: UserRoles;
 
-  @IsString()
-  @Trim()
-  dni!: string;
+  // @IsString()
+  // @Trim()
+  // dni!: string;
 
-  @IsString()
-  @Trim()
-  firstName!: string;
+  // @IsString()
+  // @Trim()
+  // firstName!: string;
 
-  @IsString()
-  @Trim()
-  lastName!: string;
+  // @IsString()
+  // @Trim()
+  // lastName!: string;
 
-  @IsString()
-  @Trim()
-  phoneNumber!: string;
+  // @IsString()
+  // @Trim()
+  // phoneNumber!: string;
 
-  @IsString()
-  @Trim()
-  address!: string;
+  // @IsString()
+  // @Trim()
+  // address!: string;
 
-  @IsNumber()
-  @Type(() => Number)
-  cityId!: number;
+  // @IsNumber()
+  // @Type(() => Number)
+  // cityId!: number;
 }
