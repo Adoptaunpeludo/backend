@@ -17,7 +17,6 @@ export class UserEntity {
     const user = {
       ...commonUser,
       phoneNumber: contactInfo?.phoneNumber,
-      address: contactInfo?.address,
       city: contactInfo?.city?.name,
     };
 

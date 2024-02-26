@@ -19,10 +19,10 @@ model User {
   role              user_roles
   verificationToken String         @default("")
   passwordToken     String         @default("")
-  dni               String
-  firstName         String
+  dni               String?
+  firstName         String?
   isOnline          Boolean        @default(false)
-  lastName          String
+  lastName          String?
   verifiedAt        DateTime?
   admin             Admin?
   animals           Animal[]       @relation("adopted")

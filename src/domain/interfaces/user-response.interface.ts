@@ -26,9 +26,9 @@ export interface UserResponse {
   email: string;
   password: string;
   username: string;
-  firstName: string;
-  lastName: string;
-  dni: string;
+  firstName: string | null;
+  lastName: string | null;
+  dni: string | null;
   emailValidated: boolean;
   verificationToken: string;
   passwordToken: string;
@@ -51,7 +51,6 @@ export interface Admin {
 export interface ContactInfo {
   id: string;
   phoneNumber: string;
-  address: string;
   cityId: number;
   city: City;
 }

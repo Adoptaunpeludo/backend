@@ -81,9 +81,6 @@ export class AuthService {
       password: hashedPassword,
       role: registerUserDto.role,
       username: registerUserDto.username,
-      dni: registerUserDto.dni,
-      firstName: registerUserDto.firstName,
-      lastName: registerUserDto.lastName,
       verificationToken: verificationToken,
       shelter:
         registerUserDto.role === 'shelter'
@@ -95,13 +92,6 @@ export class AuthService {
               },
             }
           : undefined,
-      contactInfo: {
-        create: {
-          phoneNumber: registerUserDto.phoneNumber,
-          address: registerUserDto.address,
-          cityId: registerUserDto.cityId,
-        },
-      },
     };
   }
 
