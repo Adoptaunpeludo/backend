@@ -78,7 +78,6 @@ model Admin {
 model ContactInfo {
   id          String @id
   phoneNumber String
-  address     String
   cityId      Int
   city        City   @relation(fields: [cityId], references: [id])
   user        User   @relation(fields: [id], references: [id], onDelete: Cascade)
