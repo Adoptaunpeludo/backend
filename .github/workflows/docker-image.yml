@@ -75,7 +75,7 @@ jobs:
 
     - name: Move to project folder
       run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'docker_flow.sh backend jaderodev/aup-backend:latest'
+        ssh -o StrictHostKeyChecking=no -i key.pem ubuntu@3.228.164.55 'docker_flow.sh backend jaderodev/aup-backend:latest aup-backend'
 
 
     
