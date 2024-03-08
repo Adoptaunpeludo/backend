@@ -44,7 +44,13 @@ export class Server {
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
     this.app.use(cookieParser(envs.JWT_SEED));
-    this.app.use(cors());
+
+    const corsOptions = {
+      origin: 'http://localhost:5173',
+      credentials: true,
+    };
+
+    this.app.use(cors(corsOptions));
 
     //* Public Folder
     this.app.use(express.static(this.publicPath));
