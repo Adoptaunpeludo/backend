@@ -134,6 +134,24 @@ model Animal {
   @@index([createdBy])
 }
 
+model ChatRoom {
+  id        String @id @default(uuid())
+  adopterId String
+  animalId  String
+  shelterId String
+
+  messages ChatMessage[]
+
+  @@unique([adopterId, animalId, shelterId])
+}
+
+model ChatMessage {
+  id         String    @id @default(uuid())
+  ChatRoom   ChatRoom? @relation(fields: [chatRoomId], references: [id])
+  chatRoomId String?
+  message    Json
+}
+
 model Dog {
   id                String    @id
   departmentAdapted Boolean
