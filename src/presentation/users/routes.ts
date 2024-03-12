@@ -89,7 +89,7 @@ export class UserRoutes {
     // All users
     router.get(
       '/',
-      authMiddleware.authorizePermissions('admin'),
+      // authMiddleware.authorizePermissions('admin'),
       userController.getAllUsers
     );
 

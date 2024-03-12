@@ -1,81 +1,422 @@
 import { BcryptAdapter } from '../../config';
+import {
+  facilities,
+  legalForms,
+} from '../../domain/interfaces/user-response.interface';
 
-export const seedData = [
+interface Cat {
+  playLevel: 'none' | 'low' | 'moderate' | 'high' | 'excessive';
+  kidsFriendly: boolean;
+  scratchPotential: 'none' | 'low' | 'moderate' | 'high' | 'excessive';
+  toiletTrained: boolean;
+}
+
+interface Dog {
+  departmentAdapted: boolean;
+  droolingPotential: 'none' | 'low' | 'moderate' | 'high' | 'excessive';
+  bark: 'none' | 'low' | 'moderate' | 'high' | 'excessive';
+}
+
+interface Animal {
+  name: string;
+  age: number;
+  description: string;
+  breed: string;
+  size: 'small' | 'medium' | 'big' | 'very_big';
+  publishStatus: 'pending' | 'rejected' | 'published';
+  cityId: number;
+  easyTrain: boolean;
+  energyLevel: 'light' | 'moderate' | 'high';
+  moltingAmount: 'light' | 'moderate' | 'heavy' | 'no_shedding';
+  status: 'adopted' | 'fostered' | 'reserved' | 'awaiting_home';
+  type: 'cat' | 'dog';
+  gender: 'male' | 'female';
+  cat?: Cat;
+  dog?: Dog;
+}
+
+interface ContactInfo {
+  phoneNumber: string;
+  cityId: number;
+}
+
+interface SocialMedia {
+  name: 'facebook' | 'xtweet' | 'instagram';
+  url: string;
+}
+
+interface Shelter {
+  description: string;
+  cif: string;
+  facilities:
+    | 'foster_homes'
+    | 'municipal_or_public_facilities'
+    | 'leased_facilities'
+    | 'owned_facilities'
+    | 'private_residences';
+  legalForms:
+    | 'association'
+    | 'public_utility_association'
+    | 'autonomous_foundation'
+    | 'national_foundation'
+    | 'other';
+  ownVet: boolean;
+  veterinaryFacilities: boolean;
+  socialMedia: SocialMedia[];
+}
+
+interface User {
+  email: string;
+  password: string;
+  username: string;
+  emailValidated: boolean;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  avatar?: string;
+  role: 'shelter' | 'adopter' | 'admin';
+  dni?: string;
+  firstName?: string;
+  lastName?: string;
+  verifiedAt?: string | Date | null;
+  contactInfo: ContactInfo;
+  shelter?: Shelter;
+}
+
+export const animals: Animal[] = [
+  {
+    name: 'Felix',
+    age: 2,
+    description: 'Friendly and playful',
+    breed: 'Siamese',
+    size: 'small',
+    publishStatus: 'published',
+    cityId: 1,
+    easyTrain: true,
+    energyLevel: 'moderate',
+    moltingAmount: 'light',
+    status: 'awaiting_home',
+    type: 'cat',
+    gender: 'male',
+    cat: {
+      playLevel: 'moderate',
+      kidsFriendly: true,
+      scratchPotential: 'moderate',
+      toiletTrained: true,
+    },
+  },
+  {
+    name: 'Luna',
+    age: 1.5,
+    description: 'Sweet and affectionate',
+    breed: 'Maine Coon',
+    size: 'medium',
+    publishStatus: 'published',
+    cityId: 2,
+    easyTrain: false,
+    energyLevel: 'high',
+    moltingAmount: 'moderate',
+    status: 'awaiting_home',
+    type: 'cat',
+    gender: 'female',
+    cat: {
+      playLevel: 'low',
+      kidsFriendly: false,
+      scratchPotential: 'high',
+      toiletTrained: false,
+    },
+  },
+  {
+    name: 'Simba',
+    age: 3,
+    description: 'Independent and curious',
+    breed: 'Bengal',
+    size: 'medium',
+    publishStatus: 'published',
+    cityId: 3,
+    easyTrain: true,
+    energyLevel: 'moderate',
+    moltingAmount: 'light',
+    status: 'awaiting_home',
+    type: 'cat',
+    gender: 'male',
+    cat: {
+      playLevel: 'high',
+      kidsFriendly: true,
+      scratchPotential: 'low',
+      toiletTrained: true,
+    },
+  },
+  {
+    name: 'Milo',
+    age: 1,
+    description: 'Playful and adventurous',
+    breed: 'Persian',
+    size: 'small',
+    publishStatus: 'published',
+
+    cityId: 4,
+
+    easyTrain: true,
+    energyLevel: 'high',
+    moltingAmount: 'light',
+    status: 'awaiting_home',
+    type: 'cat',
+    gender: 'male',
+    cat: {
+      playLevel: 'moderate',
+      kidsFriendly: false,
+      scratchPotential: 'high',
+      toiletTrained: true,
+    },
+  },
+  {
+    name: 'Whiskers',
+    age: 2.5,
+    description: 'Gentle and calm',
+    breed: 'Ragdoll',
+    size: 'big',
+    publishStatus: 'published',
+
+    cityId: 5,
+
+    easyTrain: false,
+    energyLevel: 'moderate',
+    moltingAmount: 'no_shedding',
+    status: 'awaiting_home',
+    type: 'cat',
+    gender: 'female',
+    cat: {
+      playLevel: 'low',
+      kidsFriendly: true,
+      scratchPotential: 'moderate',
+      toiletTrained: false,
+    },
+  },
+  {
+    name: 'Buddy',
+    age: 2,
+    description: 'Friendly and loyal',
+    breed: 'Labrador Retriever',
+    size: 'big',
+    publishStatus: 'published',
+
+    cityId: 6,
+
+    easyTrain: true,
+    energyLevel: 'high',
+    moltingAmount: 'moderate',
+    status: 'awaiting_home',
+    type: 'dog',
+    gender: 'male',
+    dog: {
+      departmentAdapted: true,
+      droolingPotential: 'none',
+      bark: 'moderate',
+    },
+  },
+  {
+    name: 'Daisy',
+    age: 3,
+    description: 'Energetic and playful',
+    breed: 'Golden Retriever',
+    size: 'big',
+    publishStatus: 'published',
+
+    cityId: 7,
+
+    easyTrain: false,
+    energyLevel: 'high',
+    moltingAmount: 'heavy',
+    status: 'awaiting_home',
+    type: 'dog',
+    gender: 'female',
+    dog: {
+      departmentAdapted: false,
+      droolingPotential: 'low',
+      bark: 'excessive',
+    },
+  },
+  {
+    name: 'Rocky',
+    age: 2,
+    description: 'Adventurous and playful',
+    breed: 'German Shepherd',
+    size: 'big',
+    publishStatus: 'published',
+
+    cityId: 8,
+
+    easyTrain: true,
+    energyLevel: 'high',
+    moltingAmount: 'moderate',
+    status: 'awaiting_home',
+    type: 'dog',
+    gender: 'male',
+    dog: {
+      departmentAdapted: true,
+      droolingPotential: 'none',
+      bark: 'low',
+    },
+  },
+  {
+    name: 'Lucy',
+    age: 1.5,
+    description: 'Affectionate and friendly',
+    breed: 'Beagle',
+    size: 'medium',
+    publishStatus: 'published',
+
+    cityId: 9,
+
+    easyTrain: true,
+    energyLevel: 'moderate',
+    moltingAmount: 'moderate',
+    status: 'awaiting_home',
+    type: 'dog',
+    gender: 'female',
+    dog: {
+      departmentAdapted: false,
+      droolingPotential: 'moderate',
+      bark: 'moderate',
+    },
+  },
+  {
+    name: 'Max',
+    age: 2,
+    description: 'Playful and energetic',
+    breed: 'Siberian Husky',
+    size: 'big',
+    publishStatus: 'published',
+
+    cityId: 10,
+
+    easyTrain: false,
+    energyLevel: 'high',
+    moltingAmount: 'heavy',
+    status: 'awaiting_home',
+    type: 'dog',
+    gender: 'male',
+    dog: {
+      departmentAdapted: true,
+      droolingPotential: 'low',
+      bark: 'low',
+    },
+  },
+];
+
+export const users: User[] = [
   {
     email: 'shelter1@example.com',
-    password: BcryptAdapter.hash('12345678'),
-    image: 'shelter1.png',
+    password: 'shelter1password',
+    username: 'shelter1',
+    emailValidated: true,
+    createdAt: '2024-03-12T00:00:00Z',
+    updatedAt: '2024-03-12T00:00:00Z',
     role: 'shelter',
-    name: 'Shelter2',
+    dni: '77777777X',
+    firstName: 'Shelter',
+    lastName: 'One',
+    verifiedAt: null,
     contactInfo: {
-      phone_number: '123456789',
-      address: '13 rue del percebe',
-      cityID: 1,
+      phoneNumber: '+3466666667',
+      cityId: 7,
     },
-    socialMedia: [
-      {
-        name: 'facebook',
-        url: 'http://facebook.com/shelter',
-      },
-      {
-        name: 'xtweet',
-        url: 'http://twitter.com/shelter',
-      },
-      {
-        name: 'instagram',
-        url: 'http://instagram.com/shelter',
-      },
-    ],
+    shelter: {
+      description: 'Description Shelter One',
+      cif: 'N77777777',
+      facilities: 'foster_homes',
+      legalForms: 'association',
+      ownVet: true,
+      veterinaryFacilities: false,
+      socialMedia: [
+        {
+          name: 'facebook',
+          url: 'shelter1.facebook.com',
+        },
+        {
+          name: 'xtweet',
+          url: 'shelter1.xteet.com',
+        },
+        {
+          name: 'instagram',
+          url: 'shelter1.instagram.com',
+        },
+      ],
+    },
   },
   {
     email: 'shelter2@example.com',
-    password: BcryptAdapter.hash('12345678'),
-    image: 'shelter2.png',
-    name: 'Shelter2',
+    password: 'shelter2password',
+    username: 'shelter2',
+    emailValidated: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
     role: 'shelter',
+    dni: '77777778X',
+    firstName: 'Shelter',
+    lastName: 'Two',
+    verifiedAt: new Date(),
     contactInfo: {
-      phone_number: '987654321',
-      address: '13 rue del percebe',
-      cityID: 1,
+      phoneNumber: '+34666666666',
+      cityId: 27,
     },
-    socialMedia: [
-      {
-        name: 'facebook',
-        url: 'http://facebook.com/shelter',
-      },
-      {
-        name: 'xtweet',
-        url: 'http://twitter.com/shelter',
-      },
-      {
-        name: 'instagram',
-        url: 'http://instagram.com/shelter',
-      },
-    ],
+    shelter: {
+      description: 'Description Shelter Two',
+      cif: 'N77777778',
+      facilities: 'leased_facilities',
+      legalForms: 'public_utility_association',
+      ownVet: false,
+      veterinaryFacilities: true,
+      socialMedia: [
+        {
+          name: 'facebook',
+          url: 'shelter2.facebook.com',
+        },
+        {
+          name: 'xtweet',
+          url: 'shelter2.xteet.com',
+        },
+        {
+          name: 'instagram',
+          url: 'shelter2.instagram.com',
+        },
+      ],
+    },
   },
   {
-    email: 'admin@example.com',
-    password: BcryptAdapter.hash('12345678'),
-    image: 'admin.png',
-    name: 'AdminName',
-    role: 'admin',
-    contactInfo: {
-      phone_number: '111222333',
-      address: '13 rue del percebe',
-      cityID: 1,
-    },
-  },
-  {
-    email: 'adopter@example.com',
-    password: BcryptAdapter.hash('12345678'),
-    image: 'adopter.png',
-    first_name: 'AdopterFirstName',
-    last_name: 'AdopterLastName',
+    email: 'adopter1@example.com',
+    password: 'adopter1password',
+    username: 'adopter1',
+    emailValidated: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    avatar: 'avatar.png',
     role: 'adopter',
+    dni: '77777779X',
+    firstName: 'Adopter',
+    lastName: 'One',
+    verifiedAt: new Date(),
     contactInfo: {
-      phone_number: '555666777',
-      address: '13 rue del percebe',
-      cityID: 1,
+      phoneNumber: '+34666666668',
+      cityId: 32,
+    },
+  },
+  {
+    email: 'adopter2@example.com',
+    password: 'adopter2password',
+    username: 'adopter2',
+    emailValidated: true,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    avatar: 'avatar.png',
+    role: 'adopter',
+    dni: '77777770X',
+    firstName: 'Adopter',
+    lastName: 'Two',
+    verifiedAt: new Date(),
+    contactInfo: {
+      phoneNumber: '+34666666669',
+      cityId: 40,
     },
   },
 ];

@@ -1,10 +1,17 @@
 import { createInterface } from 'readline';
-import { prisma } from '../postgres';
-import { citiesData, seedData } from './data';
+import { prismaWithPasswordExtension as prisma } from '../postgres';
+import { prismaWithSlugExtension as prismaSlug } from '../postgres';
+import { citiesData, users, animals } from './data';
 import {
   AllowedMedia,
   UserRoles,
 } from '../../domain/interfaces/user-response.interface';
+
+const getRandomShelterId = (shelter1: any, shelter2: any) => {
+  const shelters = [shelter1, shelter2];
+  const randomIndex = Math.floor(Math.random() * shelters.length);
+  return shelters[randomIndex];
+};
 
 const confirmationQuestion = (text: string) => {
   return new Promise((resolve) => {
@@ -18,23 +25,6 @@ const confirmationQuestion = (text: string) => {
     });
   });
 };
-
-// async function deleteUserAndAssociatedData() {
-//   try {
-//     await prisma.$transaction([
-//       prisma.contactInfo.deleteMany({ where: { userID: '1' } }),
-//       prisma.adopter.delete({ where: { adopterID: '1' } }),
-//       prisma.shelter.delete({ where: { shelterID: '1' } }),
-//       prisma.users.delete({ where: { userID: '1' } }),
-//     ]);
-
-//     console.log('User and associated data deleted successfully.');
-//   } catch (error) {
-//     console.error('Error deleting user and associated data:', error);
-//   } finally {
-//     await prisma.$disconnect();
-//   }
-// }
 
 (async () => {
   await prisma.$connect();
@@ -64,58 +54,90 @@ const confirmationQuestion = (text: string) => {
     await prisma.city.createMany({ data: citiesNames });
   }
 
-  // await Promise.all(
-  //   seedData.map(async (userData) => {
-  //     const createdUser = await prisma.user.create({
-  //       data: {
-  //         email: userData.email,
-  //         password: userData.password,
-  //         username: 'test',
-  //         role: userData.role as UserRoles,
-  //         contactInfo: {
-  //           create: {
-  //             phoneNumber: userData.contactInfo.phone_number,
-  //             cityId: userData.contactInfo.cityID,
-  //             address: '13 rue del percebe',
-  //           },
-  //         },
-  //         adopter:
-  //           userData.role === 'adopter'
-  //             ? {
-  //                 create: {
-  //                   firstName: userData.first_name!,
-  //                   lastName: userData.last_name!,
-  //                 },
-  //               }
-  //             : undefined,
-  //         shelter:
-  //           userData.role === 'shelter'
-  //             ? {
-  //                 create: {
-  //                   name: userData.name!,
+  for (const userData of users) {
+    const user = await prisma.user.create({
+      data: {
+        email: userData.email,
+        password: prisma.user.hashPassword(userData.password),
+        username: userData.username,
+        emailValidated: userData.emailValidated,
+        createdAt: userData.createdAt,
+        updatedAt: userData.updatedAt,
+        role: userData.role,
+        dni: userData.dni,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        verifiedAt: userData.verifiedAt,
+        avatar: userData.avatar,
+        contactInfo: {
+          create: {
+            phoneNumber: userData.contactInfo.phoneNumber,
+            city: {
+              connect: { id: userData.contactInfo.cityId },
+            },
+          },
+        },
 
-  //                   socialMedia: {
-  //                     create: userData.socialMedia!.map((media) => ({
-  //                       name: media.name as AllowedMedia,
-  //                       url: media.url,
-  //                     })),
-  //                   },
-  //                 },
-  //               }
-  //             : undefined,
-  //         admin:
-  //           userData.role === 'admin'
-  //             ? {
-  //                 create: {
-  //                   name: userData.name!,
-  //                 },
-  //               }
-  //             : undefined,
-  //       },
-  //     });
-  //     console.log(`User created: ${JSON.stringify(createdUser)}`);
-  //   })
-  // );
+        shelter: userData.shelter
+          ? {
+              create: {
+                cif: userData.shelter.cif,
+                description: userData.shelter.description,
+                facilities: userData.shelter.facilities,
+                legalForms: userData.shelter.legalForms,
+                ownVet: userData.shelter.ownVet,
+                veterinaryFacilities: userData.shelter.veterinaryFacilities,
+                socialMedia: {
+                  create: userData.shelter.socialMedia,
+                },
+              },
+            }
+          : undefined,
+      },
+    });
+    console.log(`Usuario creado: ${user.username}`);
+  }
+
+  const [shelter1, shelter2] = await prisma.$transaction([
+    prisma.user.findUnique({ where: { username: 'shelter1' } }),
+    prisma.user.findUnique({ where: { username: 'shelter2' } }),
+  ]);
+
+  for (const animalData of animals) {
+    // ID del refugio 2
+    const shelter = getRandomShelterId(shelter1, shelter2);
+    const slug = await prismaSlug.animal.generateUniqueSlug({
+      name: animalData.name,
+      shelter: shelter.username,
+    });
+    const animal = await prismaSlug.animal.create({
+      data: {
+        ...animalData,
+        cat: animalData.cat
+          ? {
+              create: {
+                kidsFriendly: animalData.cat.kidsFriendly,
+                playLevel: animalData.cat.playLevel,
+                scratchPotential: animalData.cat.scratchPotential,
+                toiletTrained: animalData.cat.toiletTrained,
+              },
+            }
+          : undefined,
+        dog: animalData.dog
+          ? {
+              create: {
+                bark: animalData.dog.bark,
+                departmentAdapted: animalData.dog.departmentAdapted,
+                droolingPotential: animalData.dog.droolingPotential,
+              },
+            }
+          : undefined,
+        slug,
+        createdBy: shelter.id,
+      },
+    });
+    console.log(`Animal creado: ${animal.name}`);
+  }
 
   await prisma.$disconnect();
 })();
