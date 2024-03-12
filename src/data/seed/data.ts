@@ -98,7 +98,12 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'cat',
     gender: 'male',
-    images: [],
+    images: [
+      'siamese/felix1.webp',
+      'siamese/felix2.webp',
+      'siamese/felix3.webp',
+      'siamese/felix4.webp',
+    ],
     cat: {
       playLevel: 'moderate',
       kidsFriendly: true,
@@ -120,7 +125,11 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'cat',
     gender: 'female',
-    images: [],
+    images: [
+      'maine-coon/luna1.webp',
+      'maine-coon/luna2.webp',
+      'maine-coon/luna3.webp',
+    ],
     cat: {
       playLevel: 'low',
       kidsFriendly: false,
@@ -142,7 +151,7 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'cat',
     gender: 'male',
-    images: [],
+    images: ['bengal/simba1.webp', 'bengal/simba2.webp', 'bengal/simba3.webp'],
     cat: {
       playLevel: 'high',
       kidsFriendly: true,
@@ -164,7 +173,7 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'cat',
     gender: 'male',
-    images: [],
+    images: ['persian/milo1.webp', 'persian/milo2.webp', 'persian/milo3.webp'],
     cat: {
       playLevel: 'moderate',
       kidsFriendly: false,
@@ -176,7 +185,7 @@ export const animals: Animal[] = [
     name: 'Whiskers',
     age: 2.5,
     description: 'Gentle and calm',
-    breed: 'Ragdoll',
+    breed: 'Sphynx',
     size: 'big',
     publishStatus: 'published',
     cityId: 5,
@@ -186,7 +195,11 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'cat',
     gender: 'female',
-    images: [],
+    images: [
+      'sphynx/whiskers1.webp',
+      'sphynx/whiskers2.webp',
+      'sphynx/whiskers3.webp',
+    ],
     cat: {
       playLevel: 'low',
       kidsFriendly: true,
