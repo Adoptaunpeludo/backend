@@ -31,6 +31,7 @@ interface Animal {
   status: 'adopted' | 'fostered' | 'reserved' | 'awaiting_home';
   type: 'cat' | 'dog';
   gender: 'male' | 'female';
+  images: string[];
   cat?: Cat;
   dog?: Dog;
 }
@@ -97,6 +98,7 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'cat',
     gender: 'male',
+    images: [],
     cat: {
       playLevel: 'moderate',
       kidsFriendly: true,
@@ -118,6 +120,7 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'cat',
     gender: 'female',
+    images: [],
     cat: {
       playLevel: 'low',
       kidsFriendly: false,
@@ -139,6 +142,7 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'cat',
     gender: 'male',
+    images: [],
     cat: {
       playLevel: 'high',
       kidsFriendly: true,
@@ -153,15 +157,14 @@ export const animals: Animal[] = [
     breed: 'Persian',
     size: 'small',
     publishStatus: 'published',
-
     cityId: 4,
-
     easyTrain: true,
     energyLevel: 'high',
     moltingAmount: 'light',
     status: 'awaiting_home',
     type: 'cat',
     gender: 'male',
+    images: [],
     cat: {
       playLevel: 'moderate',
       kidsFriendly: false,
@@ -176,15 +179,14 @@ export const animals: Animal[] = [
     breed: 'Ragdoll',
     size: 'big',
     publishStatus: 'published',
-
     cityId: 5,
-
     easyTrain: false,
     energyLevel: 'moderate',
     moltingAmount: 'no_shedding',
     status: 'awaiting_home',
     type: 'cat',
     gender: 'female',
+    images: [],
     cat: {
       playLevel: 'low',
       kidsFriendly: true,
@@ -196,18 +198,22 @@ export const animals: Animal[] = [
     name: 'Buddy',
     age: 2,
     description: 'Friendly and loyal',
-    breed: 'Labrador Retriever',
+    breed: 'Boxer',
     size: 'big',
     publishStatus: 'published',
-
     cityId: 6,
-
     easyTrain: true,
     energyLevel: 'high',
     moltingAmount: 'moderate',
     status: 'awaiting_home',
     type: 'dog',
     gender: 'male',
+    images: [
+      '/boxer/buddy1',
+      '/boxer/buddy2',
+      '/boxer/buddy3',
+      '/boxer/buddy4',
+    ],
     dog: {
       departmentAdapted: true,
       droolingPotential: 'none',
@@ -218,18 +224,17 @@ export const animals: Animal[] = [
     name: 'Daisy',
     age: 3,
     description: 'Energetic and playful',
-    breed: 'Golden Retriever',
+    breed: 'Dachshund',
     size: 'big',
     publishStatus: 'published',
-
     cityId: 7,
-
     easyTrain: false,
     energyLevel: 'high',
     moltingAmount: 'heavy',
     status: 'awaiting_home',
     type: 'dog',
     gender: 'female',
+    images: ['/dachshund/daisy1', '/dachshund/daisy2'],
     dog: {
       departmentAdapted: false,
       droolingPotential: 'low',
@@ -240,18 +245,17 @@ export const animals: Animal[] = [
     name: 'Rocky',
     age: 2,
     description: 'Adventurous and playful',
-    breed: 'German Shepherd',
+    breed: 'Golden Retriever',
     size: 'big',
     publishStatus: 'published',
-
     cityId: 8,
-
     easyTrain: true,
     energyLevel: 'high',
     moltingAmount: 'moderate',
     status: 'awaiting_home',
     type: 'dog',
     gender: 'male',
+    images: ['/golden/rocky1', '/golden/rocky2', '/golden/rocky3'],
     dog: {
       departmentAdapted: true,
       droolingPotential: 'none',
@@ -265,15 +269,14 @@ export const animals: Animal[] = [
     breed: 'Beagle',
     size: 'medium',
     publishStatus: 'published',
-
     cityId: 9,
-
     easyTrain: true,
     energyLevel: 'moderate',
     moltingAmount: 'moderate',
     status: 'awaiting_home',
     type: 'dog',
     gender: 'female',
+    images: ['/beagle/lucy1', '/beagle/lucy2', '/beagle/lucy3'],
     dog: {
       departmentAdapted: false,
       droolingPotential: 'moderate',
@@ -287,15 +290,14 @@ export const animals: Animal[] = [
     breed: 'Siberian Husky',
     size: 'big',
     publishStatus: 'published',
-
     cityId: 10,
-
     easyTrain: false,
     energyLevel: 'high',
     moltingAmount: 'heavy',
     status: 'awaiting_home',
     type: 'dog',
     gender: 'male',
+    images: ['/husky/max1', '/husky/max2', '/husky/max3', '/husky/max4'],
     dog: {
       departmentAdapted: true,
       droolingPotential: 'low',
