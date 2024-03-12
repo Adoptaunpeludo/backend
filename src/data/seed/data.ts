@@ -209,10 +209,10 @@ export const animals: Animal[] = [
     type: 'dog',
     gender: 'male',
     images: [
-      '/boxer/buddy1',
-      '/boxer/buddy2',
-      '/boxer/buddy3',
-      '/boxer/buddy4',
+      'boxer/buddy1.webp',
+      'boxer/buddy2.webp',
+      'boxer/buddy3.webp',
+      'boxer/buddy4.webp',
     ],
     dog: {
       departmentAdapted: true,
@@ -234,7 +234,7 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'dog',
     gender: 'female',
-    images: ['/dachshund/daisy1', '/dachshund/daisy2'],
+    images: ['dachshund/daisy1.webp', 'dachshund/daisy2.webp'],
     dog: {
       departmentAdapted: false,
       droolingPotential: 'low',
@@ -255,7 +255,7 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'dog',
     gender: 'male',
-    images: ['/golden/rocky1', '/golden/rocky2', '/golden/rocky3'],
+    images: ['golden/rocky1.webp', 'golden/rocky2.webp', 'golden/rocky3.webp'],
     dog: {
       departmentAdapted: true,
       droolingPotential: 'none',
@@ -276,7 +276,7 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'dog',
     gender: 'female',
-    images: ['/beagle/lucy1', '/beagle/lucy2', '/beagle/lucy3'],
+    images: ['beagle/lucy1.webp', 'beagle/lucy2.webp', 'beagle/lucy3.webp'],
     dog: {
       departmentAdapted: false,
       droolingPotential: 'moderate',
@@ -297,7 +297,12 @@ export const animals: Animal[] = [
     status: 'awaiting_home',
     type: 'dog',
     gender: 'male',
-    images: ['/husky/max1', '/husky/max2', '/husky/max3', '/husky/max4'],
+    images: [
+      'husky/max1.webp',
+      'husky/max2.webp',
+      'husky/max3.webp',
+      'husky/max4.webp',
+    ],
     dog: {
       departmentAdapted: true,
       droolingPotential: 'low',
