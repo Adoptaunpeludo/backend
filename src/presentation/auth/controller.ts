@@ -78,11 +78,17 @@ export class AuthController {
 
     res.cookie('refreshToken', 'logout', {
       httpOnly: true,
+      secure: true,
+      signed: true,
+      sameSite: 'none',
       expires: new Date(Date.now()),
     });
 
     res.cookie('accessToken', 'logout', {
       httpOnly: true,
+      secure: true,
+      signed: true,
+      sameSite: 'none',
       expires: new Date(Date.now()),
     });
 
