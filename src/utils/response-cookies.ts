@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { envs } from '../config';
 
 interface Options {
   res: Response;
@@ -22,7 +23,7 @@ export class AttachCookiesToResponse {
     // Attach access token cookie to the response
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: envs.NODE_ENV === 'production',
       signed: true,
       sameSite: 'none',
       expires: new Date(Date.now() + oneMinute),
@@ -32,7 +33,7 @@ export class AttachCookiesToResponse {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       expires: new Date(Date.now() + oneDay),
-      secure: true,
+      secure: envs.NODE_ENV === 'production',
       signed: true,
       sameSite: 'none',
     });

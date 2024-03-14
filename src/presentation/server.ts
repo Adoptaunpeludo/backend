@@ -50,7 +50,7 @@ export class Server {
       credentials: true,
     };
 
-    this.app.use(cors(corsOptions));
+    this.app.use(cors());
 
     //* Public Folder
     this.app.use(express.static(this.publicPath));
