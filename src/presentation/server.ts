@@ -50,7 +50,11 @@ export class Server {
       credentials: true,
     };
 
-    this.app.use(cors());
+    this.app.use(
+      cors({
+        origin: ['http://localhost:5173', 'https://www.adoptaunpeludo.com'],
+      })
+    );
 
     //* Public Folder
     this.app.use(express.static(this.publicPath));
