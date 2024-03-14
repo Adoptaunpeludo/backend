@@ -25,7 +25,6 @@ export class AttachCookiesToResponse {
       httpOnly: true,
       secure: envs.NODE_ENV === 'production',
       signed: true,
-      sameSite: 'none',
       expires: new Date(Date.now() + oneMinute),
     });
 
@@ -35,7 +34,6 @@ export class AttachCookiesToResponse {
       expires: new Date(Date.now() + oneDay),
       secure: envs.NODE_ENV === 'production',
       signed: true,
-      sameSite: 'none',
     });
   }
 }
