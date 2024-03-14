@@ -156,16 +156,25 @@ export class AuthService {
    * @throws InternalServerError if there's an issue with JWT token generation.
    */
   public async registerUser(registerUserDto: RegisterUserDto) {
-    const { email } = registerUserDto;
+    const { email, username } = registerUserDto;
 
     //* Check if the user already exists
-    const user = await prisma.user.findUnique({
+    const userEmail = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (user)
+    if (userEmail)
       throw new BadRequestError(
         `Email ${registerUserDto.email} already exists, try another one`
+      );
+
+    const userUsername = await prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (userUsername)
+      throw new BadRequestError(
+        `Username ${registerUserDto.username} already exists, try another one`
       );
 
     //* Hash password and generate email verificationToken
