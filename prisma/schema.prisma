@@ -93,7 +93,7 @@ model SocialMedia {
 
 model City {
   id          Int           @id @default(autoincrement())
-  name        String
+  name        String        @unique
   animal      Animal[]
   contactInfo ContactInfo[]
 }

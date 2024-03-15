@@ -113,6 +113,7 @@ const confirmationQuestion = (text: string) => {
     const animal = await prismaSlug.animal.create({
       data: {
         ...animalData,
+        name: animalData.name.toLowerCase(),
         cat: animalData.cat
           ? {
               create: {

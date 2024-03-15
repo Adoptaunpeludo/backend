@@ -99,10 +99,12 @@ export class AnimalService {
    * @param animalFilterDto - DTO containing animal filter criteria.
    * @returns Prisma compatible filter object.
    */
-  private mapFilters(animalFilterDto: AnimalFilterDto) {
+  private async mapFilters(animalFilterDto: AnimalFilterDto) {
     let filters: any = {};
 
     Object.entries(animalFilterDto).forEach(([key, value]) => {
+      if (key === 'city') return;
+
       if (key === 'age') {
         if (value === 'puppy') filters.age = { gte: 0, lte: 2 };
         if (value === 'adult') filters.age = { gte: 2, lte: 10 };
@@ -111,6 +113,19 @@ export class AnimalService {
         filters[key] = value;
       }
     });
+
+    if (animalFilterDto.city) {
+      const city = await prisma.city.findUnique({
+        where: { name: animalFilterDto.city },
+      });
+
+      if (city) {
+        filters.cityId = city.id;
+      } else {
+        // Manejo si la ciudad no se encuentra
+        throw new Error(`City '${animalFilterDto.city}' not found`);
+      }
+    }
 
     return filters;
   }
@@ -183,13 +198,14 @@ export class AnimalService {
     } = createCatDto;
 
     const slug = await prisma.animal.generateUniqueSlug({
-      name: rest.name,
+      name: rest.name.toLowerCase(),
       shelter: username,
     });
 
     const animal = await prisma.animal.create({
       data: {
         ...rest,
+        name: rest.name.toLowerCase(),
         createdBy: userId,
         slug,
         cat: {
@@ -267,7 +283,7 @@ export class AnimalService {
   ) {
     const { limit = 10, page = 1 } = paginationDto;
 
-    const filters = this.mapFilters(animalFilterDto);
+    const filters = await this.mapFilters(animalFilterDto);
 
     console.log({ filters });
 
@@ -276,7 +292,7 @@ export class AnimalService {
       prisma.animal.findMany({
         skip: (page - 1) * limit,
         take: limit,
-        where: { ...filters, city: { name: animalFilterDto.city } },
+        where: { ...filters },
         include: {
           shelter: {
             include: {
