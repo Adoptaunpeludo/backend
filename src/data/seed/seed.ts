@@ -107,7 +107,7 @@ const confirmationQuestion = (text: string) => {
     // ID del refugio 2
     const shelter = getRandomShelterId(shelter1, shelter2);
     const slug = await prismaSlug.animal.generateUniqueSlug({
-      name: animalData.name,
+      name: animalData.name.toLowerCase(),
       shelter: shelter.username,
     });
     const animal = await prismaSlug.animal.create({
