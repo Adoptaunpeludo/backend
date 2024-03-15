@@ -106,9 +106,9 @@ export class AnimalService {
       if (key === 'city') return;
 
       if (key === 'age') {
-        if (value === 'puppy') filters.age = { gte: 0, lte: 2 };
-        if (value === 'adult') filters.age = { gte: 2, lte: 10 };
-        if (value === 'senior') filters.age = { gt: 10 };
+        if (value === 'puppy') filters.age = { gte: 0, lt: 2 };
+        if (value === 'adult') filters.age = { gte: 2, lt: 10 };
+        if (value === 'senior') filters.age = { gte: 10 };
       } else {
         filters[key] = value;
       }
