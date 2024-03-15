@@ -107,8 +107,9 @@ export class AnimalService {
         if (value === 'puppy') filters.age = { gte: 0, lte: 2 };
         if (value === 'adult') filters.age = { gte: 2, lte: 10 };
         if (value === 'senior') filters.age = { gt: 10 };
+      } else {
+        filters[key] = value;
       }
-      filters[key] = value;
     });
 
     return filters;
@@ -268,12 +269,14 @@ export class AnimalService {
 
     const filters = this.mapFilters(animalFilterDto);
 
+    console.log({ filters });
+
     const [total, animals] = await prisma.$transaction([
       prisma.animal.count({ where: filters }),
       prisma.animal.findMany({
         skip: (page - 1) * limit,
         take: limit,
-        where: filters,
+        where: { ...filters, city: { name: animalFilterDto.city } },
         include: {
           shelter: {
             include: {

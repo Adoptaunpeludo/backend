@@ -61,4 +61,9 @@ export class AnimalFilterDto {
   @Trim()
   @IsEnum(animalType)
   type?: 'cat' | 'dog';
+
+  @IsOptional()
+  @IsString()
+  @Trim()
+  city?: string;
 }
