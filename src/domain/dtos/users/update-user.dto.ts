@@ -73,9 +73,9 @@ export class UpdateUserDto {
   legalForms?: legalForms;
 
   @IsOptional()
-  @Trim()
-  @IsEnum(enumFacilities)
-  facilities?: facilities;
+  @IsString({ each: true })
+  @IsEnum(enumFacilities, { each: true })
+  facilities?: facilities[];
 
   @IsOptional()
   @IsBoolean()

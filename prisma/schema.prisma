@@ -58,7 +58,7 @@ model Shelter {
   id                   String        @id
   description          String        @default("")
   cif                  String
-  facilities           facilities?
+  facilities           String[]
   images               String[]
   legalForms           legal_forms?
   ownVet               Boolean?

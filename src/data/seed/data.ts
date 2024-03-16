@@ -49,12 +49,13 @@ interface SocialMedia {
 interface Shelter {
   description: string;
   cif: string;
-  facilities:
+  facilities: (
     | 'foster_homes'
     | 'municipal_or_public_facilities'
     | 'leased_facilities'
     | 'owned_facilities'
-    | 'private_residences';
+    | 'private_residences'
+  )[];
   legalForms:
     | 'association'
     | 'public_utility_association'
@@ -1296,7 +1297,7 @@ export const users: User[] = [
     shelter: {
       description: 'Description Shelter One',
       cif: 'N77777777',
-      facilities: 'foster_homes',
+      facilities: ['foster_homes', 'leased_facilities', 'owned_facilities'],
       legalForms: 'association',
       ownVet: true,
       veterinaryFacilities: false,
@@ -1335,7 +1336,11 @@ export const users: User[] = [
     shelter: {
       description: 'Description Shelter Two',
       cif: 'N77777778',
-      facilities: 'leased_facilities',
+      facilities: [
+        'leased_facilities',
+        'municipal_or_public_facilities',
+        'private_residences',
+      ],
       legalForms: 'public_utility_association',
       ownVet: false,
       veterinaryFacilities: true,
