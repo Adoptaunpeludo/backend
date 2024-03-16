@@ -268,7 +268,7 @@ export class UserService {
    * Deletes a user and associated data.
    * @param user - PayloadUser object representing the user to delete.
    * @throws NotFoundError if the user is not found.
-   */
+  //  
   public async deleteUser(user: PayloadUser) {
     const [userToDelete, animalsCreated] = await prisma.$transaction([
       prisma.user.findUnique({

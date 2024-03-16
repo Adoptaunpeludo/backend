@@ -122,7 +122,7 @@ interface Shelter {
   cif: string;
   legalForms: legalForms | null;
   veterinaryFacilities: boolean | null;
-  facilities: facilities | null;
+  facilities: string[];
   ownVet: boolean | null;
   images: any[];
   user: User;
