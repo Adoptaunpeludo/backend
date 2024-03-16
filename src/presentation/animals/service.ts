@@ -287,26 +287,30 @@ export class AnimalService {
 
     console.log({ filters });
 
-    const [total, animals] = await prisma.$transaction([
-      prisma.animal.count({ where: filters }),
-      prisma.animal.findMany({
-        skip: (page - 1) * limit,
-        take: limit,
-        where: { ...filters },
-        include: {
-          shelter: {
-            include: {
-              user: {
-                select: { avatar: true, username: true, isOnline: true },
+    const [adopted, fostered, awaitingHome, total, animals] =
+      await prisma.$transaction([
+        prisma.animal.count({ where: { ...filters, status: 'adopted' } }),
+        prisma.animal.count({ where: { ...filters, status: 'fostered' } }),
+        prisma.animal.count({ where: { ...filters, status: 'awaiting_home' } }),
+        prisma.animal.count({ where: filters }),
+        prisma.animal.findMany({
+          skip: (page - 1) * limit,
+          take: limit,
+          where: { ...filters },
+          include: {
+            shelter: {
+              include: {
+                user: {
+                  select: { avatar: true, username: true, isOnline: true },
+                },
               },
             },
+            city: true,
+            cat: true,
+            dog: true,
           },
-          city: true,
-          cat: true,
-          dog: true,
-        },
-      }),
-    ]);
+        }),
+      ]);
 
     const maxPages = Math.ceil(total / limit);
 
@@ -317,6 +321,9 @@ export class AnimalService {
       maxPages,
       limit,
       total,
+      adopted,
+      fostered,
+      awaitingHome,
       next:
         page + 1 <= maxPages
           ? `/api/animals?page=${page + 1}&limit=${limit}`
