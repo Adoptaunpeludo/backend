@@ -17,6 +17,13 @@ export type animalGender = 'female' | 'male';
 
 export type animalPublishStatus = 'pending' | 'rejected' | 'published';
 
+export enum statusPet {
+  A = 'adopted',
+  F = 'fostered',
+  R = 'reserved',
+  AH = 'awaiting_home',
+}
+
 export enum type {
   C = 'cat',
   D = 'dog',

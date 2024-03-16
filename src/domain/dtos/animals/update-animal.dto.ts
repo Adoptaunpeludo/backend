@@ -17,6 +17,7 @@ import {
   gender,
   molting,
   potential,
+  statusPet,
   type,
 } from '../../interfaces/animal.interface';
 import { Transform, Type } from 'class-transformer';
@@ -115,4 +116,9 @@ export class UpdateAnimalDto {
   @IsEnum(potential)
   @Trim()
   scratchPotential?: animalPotential;
+
+  @IsOptional()
+  @IsEnum(statusPet)
+  @Trim()
+  status?: statusPet;
 }
