@@ -20,6 +20,8 @@ export class UserEntity {
       city: contactInfo?.city?.name,
     };
 
+    console.log({ user });
+
     switch (userResponse.role) {
       case 'shelter':
         userEntity = {

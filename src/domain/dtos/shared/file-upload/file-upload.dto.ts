@@ -12,7 +12,7 @@ export class FileUploadDto {
 
   @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
+  // @ValidateNested({ each: true })
   @Type(() => String)
   deleteImages?: String[];
 }
