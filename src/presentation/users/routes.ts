@@ -36,67 +36,88 @@ export class UserRoutes {
     const userController = new UserController(userService);
     const fileUploadMiddleware = new FileUploadMiddleware(s3Service);
 
-    router.use(authMiddleware.authenticateUser);
+    //* Public Routes
+    router.get('/:id', userController.getSingleUser);
+    router.get('/', userController.getAllUsers);
 
-    // Favorites
+    //* Private Routes
     router.get(
       '/me/favorites',
-      authMiddleware.authorizePermissions('adopter'),
+      [
+        authMiddleware.authenticateUser,
+        authMiddleware.authorizePermissions('adopter'),
+      ],
       userController.getUserFavorites
     );
 
     // Notifications
-    router.get('/me/notifications', userController.getUserNotifications);
+    router.get(
+      '/me/notifications',
+      authMiddleware.authenticateUser,
+      userController.getUserNotifications
+    );
 
-    router.put('/me/notifications/read/:id', userController.readNotification);
+    router.put(
+      '/me/notifications/read/:id',
+      authMiddleware.authenticateUser,
+      userController.readNotification
+    );
 
     // Animals
     router.get(
       '/me/animals/',
-      authMiddleware.authorizePermissions('shelter'),
+      [
+        authMiddleware.authenticateUser,
+        authMiddleware.authorizePermissions('shelter'),
+      ],
       userController.getUserAnimals
     );
 
     // Current User CRUD
-    router.get('/me', userController.getCurrentUser);
+    router.get(
+      '/me',
+      authMiddleware.authenticateUser,
+      userController.getCurrentUser
+    );
 
     router.put(
       '/me',
-      ValidationMiddleware.validate(UpdateUserDto),
+      [
+        authMiddleware.authenticateUser,
+        ValidationMiddleware.validate(UpdateUserDto),
+      ],
       userController.updateUser
     );
 
     router.put(
       '/me/change-password',
-      ValidationMiddleware.validate(UpdatePasswordDto),
+      [
+        authMiddleware.authenticateUser,
+        ValidationMiddleware.validate(UpdatePasswordDto),
+      ],
       userController.changePassword
     );
 
     router.put(
       '/me/update-social-media',
       [
+        authMiddleware.authenticateUser,
         authMiddleware.authorizePermissions('shelter'),
         ValidationMiddleware.validate(UpdateSocialMediaDto),
       ],
       userController.updateSocialMedia
     );
 
-    router.delete('/me', userController.deleteUser);
-
-    router.get('/:id', userController.getSingleUser);
-    // End Current User CRUD
-
-    // All users
-    router.get(
-      '/',
-      // authMiddleware.authorizePermissions('admin'),
-      userController.getAllUsers
+    router.delete(
+      '/me',
+      authMiddleware.authenticateUser,
+      userController.deleteUser
     );
 
-    // Images
     router.post(
       '/upload-images',
       [
+        authMiddleware.authenticateUser,
         ValidationMiddleware.validate(FileUploadDto),
         fileUploadMiddleware.multiple('users'),
       ],
