@@ -4,7 +4,7 @@ import {
   IsEnum,
   IsOptional,
   IsString,
-  Length,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 
@@ -46,7 +46,8 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @Trim()
-  @Length(9)
+  @MinLength(9)
+  @MaxLength(9)
   dni?: string;
 
   @IsOptional()
@@ -58,7 +59,8 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @Trim()
-  @Length(9)
+  @MinLength(9)
+  @MaxLength(9)
   cif?: string;
 
   @IsOptional()
