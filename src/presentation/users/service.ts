@@ -221,7 +221,13 @@ export class UserService {
     const filters = await this.mapShelterFilters(shelterFilterDto);
 
     const [total, users] = await prisma.$transaction([
-      prisma.user.count(),
+      prisma.user.count({
+        where: {
+          username: filters.username,
+          role: filters.role,
+          contactInfo: { cityId: filters.cityId },
+        },
+      }),
       prisma.user.findMany({
         skip: (page - 1) * limit,
         take: limit,
@@ -241,7 +247,6 @@ export class UserService {
               city: true,
             },
           },
-          animals: true,
         },
       }),
     ]);
