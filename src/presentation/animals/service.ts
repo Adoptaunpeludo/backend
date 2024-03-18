@@ -285,8 +285,6 @@ export class AnimalService {
 
     const filters = await this.mapFilters(animalFilterDto);
 
-    console.log({ filters });
-
     const [adopted, fostered, awaitingHome, total, animals] =
       await prisma.$transaction([
         prisma.animal.count({ where: { ...filters, status: 'adopted' } }),

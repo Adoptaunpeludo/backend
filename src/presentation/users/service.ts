@@ -99,17 +99,16 @@ export class UserService {
    * @param updateUserDto - DTO containing updated user information.
    * @returns Update query object.
    */
-  private buildQuery(updateUserDto: UpdateUserDto) {
+  private async buildQuery(updateUserDto: UpdateUserDto) {
     const updatedAt = new Date();
 
     const {
-      username,
       firstName,
       lastName,
       description,
       phoneNumber,
       address,
-      cityId,
+      city,
       dni,
       cif,
       facilities,
@@ -120,7 +119,6 @@ export class UserService {
 
     const updateQuery: any = {
       updatedAt,
-      username,
       firstName,
       lastName,
       dni,
@@ -128,7 +126,6 @@ export class UserService {
         update: {
           phoneNumber,
           address,
-          cityId: cityId && +cityId,
         },
       },
       shelter: {
@@ -142,6 +139,19 @@ export class UserService {
         },
       },
     };
+
+    if (city) {
+      const cityObj = await prisma.city.findUnique({
+        where: { name: city },
+      });
+
+      if (cityObj) {
+        updateQuery.contactInfo.update.cityId = cityObj.id;
+      } else {
+        // Manejo si la ciudad no se encuentra
+        throw new Error(`City '${city}' not found`);
+      }
+    }
 
     if (ownVet !== undefined) {
       updateQuery.shelter.update.ownVet = ownVet;
@@ -397,7 +407,7 @@ export class UserService {
 
     CheckPermissions.check(user, userToUpdate.id);
 
-    const updateQuery = this.buildQuery(updateUserDto);
+    const updateQuery = await this.buildQuery(updateUserDto);
 
     const updatedUser = await prisma.user.update({
       where: { email: userToUpdate.email },

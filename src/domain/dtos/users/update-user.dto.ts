@@ -35,12 +35,6 @@ export class UpdateUserDto {
   @IsString()
   @Trim()
   @MinLength(3)
-  username?: string;
-
-  @IsOptional()
-  @IsString()
-  @Trim()
-  @MinLength(3)
   firstName?: string;
 
   @IsOptional()
@@ -99,7 +93,7 @@ export class UpdateUserDto {
   address?: string;
 
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  cityId?: number;
+  @IsString()
+  @Trim()
+  city?: string;
 }
