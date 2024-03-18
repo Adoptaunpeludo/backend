@@ -36,10 +36,6 @@ export class UserRoutes {
     const userController = new UserController(userService);
     const fileUploadMiddleware = new FileUploadMiddleware(s3Service);
 
-    //* Public Routes
-    router.get('/:id', userController.getSingleUser);
-    router.get('/', userController.getAllUsers);
-
     //* Private Routes
     router.get(
       '/me/favorites',
@@ -123,6 +119,10 @@ export class UserRoutes {
       ],
       userController.uploadImages
     );
+
+    //* Public Routes
+    router.get('/:id', userController.getSingleUser);
+    router.get('/', userController.getAllUsers);
 
     return router;
   }
