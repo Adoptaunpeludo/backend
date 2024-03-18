@@ -15,10 +15,15 @@ export class UserController {
   /**
    * Retrieves all users.
    */
-  getAllUsers = async (_req: Request, res: Response) => {
-    const users = await this.userService.getAllUsers();
+  getAllUsers = async (req: Request, res: Response) => {
+    const { limit = 10, page = 1, ...filters } = req.query;
 
-    res.status(HttpCodes.OK).json(users);
+    const { users, ...pagination } = await this.userService.getAll(
+      { limit: +limit, page: +page },
+      filters
+    );
+
+    res.status(HttpCodes.OK).json({ ...pagination, users });
   };
 
   /**

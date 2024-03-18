@@ -12,6 +12,7 @@ import {
   gender,
   molting,
   potential,
+  statusPet,
   type,
 } from '../../interfaces/animal.interface';
 
@@ -28,7 +29,7 @@ export class CreateAnimalDto {
   name!: string;
 
   @IsNumber()
-  @ToInt()
+  @Transform(({ value }) => +value)
   age!: number;
 
   @IsString()
@@ -60,9 +61,13 @@ export class CreateAnimalDto {
   @Trim()
   gender!: gender;
 
-  @IsNumber()
-  @ToInt()
-  cityId!: number;
+  @IsString()
+  @Trim()
+  city!: string;
+
+  @IsEnum(statusPet)
+  @Trim()
+  status!: statusPet;
 }
 
 export class CreateDogDto extends CreateAnimalDto {

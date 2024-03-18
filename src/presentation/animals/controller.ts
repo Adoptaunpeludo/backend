@@ -29,7 +29,7 @@ export class AnimalController {
       animal
     );
 
-    res.status(HttpCodes.CREATED).json(cat);
+    res.status(HttpCodes.CREATED).json({ cat });
   };
 
   /**
@@ -48,7 +48,7 @@ export class AnimalController {
       animal
     );
 
-    res.status(HttpCodes.CREATED).json(dog);
+    res.status(HttpCodes.CREATED).json({ dog });
   };
 
   /**

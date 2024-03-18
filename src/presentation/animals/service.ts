@@ -123,7 +123,7 @@ export class AnimalService {
         filters.cityId = city.id;
       } else {
         // Manejo si la ciudad no se encuentra
-        throw new Error(`City '${animalFilterDto.city}' not found`);
+        throw new NotFoundError(`City '${animalFilterDto.city}' not found`);
       }
     }
 
@@ -194,8 +194,17 @@ export class AnimalService {
       kidsFriendly,
       toiletTrained,
       scratchPotential,
+      city,
       ...rest
     } = createCatDto;
+
+    const cityData = await prisma.city.findUnique({
+      where: { name: city },
+    });
+
+    if (!cityData) {
+      throw new BadRequestError(`City '${city}' not found`);
+    }
 
     const slug = await prisma.animal.generateUniqueSlug({
       name: rest.name.toLowerCase(),
@@ -208,6 +217,7 @@ export class AnimalService {
         name: rest.name.toLowerCase(),
         createdBy: userId,
         slug,
+        cityId: cityData.id,
         cat: {
           create: { playLevel, kidsFriendly, toiletTrained, scratchPotential },
         },
@@ -228,13 +238,16 @@ export class AnimalService {
     username: string,
     createDogDto: CreateDogDto
   ) {
-    const {
-      departmentAdapted,
-      droolingPotential,
-      bark,
+    const { departmentAdapted, droolingPotential, bark, city, ...rest } =
+      createDogDto;
 
-      ...rest
-    } = createDogDto;
+    const cityData = await prisma.city.findUnique({
+      where: { name: city },
+    });
+
+    if (!cityData) {
+      throw new BadRequestError(`City '${city}' not found`);
+    }
 
     const slug = await prisma.animal.generateUniqueSlug({
       name: rest.name,
@@ -246,6 +259,7 @@ export class AnimalService {
         ...rest,
         createdBy: userId,
         slug,
+        cityId: cityData.id,
         dog: {
           create: { departmentAdapted, droolingPotential, bark },
         },

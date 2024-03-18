@@ -7,6 +7,7 @@ import {
   UpdateUserDto,
   UserEntity,
 } from '../../domain';
+import { ShelterFilterDto } from '../../domain/dtos/users/filter-user.dto';
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { AnimalEntity } from '../../domain/entities/animals.entity';
 import { AnimalResponse, PayloadUser } from '../../domain/interfaces';
@@ -184,30 +185,82 @@ export class UserService {
     return filters;
   }
 
+  private async mapShelterFilters(shelterFilterDto: ShelterFilterDto) {
+    let filters: any = {};
+
+    Object.entries(shelterFilterDto).forEach(([key, value]) => {
+      if (key === 'city') return;
+      filters[key] = value;
+    });
+
+    if (shelterFilterDto.city) {
+      const city = await prisma.city.findUnique({
+        where: { name: shelterFilterDto.city },
+      });
+
+      if (city) {
+        filters.cityId = city.id;
+      } else {
+        throw new NotFoundError(`City ${shelterFilterDto.city} not found`);
+      }
+    }
+
+    return filters;
+  }
+
   /**
    * Fetches all users with detailed information.
    * @returns Array of user entities.
    */
-  public async getAllUsers() {
-    const users = await prisma.user.findMany({
-      include: {
-        shelter: {
-          include: {
-            socialMedia: true,
-          },
-        },
-        contactInfo: {
-          include: {
-            city: true,
-          },
-        },
-        animals: true,
-      },
-    });
+  public async getAll(
+    paginationDto: PaginationDto,
+    shelterFilterDto: ShelterFilterDto
+  ) {
+    const { limit = 10, page = 1 } = paginationDto;
 
+    const filters = await this.mapShelterFilters(shelterFilterDto);
+
+    const [total, users] = await prisma.$transaction([
+      prisma.user.count(),
+      prisma.user.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+        where: {
+          username: filters.username,
+          role: filters.role,
+          contactInfo: { cityId: filters.cityId },
+        },
+        include: {
+          shelter: {
+            include: {
+              socialMedia: true,
+            },
+          },
+          contactInfo: {
+            include: {
+              city: true,
+            },
+          },
+          animals: true,
+        },
+      }),
+    ]);
+
+    const maxPages = Math.ceil(total / limit);
     const userEntities = users.map((user: any) => UserEntity.fromObject(user));
 
-    return userEntities;
+    return {
+      currentPage: page,
+      maxPages,
+      limit,
+      total,
+      next:
+        page + 1 <= maxPages
+          ? `/api/users?page=${page + 1}&limit=${limit}`
+          : null,
+      prev: page - 1 > 0 ? `/api/users?page=${page - 1}&limit=${limit}` : null,
+      users: userEntities,
+    };
   }
 
   /**
