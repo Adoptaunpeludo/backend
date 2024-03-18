@@ -2,9 +2,9 @@ import { Trim } from 'class-sanitizer';
 import {
   IsBoolean,
   IsEnum,
-  IsNumber,
   IsOptional,
   IsString,
+  Length,
   MinLength,
 } from 'class-validator';
 
@@ -46,7 +46,7 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @Trim()
-  @MinLength(9)
+  @Length(9)
   dni?: string;
 
   @IsOptional()
@@ -58,7 +58,7 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @Trim()
-  @MinLength(9)
+  @Length(9)
   cif?: string;
 
   @IsOptional()
