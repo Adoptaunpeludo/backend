@@ -217,6 +217,7 @@ export class AnimalService {
         name: rest.name.toLowerCase(),
         createdBy: userId,
         slug,
+        publishStatus: 'published',
         cityId: cityData.id,
         cat: {
           create: { playLevel, kidsFriendly, toiletTrained, scratchPotential },
@@ -260,6 +261,7 @@ export class AnimalService {
         createdBy: userId,
         slug,
         cityId: cityData.id,
+        publishStatus: 'published',
         dog: {
           create: { departmentAdapted, droolingPotential, bark },
         },
