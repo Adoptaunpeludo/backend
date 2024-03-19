@@ -321,6 +321,9 @@ export class AnimalService {
             cat: true,
             dog: true,
           },
+          orderBy: {
+            createdAt: 'desc',
+          },
         }),
       ]);
 

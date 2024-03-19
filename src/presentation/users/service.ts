@@ -583,6 +583,9 @@ export class UserService {
           cat: true,
           dog: true,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       }),
     ]);
 
@@ -641,6 +644,9 @@ export class UserService {
           city: true,
           cat: true,
           dog: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
         },
       }),
     ]);
