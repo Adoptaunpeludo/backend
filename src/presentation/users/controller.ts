@@ -41,9 +41,9 @@ export class UserController {
    * Retrieves a single user by ID.
    */
   getSingleUser = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { term } = req.params;
 
-    const user = await this.userService.getSingleUser(id);
+    const user = await this.userService.getSingleUser(term);
 
     res.status(HttpCodes.OK).json(user);
   };

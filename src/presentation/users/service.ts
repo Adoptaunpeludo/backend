@@ -1,3 +1,4 @@
+import { UUID } from '../../config/uuid.adapter';
 import { prismaWithPasswordExtension as prisma } from '../../data/postgres';
 import {
   AnimalFilterDto,
@@ -301,29 +302,58 @@ export class UserService {
     return userEntity;
   }
 
+  private async getUserFromTerm(term: string) {
+    let user = null;
+
+    const isUUID = UUID.validate(term);
+
+    if (isUUID)
+      user = await prisma.user.findUnique({
+        where: { id: term },
+        include: {
+          contactInfo: {
+            include: {
+              city: true,
+            },
+          },
+          shelter: {
+            include: {
+              socialMedia: true,
+              animals: { include: { cat: true, dog: true } },
+            },
+          },
+        },
+      });
+
+    if (!isUUID)
+      user = await prisma.user.findUnique({
+        where: { username: term },
+        include: {
+          contactInfo: {
+            include: {
+              city: true,
+            },
+          },
+          shelter: {
+            include: {
+              socialMedia: true,
+              animals: { include: { cat: true, dog: true } },
+            },
+          },
+        },
+      });
+
+    return user;
+  }
+
   /**
    * Fetches detailed information of a single user.
    * @param id - ID of the user.
    * @returns User entity object.
    * @throws NotFoundError if the user is not found.
    */
-  public async getSingleUser(id: string) {
-    const user = await prisma.user.findUnique({
-      where: { id },
-      include: {
-        contactInfo: {
-          include: {
-            city: true,
-          },
-        },
-        shelter: {
-          include: {
-            socialMedia: true,
-            animals: { include: { cat: true, dog: true } },
-          },
-        },
-      },
-    });
+  public async getSingleUser(term: string) {
+    const user = await this.getUserFromTerm(term);
 
     if (!user) throw new NotFoundError('User not found');
 
