@@ -121,7 +121,7 @@ export class UserRoutes {
     );
 
     //* Public Routes
-    router.get('/:id', userController.getSingleUser);
+    router.get('/:term', userController.getSingleUser);
     router.get('/', userController.getAllUsers);
 
     return router;
