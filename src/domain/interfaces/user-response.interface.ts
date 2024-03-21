@@ -50,7 +50,7 @@ export interface Admin {
 
 export interface ContactInfo {
   id: string;
-  phoneNumber: string;
+  phoneNumber: string | null;
   cityId: number;
   city: City;
 }
@@ -62,8 +62,8 @@ export interface City {
 
 export interface Shelter {
   id: string;
-  description: string;
-  cif: string;
+  description: string | null;
+  cif: string | null;
   legalForms: legalForms | null;
   veterinaryFacilities: boolean | null;
   facilities: string[];

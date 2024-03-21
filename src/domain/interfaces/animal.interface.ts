@@ -118,8 +118,8 @@ export interface User {
 
 interface Shelter {
   id: string;
-  description: string;
-  cif: string;
+  description: string | null;
+  cif: string | null;
   legalForms: legalForms | null;
   veterinaryFacilities: boolean | null;
   facilities: string[];

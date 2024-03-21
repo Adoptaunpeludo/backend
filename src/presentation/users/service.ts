@@ -108,9 +108,6 @@ export class UserService {
       firstName,
       lastName,
       description,
-      phoneNumber,
-      address,
-      city,
       dni,
       cif,
       facilities,
@@ -124,12 +121,6 @@ export class UserService {
       firstName,
       lastName,
       dni,
-      contactInfo: {
-        update: {
-          phoneNumber,
-          address,
-        },
-      },
       shelter: {
         update: {
           description,
@@ -141,19 +132,6 @@ export class UserService {
         },
       },
     };
-
-    if (city) {
-      const cityObj = await prisma.city.findUnique({
-        where: { name: city },
-      });
-
-      if (cityObj) {
-        updateQuery.contactInfo.update.cityId = cityObj.id;
-      } else {
-        // Manejo si la ciudad no se encuentra
-        throw new Error(`City '${city}' not found`);
-      }
-    }
 
     if (ownVet !== undefined) {
       updateQuery.shelter.update.ownVet = ownVet;
@@ -487,6 +465,8 @@ export class UserService {
    * @throws NotFoundError if the user is not found.
    */
   public async updateUser(updateUserDto: UpdateUserDto, user: PayloadUser) {
+    const { city, phoneNumber } = updateUserDto;
+
     const userToUpdate = await prisma.user.findUnique({
       where: { email: user.email },
     });
@@ -494,6 +474,29 @@ export class UserService {
     if (!userToUpdate) throw new NotFoundError('User not found');
 
     CheckPermissions.check(user, userToUpdate.id);
+
+    let cityObj;
+
+    if (city && phoneNumber) {
+      cityObj = await prisma.city.findUnique({
+        where: { name: city },
+      });
+
+      await prisma.contactInfo.upsert({
+        where: {
+          id: userToUpdate.id,
+        },
+        update: {
+          cityId: cityObj?.id,
+          phoneNumber,
+        },
+        create: {
+          cityId: cityObj!.id,
+          phoneNumber,
+          id: userToUpdate.id,
+        },
+      });
+    }
 
     const updateQuery = await this.buildQuery(updateUserDto);
 

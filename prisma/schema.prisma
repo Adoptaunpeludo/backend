@@ -56,8 +56,8 @@ model Token {
 
 model Shelter {
   id                   String        @id
-  description          String        @default("")
-  cif                  String
+  description          String?       @default("")
+  cif                  String?       @default("")
   facilities           String[]
   images               String[]
   legalForms           legal_forms?
@@ -75,11 +75,11 @@ model Admin {
 }
 
 model ContactInfo {
-  id          String @id
-  phoneNumber String
+  id          String  @id
+  phoneNumber String? @default("")
   cityId      Int
-  city        City   @relation(fields: [cityId], references: [id])
-  user        User   @relation(fields: [id], references: [id], onDelete: Cascade)
+  city        City    @relation(fields: [cityId], references: [id])
+  user        User    @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
 model SocialMedia {
