@@ -14,7 +14,7 @@ import {
 } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
 import { QueueService } from '../common/services';
-import { PartialUserResponse } from '../../domain/interfaces';
+import { PartialUserResponse, SocialMedia } from '../../domain/interfaces';
 
 interface Options {
   userAgent: string;
@@ -148,6 +148,32 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  private async createEmptySocialMedia(createdUser: any) {
+    if (createdUser.role !== 'shelter') return;
+
+    const socialMedia: SocialMedia[] = [
+      {
+        shelterId: createdUser.id,
+        url: '',
+        name: 'facebook',
+      },
+      {
+        shelterId: createdUser.id,
+        url: '',
+        name: 'xtweet',
+      },
+      {
+        shelterId: createdUser.id,
+        url: '',
+        name: 'instagram',
+      },
+    ];
+
+    await prisma.socialMedia.createMany({
+      data: socialMedia,
+    });
+  }
+
   /**
    * Registers a new user.
    * @param registerUserDto - DTO containing user registration data.
@@ -198,6 +224,8 @@ export class AuthService {
     const createdUser = await prisma.user.create({
       data,
     });
+
+    await this.createEmptySocialMedia(createdUser);
 
     //* Send an verification email to queue
     await this.emailService.addMessageToQueue(
