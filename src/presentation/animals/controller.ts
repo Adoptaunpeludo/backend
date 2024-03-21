@@ -84,9 +84,9 @@ export class AnimalController {
     const updates = req.body;
     const user = req.user;
 
-    await this.animalService.update(user, term, updates);
+    const animal = await this.animalService.update(user, term, updates);
 
-    res.status(HttpCodes.OK).json({ message: 'Animal updated' });
+    res.status(HttpCodes.OK).json(animal);
   };
 
   /**

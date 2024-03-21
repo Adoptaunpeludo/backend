@@ -135,7 +135,7 @@ export class AnimalService {
    * @param updateAnimalDto - DTO containing updated animal information.
    * @returns Update query object.
    */
-  private buildQuery(updateAnimalDto: UpdateAnimalDto) {
+  private async buildQuery(updateAnimalDto: UpdateAnimalDto) {
     const updatedAt = new Date();
 
     let query: any;
@@ -149,6 +149,7 @@ export class AnimalService {
       toiletTrained,
       scratchPotential,
       type,
+      city,
       ...common
     } = updateAnimalDto;
 
@@ -158,21 +159,38 @@ export class AnimalService {
       cat:
         type === 'cat'
           ? {
-              playLevel,
-              kidsFriendly,
-              toiletTrained,
-              scratchPotential,
+              update: {
+                playLevel,
+                kidsFriendly,
+                toiletTrained,
+                scratchPotential,
+              },
             }
           : undefined,
       dog:
         type === 'dog'
           ? {
-              droolingPotential,
-              departmentAdapted,
-              bark,
+              update: {
+                droolingPotential,
+                departmentAdapted,
+                bark,
+              },
             }
           : undefined,
     };
+
+    if (city) {
+      const cityObj = await prisma.city.findUnique({
+        where: { name: city },
+      });
+
+      if (cityObj) {
+        query.cityId = cityObj.id;
+      } else {
+        // Manejo si la ciudad no se encuentra
+        throw new Error(`City '${city}' not found`);
+      }
+    }
 
     return query;
   }
@@ -406,7 +424,9 @@ export class AnimalService {
 
     CheckPermissions.check(user, animal.createdBy);
 
-    const updateQuery = this.buildQuery(updateAnimalDto);
+    const updateQuery = await this.buildQuery(updateAnimalDto);
+
+    console.log({ updateQuery });
 
     const updatedAnimal = await prisma.animal.update({
       where: { id: animal.id },

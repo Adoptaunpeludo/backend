@@ -78,9 +78,9 @@ export class UpdateAnimalDto {
   gender?: gender;
 
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  cityId?: number;
+  @IsString()
+  @Trim()
+  city?: string;
 
   @IsOptional()
   @IsBoolean()
