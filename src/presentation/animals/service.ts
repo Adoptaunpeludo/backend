@@ -380,7 +380,11 @@ export class AnimalService {
    * @param animalId - ID of the updated animal.
    * @param query - Query object containing notification details.
    */
-  private async sendNotifications(animalId: string, query: any) {
+  private async sendNotifications(
+    animalId: string,
+    animalSlug: string,
+    query: any
+  ) {
     const favs = await prisma.animal.findUnique({
       where: { id: animalId },
       include: {
@@ -401,7 +405,11 @@ export class AnimalService {
 
     userData?.forEach(({ email, userId, isOnline }) => {
       this.notificationService.addMessageToQueue(
-        { message: `Animal ${animalId} has changed`, userId },
+        {
+          message: `An animal from your favorites has changed`,
+          userId,
+          animalSlug,
+        },
         'animal-changed-push-notification'
       );
 
@@ -438,7 +446,11 @@ export class AnimalService {
       data: updateQuery,
     });
 
-    await this.sendNotifications(updatedAnimal.id, updateQuery);
+    await this.sendNotifications(
+      updatedAnimal.id,
+      updatedAnimal.slug,
+      updateQuery
+    );
 
     return updatedAnimal;
   }
