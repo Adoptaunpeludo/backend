@@ -68,7 +68,6 @@ const confirmationQuestion = (text: string) => {
         firstName: userData.firstName,
         lastName: userData.lastName,
         verifiedAt: userData.verifiedAt,
-        avatar: userData.avatar,
         contactInfo: {
           create: {
             phoneNumber: userData.contactInfo.phoneNumber,
