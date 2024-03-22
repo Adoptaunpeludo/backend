@@ -88,6 +88,11 @@ export interface AnimalResponse {
   city?: City;
   cat: Cat | null;
   dog: Dog | null;
+  userFav?: UserFav[];
+}
+
+export interface UserFav {
+  id: string;
 }
 
 export interface Cat {

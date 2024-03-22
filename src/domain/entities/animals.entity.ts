@@ -43,7 +43,10 @@ export class AnimalEntity {
       numFavs,
       publishStatus,
       status,
+      userFav,
     } = animalResponse;
+
+    const userFavs = userFav?.map((user) => user.id);
 
     return {
       id,
@@ -58,6 +61,7 @@ export class AnimalEntity {
       status,
       images,
       numFavs,
+      userFavs,
       shelter: { avatar, username, isOnline },
     };
   }

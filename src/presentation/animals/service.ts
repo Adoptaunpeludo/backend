@@ -340,6 +340,11 @@ export class AnimalService {
             city: true,
             cat: true,
             dog: true,
+            userFav: {
+              select: {
+                id: true,
+              },
+            },
           },
           orderBy: {
             createdAt: 'desc',
