@@ -562,7 +562,7 @@ export class UserService {
 
       const images = userToUpdate.shelter.images;
       const resultImages = await this.buildImages(images, deleteImages, files);
-
+      updateQuery.avatar = resultImages.length > 0 ? [resultImages[0]] : [];
       updateQuery.shelter = {
         update: {
           images: resultImages,
