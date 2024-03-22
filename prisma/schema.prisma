@@ -15,7 +15,7 @@ model User {
   emailValidated    Boolean        @default(false)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @default(now())
-  avatar            String         @default("avatar.png")
+  avatar            String[]       @default([])
   role              user_roles
   verificationToken String         @default("")
   passwordToken     String         @default("")

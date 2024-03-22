@@ -36,7 +36,7 @@ export interface UserResponse {
   createdAt: Date;
   updatedAt: Date;
   verifiedAt: Date | null;
-  avatar: string;
+  avatar: string[];
   isOnline: boolean;
   shelter: Shelter | null;
   admin?: Admin | null;

@@ -116,7 +116,7 @@ export interface Dog {
 }
 
 export interface User {
-  avatar: string;
+  avatar: string[];
   username: string;
   isOnline: boolean;
 }

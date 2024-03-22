@@ -540,6 +540,7 @@ export class UserService {
     const userToUpdate = await prisma.user.findUnique({
       where: { email: user.email },
       select: {
+        role: true,
         shelter: {
           select: {
             images: true,
@@ -550,35 +551,33 @@ export class UserService {
 
     if (!userToUpdate) throw new NotFoundError('User not found');
 
-    if (!userToUpdate.shelter)
-      throw new BadRequestError('User is not a shelter');
-
-    const images = userToUpdate.shelter.images;
-
     let updateQuery: {
-      avatar: string;
-      shelter: { update: { images: string[] } };
-    } = {
-      avatar: 'avatar.png',
-      shelter: {
+      avatar?: string[];
+      shelter?: { update: { images: string[] } };
+    } = {};
+
+    if (userToUpdate.role === 'shelter') {
+      if (!userToUpdate.shelter)
+        throw new NotFoundError('Shelter not found for user');
+
+      const images = userToUpdate.shelter.images;
+      const resultImages = await this.buildImages(images, deleteImages, files);
+
+      updateQuery.shelter = {
         update: {
-          images: [],
+          images: resultImages,
         },
-      },
-    };
-
-    const resultImages = await this.buildImages(images, deleteImages, files);
-
-    updateQuery.shelter.update.images = resultImages;
-
-    updateQuery.avatar = resultImages[0] ? resultImages[0] : updateQuery.avatar;
+      };
+    } else {
+      const resultImages = await this.buildImages([], deleteImages, files);
+      updateQuery.avatar = resultImages.length > 0 ? [resultImages[0]] : [];
+    }
 
     await prisma.user.update({
       where: { email: user.email },
       data: updateQuery,
     });
   }
-
   /**
    * Fetches favorites user animals.
    * @param user - PayloadUser object representing the user.
