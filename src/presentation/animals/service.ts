@@ -114,6 +114,21 @@ export class AnimalService {
       }
     });
 
+    if (animalFilterDto.shelterName) {
+      const shelter = await prisma.user.findUnique({
+        where: {
+          username: animalFilterDto.shelterName,
+        },
+        include: {
+          shelter: true,
+        },
+      });
+
+      if (!shelter) throw new NotFoundError('Shelter not found');
+      filters.createdBy = shelter.id;
+      delete filters.shelterName;
+    }
+
     if (animalFilterDto.city) {
       const city = await prisma.city.findUnique({
         where: { name: animalFilterDto.city },
@@ -126,6 +141,8 @@ export class AnimalService {
         throw new NotFoundError(`City '${animalFilterDto.city}' not found`);
       }
     }
+
+    console.log({ filters });
 
     return filters;
   }

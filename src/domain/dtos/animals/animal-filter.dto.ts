@@ -66,4 +66,9 @@ export class AnimalFilterDto {
   @IsString()
   @Trim()
   city?: string;
+
+  @IsOptional()
+  @IsString()
+  @Trim()
+  shelterName?: string;
 }
