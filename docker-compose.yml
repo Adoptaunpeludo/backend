@@ -60,6 +60,7 @@ services:
       RABBITMQ_URL: ${DOCK_RABBITMQ_URL}
       DATABASE_URL: ${DOCK_DATABASE_URL}
       PORT: ${WS_SERVER_PORT}
+      JWT_SEED: ${JWT_SEED}
     ports:
       - ${WS_SERVER_PORT}:${WS_SERVER_PORT}
 
