@@ -30,9 +30,7 @@ export class UserController {
    * Retrieves the current user.
    */
   getCurrentUser = async (req: Request, res: Response) => {
-    const { email } = req.user;
-
-    const user = await this.userService.getCurrentUser(email);
+    const user = await this.userService.getCurrentUser(req.user);
 
     res.status(HttpCodes.OK).json(user);
   };

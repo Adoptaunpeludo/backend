@@ -12,7 +12,7 @@ export class UserEntity {
       ...commonUser
     } = userResponse;
 
-    let userEntity = {};
+    let userEntity: any = {};
 
     const user = {
       ...commonUser,

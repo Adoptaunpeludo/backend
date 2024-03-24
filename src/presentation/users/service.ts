@@ -253,7 +253,7 @@ export class UserService {
    * @returns User entity object.
    * @throws NotFoundError if the user is not found.
    */
-  public async getCurrentUser(email: string) {
+  public async getCurrentUser({ email, wsToken }: PayloadUser) {
     const user = await prisma.user.findUnique({
       where: {
         email,
@@ -276,6 +276,8 @@ export class UserService {
     if (!user) throw new NotFoundError('User not found');
 
     const userEntity = UserEntity.fromObject(user);
+
+    userEntity.wsToken = wsToken;
 
     return userEntity;
   }

@@ -5,4 +5,5 @@ export interface PayloadUser {
   name?: string;
   email: string;
   role?: UserRoles;
+  wsToken?: string;
 }
