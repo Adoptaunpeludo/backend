@@ -415,17 +415,19 @@ export class AnimalService {
           email: user.email,
           userId: user.id,
           isOnline: user.isOnline,
+          username: user.username,
         }))) ||
       [];
 
     const ids = userData.map((user) => user.userId);
 
-    userData?.forEach(({ email, userId, isOnline }) => {
+    userData?.forEach(({ email, userId, isOnline, username }) => {
       this.notificationService.addMessageToQueue(
         {
           message: `An animal from your favorites has changed`,
           userId,
           animalSlug,
+          username,
         },
         'animal-changed-push-notification'
       );
