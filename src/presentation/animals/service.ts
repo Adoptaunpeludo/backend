@@ -142,8 +142,6 @@ export class AnimalService {
       }
     }
 
-    console.log({ filters });
-
     return filters;
   }
 
@@ -398,9 +396,10 @@ export class AnimalService {
    * @param query - Query object containing notification details.
    */
   private async sendNotifications(
+    message: string,
     animalId: string,
     animalSlug: string,
-    query: any
+    query: any = {}
   ) {
     const favs = await prisma.animal.findUnique({
       where: { id: animalId },
@@ -419,12 +418,12 @@ export class AnimalService {
         }))) ||
       [];
 
-    const ids = userData.map((user) => user.userId);
+    userData.map((user) => user.userId);
 
     userData?.forEach(({ email, userId, isOnline, username }) => {
       this.notificationService.addMessageToQueue(
         {
-          message: `An animal from your favorites has changed`,
+          message,
           userId,
           animalSlug,
           username,
@@ -466,6 +465,7 @@ export class AnimalService {
     });
 
     await this.sendNotifications(
+      `Animal ${updatedAnimal.name} updated`,
       updatedAnimal.id,
       updatedAnimal.slug,
       updateQuery
@@ -484,6 +484,12 @@ export class AnimalService {
 
     CheckPermissions.check(user, animal.createdBy);
 
+    await this.sendNotifications(
+      `Animal ${animal.name} deleted`,
+      animal.id,
+      animal.slug
+    );
+
     await prisma.animal.delete({ where: { id: animal.id } });
 
     const imagesToDelete = animal.images.map((image) => image) || [];
@@ -491,14 +497,14 @@ export class AnimalService {
     if (imagesToDelete.length > 0)
       await this.s3Service.deleteFiles(imagesToDelete);
 
-    this.notificationService.addMessageToQueue(
-      {
-        message: `Animal with id: ${animal.id} and name: ${animal.name} was deleted`,
-        userId: user.id,
-        animalSlug: animal.slug,
-      },
-      'animal-changed-push-notification'
-    );
+    // this.notificationService.addMessageToQueue(
+    //   {
+    //     message: `Animal with id: ${animal.id} and name: ${animal.name} was deleted`,
+    //     userId: user.id,
+    //     animalSlug: animal.slug,
+    //   },
+    //   'animal-changed-push-notification'
+    // );
   }
 
   /**

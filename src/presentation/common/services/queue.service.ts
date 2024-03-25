@@ -36,6 +36,7 @@ export class QueueService {
    */
   async addMessageToQueue(payload: any, queue: string) {
     try {
+      console.log({ payload, queue });
       // Publishes the message to the specified queue in the exchange.
       await this.channelWrapper.publish(
         this.exchange,
