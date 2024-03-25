@@ -490,6 +490,15 @@ export class AnimalService {
 
     if (imagesToDelete.length > 0)
       await this.s3Service.deleteFiles(imagesToDelete);
+
+    this.notificationService.addMessageToQueue(
+      {
+        message: `Animal with id: ${animal.id} and name: ${animal.name} was deleted`,
+        userId: user.id,
+        animalSlug: animal.slug,
+      },
+      'animal-changed-push-notification'
+    );
   }
 
   /**

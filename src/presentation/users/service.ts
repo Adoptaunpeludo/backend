@@ -89,6 +89,7 @@ export class UserService {
             {
               message: `Animal with id: ${animal.id} and name: ${animal.name} was deleted`,
               userId: user.id,
+              animalSlug: animal.slug,
             },
             'animal-changed-push-notification'
           );
