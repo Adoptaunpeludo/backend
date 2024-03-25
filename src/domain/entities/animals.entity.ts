@@ -44,6 +44,7 @@ export class AnimalEntity {
       publishStatus,
       status,
       userFav,
+      description,
     } = animalResponse;
 
     const userFavs = userFav?.map((user) => user.id);
@@ -54,6 +55,7 @@ export class AnimalEntity {
       name,
       age,
       gender,
+      description,
       size,
       type,
       city,
