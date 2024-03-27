@@ -74,9 +74,7 @@ export class UserController {
 
     const updatedUser = await this.userService.updateUser(updates, user);
 
-    res
-      .status(HttpCodes.OK)
-      .json({ message: 'User updated successfully', updatedUser });
+    res.status(HttpCodes.OK).json(updatedUser);
   };
 
   /**
