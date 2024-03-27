@@ -76,6 +76,7 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - MONGO_DB_URL=${MONGO_DB_URL}
       - PORT=${ASSISTANT_PORT}
+      - JWT_SEED=${JWT_SEED}
     ports:
       - ${ASSISTANT_PORT}:${ASSISTANT_PORT}
 
