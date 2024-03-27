@@ -64,16 +64,16 @@ services:
     ports:
       - ${WS_SERVER_PORT}:${WS_SERVER_PORT}
 
-  # assistant-service:
-  #   image: jaderodev/assistant-service:latest
-  #   restart: on-failure
-  #   container_name: assistant-service
-  #   environment:
-  #     - SUPABASE_URL=${SUPABASE_URL}
-  #     - SUPABASE_PRIVATE_KEY=${SUPABASE_PRIVATE_KEY}
-  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
-  #     - MONGO_DB_URL=${MONGO_DB_URL}
-  #     - PORT=${ASSSISTANT_PORT}
+  assistant-service:
+    image: jaderodev/assistant-service:latest
+    restart: on-failure
+    container_name: assistant-service
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_PRIVATE_KEY=${SUPABASE_PRIVATE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MONGO_DB_URL=${MONGO_DB_URL}
+      - PORT=${ASSISTANT_PORT}
 
   aup-backend:
     image: jaderodev/aup-backend:latest
