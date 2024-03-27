@@ -74,6 +74,8 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - MONGO_DB_URL=${MONGO_DB_URL}
       - PORT=${ASSISTANT_PORT}
+    ports:
+      - ${PORT}:${ASSISTANT_PORT}
 
   aup-backend:
     image: jaderodev/aup-backend:latest
