@@ -31,7 +31,7 @@ model User {
   shelter           Shelter?
   Token             Token?
   userFav           Animal[]       @relation("userFav")
-  chat              Chat[]
+  chats             AdoptionChat[] @relation("participants")
 }
 
 model Notification {
@@ -128,13 +128,7 @@ model Animal {
   cat           Cat?
   dog           Dog?
   userFav       User[]                  @relation("userFav")
-  chat          Chat[]
-
-  @@index([gender])
-  @@index([name])
-  @@index([age])
-  @@index([size])
-  @@index([createdBy])
+  AdoptionChat  AdoptionChat[]          @relation("animal")
 }
 
 model Dog {
@@ -154,24 +148,24 @@ model Cat {
   animal           Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
 }
 
-model Chat {
-  id       String        @id @default(uuid())
-  slug     String
-  Animal   Animal?       @relation(fields: [animalId], references: [id], onDelete: Cascade)
-  animalId String?
-  User     User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String?
-  messages ChatMessage[]
+model AdoptionChat {
+  id              String        @id @default(uuid())
+  slug            String
+  adopterUsername String
+  shelterUsername String
+  animal          Animal[]      @relation("animal")
+  users           User[]        @relation("participants")
+  messages        ChatMessage[]
 
-  @@unique([userId, slug])
+  @@unique([slug, adopterUsername, shelterUsername])
 }
 
 model ChatMessage {
-  id     String  @id
-  text   String
-  userId String
-  chatId String?
-  Chat   Chat?   @relation(fields: [chatId], references: [id])
+  id             String       @id @default(uuid())
+  text           String
+  username       String
+  AdoptionChat   AdoptionChat @relation(fields: [adoptionChatId], references: [id], onDelete: Cascade)
+  adoptionChatId String
 }
 
 enum user_roles {
