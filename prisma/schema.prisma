@@ -31,6 +31,7 @@ model User {
   shelter           Shelter?
   Token             Token?
   userFav           Animal[]       @relation("userFav")
+  chat              Chat[]
 }
 
 model Notification {
@@ -127,6 +128,7 @@ model Animal {
   cat           Cat?
   dog           Dog?
   userFav       User[]                  @relation("userFav")
+  chat          Chat[]
 
   @@index([gender])
   @@index([name])
@@ -150,6 +152,26 @@ model Cat {
   scratchPotential potential
   toiletTrained    Boolean
   animal           Animal    @relation(fields: [id], references: [id], onDelete: Cascade)
+}
+
+model Chat {
+  id       String        @id @default(uuid())
+  slug     String
+  Animal   Animal?       @relation(fields: [animalId], references: [id], onDelete: Cascade)
+  animalId String?
+  User     User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String?
+  messages ChatMessage[]
+
+  @@unique([userId, slug])
+}
+
+model ChatMessage {
+  id     String  @id
+  text   String
+  userId String
+  chatId String?
+  Chat   Chat?   @relation(fields: [chatId], references: [id])
 }
 
 enum user_roles {

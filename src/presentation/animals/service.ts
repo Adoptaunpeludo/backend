@@ -482,6 +482,8 @@ export class AnimalService {
   public async delete(user: PayloadUser, term: string) {
     const animal = await this.getAnimalFromTerm(term);
 
+    if (!animal) throw new NotFoundError(`Animal not found`);
+
     CheckPermissions.check(user, animal.createdBy);
 
     await this.sendNotifications(
