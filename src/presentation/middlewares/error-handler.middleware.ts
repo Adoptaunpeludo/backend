@@ -30,6 +30,11 @@ export class ErrorHandlerMiddleware {
       message = 'Unknown error';
     }
 
+    if (err.name && err.name === 'TokenExpiredError') {
+      statusCode = 401;
+      message = 'JWT token expired';
+    }
+
     // Handle CustomAPIError
     if (err instanceof CustomAPIError) {
       statusCode = err.statusCode;
