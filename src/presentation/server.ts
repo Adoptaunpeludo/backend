@@ -7,6 +7,7 @@ import cors from 'cors';
 import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
 import { envs } from '../config';
 import { prisma } from '../data/postgres';
+import { QueueService } from './common/services';
 
 interface Options {
   port: number;
@@ -72,6 +73,7 @@ export class Server {
     this.app.use(NotFoundMiddleware.init);
 
     //* Error Handler Middleware
+
     this.app.use(ErrorHandlerMiddleware.handle);
 
     //* Start the server and connect to the database
