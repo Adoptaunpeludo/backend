@@ -9,17 +9,18 @@ import { QueueService } from '../common/services';
  * Middleware class for handling errors.
  */
 export class ErrorHandlerMiddleware {
+  errorLogsService: QueueService = new QueueService(
+    envs.RABBITMQ_URL,
+    'error-notification'
+  );
+
   /**
    * Handles errors and sends appropriate responses.
    */
+  constructor() {}
 
-  static handle(err: Error, _req: Request, res: Response, _next: NextFunction) {
+  handle(err: Error, _req: Request, res: Response, _next: NextFunction) {
     console.log({ err });
-
-    const errorLogsService = new QueueService(
-      envs.RABBITMQ_URL,
-      'error-notification'
-    );
 
     let message, statusCode;
 
@@ -41,7 +42,7 @@ export class ErrorHandlerMiddleware {
       message = err.message;
     }
 
-    errorLogsService.addMessageToQueue(
+    this.errorLogsService.addMessageToQueue(
       {
         message: message,
         level: statusCode === 500 ? 'high' : 'medium',

@@ -74,7 +74,9 @@ export class Server {
 
     //* Error Handler Middleware
 
-    this.app.use(ErrorHandlerMiddleware.handle);
+    const errorHandlerMiddleware = new ErrorHandlerMiddleware();
+
+    this.app.use(errorHandlerMiddleware.handle);
 
     //* Start the server and connect to the database
     this.serverListener = this.app.listen(this.port, async () => {
