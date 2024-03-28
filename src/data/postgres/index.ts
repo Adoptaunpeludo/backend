@@ -59,7 +59,7 @@ const slugExtension = Prisma.defineExtension({
           slug = `${shelter}-${name
             .toLowerCase()
             .replace(/ /g, '_')
-            .replace(/'/g, '')}-${suffix}`;
+            .replace(/'/g, '')}${suffix}`;
           existingAnimalWithSlug = await prisma.animal.findFirst({
             where: {
               slug,
