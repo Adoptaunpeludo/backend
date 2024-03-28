@@ -19,7 +19,7 @@ export class ErrorHandlerMiddleware {
    */
   constructor() {}
 
-  handle(err: Error, _req: Request, res: Response, _next: NextFunction) {
+  handle = (err: Error, _req: Request, res: Response, _next: NextFunction) => {
     console.log({ err });
 
     let message, statusCode;
@@ -55,5 +55,5 @@ export class ErrorHandlerMiddleware {
       name: err?.name || 'Error',
       message: message || err?.message,
     });
-  }
+  };
 }
