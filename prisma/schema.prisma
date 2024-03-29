@@ -149,8 +149,7 @@ model Cat {
 }
 
 model AdoptionChat {
-  id              String        @id @default(uuid())
-  slug            String
+  slug            String        @id
   adopterUsername String
   shelterUsername String
   animal          Animal[]      @relation("animal")
@@ -161,11 +160,11 @@ model AdoptionChat {
 }
 
 model ChatMessage {
-  id             String       @id @default(uuid())
-  text           String
-  username       String
-  AdoptionChat   AdoptionChat @relation(fields: [adoptionChatId], references: [id], onDelete: Cascade)
-  adoptionChatId String
+  id               Int          @id @default(autoincrement())
+  text             String
+  username         String
+  AdoptionChat     AdoptionChat @relation(fields: [adoptionChatSlug], references: [slug], onDelete: Cascade)
+  adoptionChatSlug String
 }
 
 enum user_roles {
