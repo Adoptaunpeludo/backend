@@ -150,8 +150,8 @@ model Cat {
 
 model AdoptionChat {
   slug            String        @id
-  adopterUsername String
-  shelterUsername String
+  adopterUsername String        @default("")
+  shelterUsername String        @default("")
   animal          Animal[]      @relation("animal")
   users           User[]        @relation("participants")
   messages        ChatMessage[]
