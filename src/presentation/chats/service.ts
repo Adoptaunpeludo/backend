@@ -5,6 +5,16 @@ import { PayloadUser } from '../../domain/interfaces';
 export class ChatService {
   constructor() {}
 
+  chatHistory = async (chat: string) => {
+    const history = await prisma.chatMessage.findMany({
+      where: {
+        adoptionChatSlug: chat,
+      },
+    });
+
+    return history;
+  };
+
   userChats = async (user: PayloadUser) => {
     const chats = await prisma.adoptionChat.findMany({
       where: {
@@ -58,8 +68,6 @@ export class ChatService {
         },
       },
     });
-
-    if (!chat) throw new NotFoundError('Chat not found');
 
     return chat;
   };

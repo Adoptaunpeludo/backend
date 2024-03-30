@@ -20,4 +20,12 @@ export class ChatController {
 
     res.status(HttpCodes.OK).json(chat);
   };
+
+  getChatHistory = async (req: Request, res: Response) => {
+    const { chat } = req.params;
+
+    const history = await this.chatService.chatHistory(chat);
+
+    res.status(HttpCodes.OK).json(history);
+  };
 }

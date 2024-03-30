@@ -16,6 +16,7 @@ export class ChatRoutes {
     router.use(authMiddleware.authenticateUser);
 
     router.get('/', chatController.userChats);
+    router.get('/history/:chat', chatController.getChatHistory);
     router.get('/:slug', chatController.getChat);
 
     return router;
