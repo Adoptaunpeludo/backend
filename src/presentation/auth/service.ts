@@ -394,7 +394,7 @@ export class AuthService {
     await this.emailService.addMessageToQueue(
       {
         email,
-        passwordToken,
+        verificationToken: passwordToken,
         type: 'password',
       },
       'change-password'
