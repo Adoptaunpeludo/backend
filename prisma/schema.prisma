@@ -39,6 +39,7 @@ model Notification {
   userId     String
   message    String
   animalSlug String
+  animalType String
   createdAt  DateTime  @default(now())
   queue      String
   isRead     Boolean   @default(false)

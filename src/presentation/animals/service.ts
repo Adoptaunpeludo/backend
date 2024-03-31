@@ -399,6 +399,7 @@ export class AnimalService {
     message: string,
     animalId: string,
     animalSlug: string,
+    animalType: string,
     query: any = {}
   ) {
     const favs = await prisma.animal.findUnique({
@@ -420,12 +421,20 @@ export class AnimalService {
 
     userData.map((user) => user.userId);
 
-    userData?.forEach(({ email, userId, isOnline, username }) => {
-      this.notificationService.addMessageToQueue(
-        {
+    userData?.forEach(async ({ email, userId, isOnline, username }) => {
+      const notification = await prisma.notification.create({
+        data: {
           message,
           userId,
+          queue: 'animal-changed-push-notification',
           animalSlug,
+          animalType,
+        },
+      });
+
+      this.notificationService.addMessageToQueue(
+        {
+          ...notification,
           username,
         },
         'animal-changed-push-notification'
@@ -468,6 +477,7 @@ export class AnimalService {
       `Animal ${updatedAnimal.name} updated`,
       updatedAnimal.id,
       updatedAnimal.slug,
+      updatedAnimal.type,
       updateQuery
     );
 
@@ -489,7 +499,8 @@ export class AnimalService {
     await this.sendNotifications(
       `Animal ${animal.name} deleted`,
       animal.id,
-      animal.slug
+      animal.slug,
+      animal.type
     );
 
     await prisma.animal.delete({ where: { id: animal.id } });

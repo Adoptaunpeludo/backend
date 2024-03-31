@@ -83,16 +83,25 @@ export class UserService {
     });
 
     usersWithFavs.forEach((user) => {
-      user.userFav.forEach((animal) => {
-        if (deletedAnimalsIds.includes(animal.id))
-          this.notificationService.addMessageToQueue(
-            {
+      user.userFav.forEach(async (animal) => {
+        if (deletedAnimalsIds.includes(animal.id)) {
+          const notification = await prisma.notification.create({
+            data: {
               message: `Animal with id: ${animal.id} and name: ${animal.name} was deleted`,
               userId: user.id,
+              queue: 'animal-changed-push-notification',
               animalSlug: animal.slug,
+              animalType: animal.type,
+            },
+          });
+          this.notificationService.addMessageToQueue(
+            {
+              ...notification,
+              username: user.username,
             },
             'animal-changed-push-notification'
           );
+        }
       });
     });
   }
