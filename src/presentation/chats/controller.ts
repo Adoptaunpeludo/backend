@@ -8,7 +8,7 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   createChat = async (req: Request, res: Response) => {
-    const chat = await this.chatService.createChat(req.body);
+    const chat = await this.chatService.createChat(req.user, req.body);
 
     res.status(HttpCodes.OK).json(chat);
   };

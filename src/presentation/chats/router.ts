@@ -3,6 +3,7 @@ import { ChatService } from './service';
 import { ChatController } from './controller';
 import { JWTAdapter, envs } from '../../config';
 import { AuthMiddleware } from '../middlewares';
+import { QueueService } from '../common/services';
 
 export class ChatRoutes {
   static get routes() {
@@ -10,7 +11,11 @@ export class ChatRoutes {
 
     const jwt = new JWTAdapter(envs.JWT_SEED);
     const authMiddleware = new AuthMiddleware(jwt);
-    const chatService = new ChatService();
+    const notificationService = new QueueService(
+      envs.RABBITMQ_URL,
+      'notification-request'
+    );
+    const chatService = new ChatService(notificationService);
     const chatController = new ChatController(chatService);
 
     router.use(authMiddleware.authenticateUser);

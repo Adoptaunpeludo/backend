@@ -2,9 +2,10 @@ import { prisma } from '../../data/postgres';
 import { NotFoundError } from '../../domain';
 import { CreateChatDto } from '../../domain/dtos/chat/create-chat.dto';
 import { PayloadUser } from '../../domain/interfaces';
+import { QueueService } from '../common/services';
 
 export class ChatService {
-  constructor() {}
+  constructor(private readonly notificationService: QueueService) {}
 
   private getDataFromRoom(room: string) {
     const parts = room.split('-');
@@ -15,7 +16,7 @@ export class ChatService {
     return { shelterUsername, adopterUsername, animalSlug };
   }
 
-  createChat = async ({ room }: CreateChatDto) => {
+  createChat = async (user: PayloadUser, { room }: CreateChatDto) => {
     const chatExist = await prisma.adoptionChat.findUnique({
       where: {
         slug: room,
@@ -56,6 +57,16 @@ export class ChatService {
         animal: animal ? { connect: { id: animal.id } } : undefined,
       },
     });
+
+    this.notificationService.addMessageToQueue(
+      {
+        ...newAdoptionChat,
+        username:
+          adopterUsername === user.name ? shelterUsername : adopterUsername,
+        queue: 'new-chat-push-notification',
+      },
+      'new-chat-push-notification'
+    );
 
     return newAdoptionChat;
   };
