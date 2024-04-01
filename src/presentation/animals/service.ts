@@ -406,6 +406,9 @@ export class AnimalService {
       where: { id: animalId },
       include: {
         userFav: true,
+        shelter: {
+          select: { user: { select: { username: true } } },
+        },
       },
     });
 
@@ -435,6 +438,7 @@ export class AnimalService {
       this.notificationService.addMessageToQueue(
         {
           ...notification,
+          createdBy: favs?.shelter.user.username,
           username,
         },
         'animal-changed-push-notification'
