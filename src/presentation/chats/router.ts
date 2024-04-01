@@ -19,6 +19,8 @@ export class ChatRoutes {
     router.get('/history/:chat', chatController.getChatHistory);
     router.get('/:slug', chatController.getChat);
 
+    router.post('/', chatController.createChat);
+
     return router;
   }
 }

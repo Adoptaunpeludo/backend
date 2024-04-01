@@ -7,6 +7,12 @@ import { HttpCodes } from '../../config';
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
+  createChat = async (req: Request, res: Response) => {
+    const chat = await this.chatService.createChat(req.body);
+
+    res.status(HttpCodes.OK).json(chat);
+  };
+
   userChats = async (req: Request, res: Response) => {
     const chats = await this.chatService.userChats(req.user);
 
