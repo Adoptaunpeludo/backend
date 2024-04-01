@@ -3,6 +3,7 @@ import express, { Request, Response, Router } from 'express';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import cors from 'cors';
+import morgan from 'morgan';
 
 import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
 import { envs } from '../config';
@@ -45,6 +46,7 @@ export class Server {
     this.app.use(express.json()); // raw
     this.app.use(express.urlencoded({ extended: true })); // x-www-form-urlencoded
     this.app.use(cookieParser(envs.JWT_SEED));
+    this.app.use(morgan('tiny'));
 
     const corsOptions = {
       origin: 'http://localhost:5173',
