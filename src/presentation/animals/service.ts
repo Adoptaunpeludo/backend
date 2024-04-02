@@ -427,11 +427,15 @@ export class AnimalService {
     userData?.forEach(async ({ email, userId, isOnline, username }) => {
       const notification = await prisma.notification.create({
         data: {
+          type: 'animal-changed',
           message,
+          link: `/animals/${animalType}/${animalSlug}`,
           userId,
           queue: 'animal-changed-push-notification',
-          animalSlug,
-          animalType,
+          data: {
+            animalSlug,
+            animalType,
+          },
         },
       });
 
@@ -478,7 +482,7 @@ export class AnimalService {
     });
 
     await this.sendNotifications(
-      `Animal ${updatedAnimal.name} updated`,
+      `El animal ${updatedAnimal.name.toUpperCase()} de tus favoritos ha cambiado`,
       updatedAnimal.id,
       updatedAnimal.slug,
       updatedAnimal.type,
@@ -501,7 +505,7 @@ export class AnimalService {
     CheckPermissions.check(user, animal.createdBy);
 
     await this.sendNotifications(
-      `Animal ${animal.name} deleted`,
+      `El animal ${animal.name.toUpperCase()} de tus favoritos ha sido borrado`,
       animal.id,
       animal.slug,
       animal.type

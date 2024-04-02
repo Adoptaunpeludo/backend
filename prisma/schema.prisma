@@ -34,17 +34,31 @@ model User {
   chats             AdoptionChat[] @relation("participants")
 }
 
+// model Notification {
+//   id         String    @id @default(uuid())
+//   userId     String
+//   message    String
+//   animalSlug String
+//   animalType String
+//   createdAt  DateTime  @default(now())
+//   queue      String
+//   isRead     Boolean   @default(false)
+//   isReadAt   DateTime?
+//   User       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }
+
 model Notification {
-  id         String    @id @default(uuid())
-  userId     String
-  message    String
-  animalSlug String
-  animalType String
-  createdAt  DateTime  @default(now())
-  queue      String
-  isRead     Boolean   @default(false)
-  isReadAt   DateTime?
-  User       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String    @id @default(uuid())
+  type      String
+  message   String
+  link      String
+  data      Json
+  createdAt DateTime  @default(now())
+  queue     String
+  isRead    Boolean   @default(false)
+  isReadAt  DateTime?
+  userId    String
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Token {

@@ -39,7 +39,7 @@ export class ChatService {
       }),
       prisma.animal.findUnique({
         where: { slug: animalSlug },
-        select: { id: true },
+        select: { id: true, slug: true, type: true, name: true },
       }),
     ]);
 
@@ -58,9 +58,27 @@ export class ChatService {
       },
     });
 
+    const notification = await prisma.notification.create({
+      data: {
+        type: 'new-chat',
+        message: `El usuario ${adopterUsername.toUpperCase()} quiere chatear contigo${
+          animal ? ` sobre el animal ${animal.name.toUpperCase()}.` : '.'
+        }`,
+        link: `/private/chat/${room}`,
+        data: {
+          adopterUsername,
+          shelterUsername,
+          room,
+          animal,
+        },
+        queue: 'new-chat-push-notification',
+        userId: shelter.id,
+      },
+    });
+
     this.notificationService.addMessageToQueue(
       {
-        ...newAdoptionChat,
+        ...notification,
         username:
           adopterUsername === user.name ? shelterUsername : adopterUsername,
         queue: 'new-chat-push-notification',

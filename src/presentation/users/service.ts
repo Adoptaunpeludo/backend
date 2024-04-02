@@ -87,11 +87,15 @@ export class UserService {
         if (deletedAnimalsIds.includes(animal.id)) {
           const notification = await prisma.notification.create({
             data: {
-              message: `Animal with id: ${animal.id} and name: ${animal.name} was deleted`,
+              type: 'animal-changed',
+              message: `El animal ${animal.name.toUpperCase()} de tus favoritos ha sido borrado`,
+              link: '',
               userId: user.id,
               queue: 'animal-changed-push-notification',
-              animalSlug: animal.slug,
-              animalType: animal.type,
+              data: {
+                animalSlug: animal.slug,
+                animalType: animal.type,
+              },
             },
           });
           this.notificationService.addMessageToQueue(
