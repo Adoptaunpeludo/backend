@@ -727,8 +727,14 @@ export class UserService {
   public async getNotifications(id: string, paginationDto: PaginationDto) {
     const { limit = 5, page = 1 } = paginationDto;
 
-    const [total, notifications] = await prisma.$transaction([
+    const [total, read, unread, notifications] = await prisma.$transaction([
       prisma.notification.count({ where: { userId: id } }),
+      prisma.notification.count({
+        where: { AND: { userId: id, isRead: true } },
+      }),
+      prisma.notification.count({
+        where: { AND: { userId: id, isRead: false } },
+      }),
       prisma.notification.findMany({
         skip: (page - 1) * limit,
         take: limit,
@@ -745,6 +751,8 @@ export class UserService {
       maxPages,
       limit,
       total,
+      read,
+      unread,
       next:
         page + 1 <= maxPages
           ? `/api/users/me/notifications?page=${page + 1}&limit=${limit}`
