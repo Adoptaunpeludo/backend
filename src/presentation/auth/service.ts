@@ -13,7 +13,7 @@ import {
   UnauthenticatedError,
 } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
-import { QueueService } from '../common/services';
+import { QueueService } from '../shared/services';
 import { PartialUserResponse, SocialMedia } from '../../domain/interfaces';
 
 interface Options {

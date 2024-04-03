@@ -2,7 +2,7 @@ import { prisma } from '../../data/postgres';
 import { NotFoundError } from '../../domain';
 import { CreateChatDto } from '../../domain/dtos/chat/create-chat.dto';
 import { PayloadUser } from '../../domain/interfaces';
-import { QueueService } from '../common/services';
+import { QueueService } from '../shared/services';
 
 export class ChatService {
   constructor(private readonly notificationService: QueueService) {}

@@ -16,7 +16,7 @@ import {
   PaginationDto,
   UpdateAnimalDto,
 } from '../../domain';
-import { QueueService, S3Service } from '../common/services';
+import { QueueService, S3Service } from '../shared/services';
 
 export class AnimalRoutes {
   static get routes() {

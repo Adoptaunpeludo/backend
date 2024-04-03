@@ -8,7 +8,6 @@ import morgan from 'morgan';
 import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
 import { envs } from '../config';
 import { prisma } from '../data/postgres';
-import { QueueService } from './common/services';
 
 interface Options {
   port: number;

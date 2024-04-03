@@ -13,7 +13,7 @@ import {
   UpdatePasswordDto,
   UpdateSocialMediaDto,
 } from '../../domain';
-import { S3Service, QueueService } from '../common/services';
+import { S3Service, QueueService } from '../shared/services';
 import { UserService } from './service';
 
 export class UserRoutes {

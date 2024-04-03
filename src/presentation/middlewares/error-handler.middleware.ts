@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import { CustomAPIError } from '../../domain/errors';
 import { HttpCodes, envs } from '../../config';
 import { MulterError } from 'multer';
-import { QueueService } from '../common/services';
+import { QueueService } from '../shared/services';
 
 /**
  * Middleware class for handling errors.

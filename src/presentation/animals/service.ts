@@ -11,7 +11,7 @@ import { AnimalResponse } from '../../domain/interfaces';
 import { PayloadUser } from '../../domain/interfaces/payload-user.interface';
 import { CheckPermissions } from '../../utils';
 import { UpdateAnimalDto } from '../../domain/dtos/animals/update-animal.dto';
-import { S3Service, QueueService } from '../common/services';
+import { S3Service, QueueService } from '../shared/services';
 import { AnimalEntity } from '../../domain/entities/animals.entity';
 
 /**

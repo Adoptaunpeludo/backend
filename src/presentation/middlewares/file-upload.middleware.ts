@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { S3Service } from '../common/services/s3.service';
+import { S3Service } from '../shared/services/s3.service';
 
 import { BadRequestError, NotFoundError } from '../../domain';
 import { CheckPermissions } from '../../utils';

@@ -3,7 +3,7 @@ import { ChatService } from './service';
 import { ChatController } from './controller';
 import { JWTAdapter, envs } from '../../config';
 import { AuthMiddleware } from '../middlewares';
-import { QueueService } from '../common/services';
+import { QueueService } from '../shared/services';
 
 export class ChatRoutes {
   static get routes() {

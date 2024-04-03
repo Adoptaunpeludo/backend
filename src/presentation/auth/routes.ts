@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { AuthController } from './controller';
 import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
-import { QueueService } from '../common/services';
+import { QueueService } from '../shared/services';
 import { AuthService } from './service';
 import { JWTAdapter, envs } from '../../config';
 import {
