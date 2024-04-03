@@ -58,6 +58,15 @@ export class ChatService {
       },
     });
 
+    const chatNotificationExist = await prisma.notification.findFirst({
+      where: {
+        link: `/private/chat/${room}`,
+        isRead: false,
+      },
+    });
+
+    if (chatNotificationExist) return;
+
     const notification = await prisma.notification.create({
       data: {
         type: 'new-chat',
@@ -93,6 +102,9 @@ export class ChatService {
     const history = await prisma.chatMessage.findMany({
       where: {
         adoptionChatSlug: chat,
+      },
+      orderBy: {
+        createdAt: 'asc',
       },
     });
 

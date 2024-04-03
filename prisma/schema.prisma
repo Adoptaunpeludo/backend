@@ -180,6 +180,9 @@ model ChatMessage {
   username         String
   AdoptionChat     AdoptionChat @relation(fields: [adoptionChatSlug], references: [slug], onDelete: Cascade)
   adoptionChatSlug String
+  createdAt        DateTime     @default(now())
+  isRead           Boolean      @default(false)
+  isReadAt         DateTime?
 }
 
 enum user_roles {
