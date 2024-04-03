@@ -3,9 +3,9 @@ import { testServer } from '../../../presentation/test-server';
 import { TestUser, cleanDB } from '../auth/routes.test';
 import request from 'supertest';
 import { CreateAnimalDto } from '../../../domain';
-import { gender } from '../../../domain/interfaces';
+import { gender, statusPet } from '../../../domain/interfaces';
 
-jest.mock('../../../presentation/services/s3.service.ts');
+jest.mock('../../../presentation/shared/services');
 
 describe('Api animals routes testing', () => {
   const loginRoute = '/api/auth/login';
@@ -20,17 +20,11 @@ describe('Api animals routes testing', () => {
     email: 'test@test.com',
     password: 'testtest',
     role: 'shelter',
-    dni: '111111111',
-    firstName: 'test',
-    lastName: 'test',
-    phoneNumber: '11111111',
-    address: '13 rue del percebe',
-    cityId: 7,
   };
 
   const animal: CreateAnimalDto = {
     type: 'cat',
-    name: 'Nero',
+    name: 'nero',
     age: 14,
     description: 'Cold as Hell',
     breed: 'Unknown',
@@ -39,7 +33,8 @@ describe('Api animals routes testing', () => {
     energyLevel: 'light',
     moltingAmount: 'light',
     gender: gender.M,
-    cityId: 7,
+    city: 'Granada',
+    status: statusPet.A,
   };
 
   const cat = {
@@ -55,7 +50,7 @@ describe('Api animals routes testing', () => {
     bark: 'excessive',
   };
 
-  const { phoneNumber, address, cityId, ...userRest } = user;
+  const { ...userRest } = user;
 
   beforeAll(async () => {
     prisma.$connect();
@@ -105,7 +100,7 @@ describe('Api animals routes testing', () => {
       expect(body).toEqual({
         id: expect.any(String),
         gender: 'male',
-        name: 'Nero',
+        name: 'nero',
         type: 'cat',
         slug: 'test-nero',
         age: 14,
@@ -113,8 +108,8 @@ describe('Api animals routes testing', () => {
         breed: 'Unknown',
         size: 'medium',
         numFavs: 0,
-        publishStatus: 'pending',
-        status: 'awaiting_home',
+        publishStatus: 'published',
+        status: 'adopted',
         easyTrain: false,
         energyLevel: 'light',
         moltingAmount: 'light',
@@ -123,7 +118,7 @@ describe('Api animals routes testing', () => {
         updatedAt: expect.any(String),
         adoptedBy: null,
         createdBy: expect.any(String),
-        cityId: 7,
+        cityId: 4,
       });
     });
     test('Should create a new dog', async () => {
@@ -146,7 +141,7 @@ describe('Api animals routes testing', () => {
       expect(body).toEqual({
         id: expect.any(String),
         gender: 'male',
-        name: 'Nero',
+        name: 'nero',
         type: 'dog',
         slug: 'test-nero',
         age: 14,
@@ -154,8 +149,8 @@ describe('Api animals routes testing', () => {
         breed: 'Unknown',
         size: 'medium',
         numFavs: 0,
-        publishStatus: 'pending',
-        status: 'awaiting_home',
+        publishStatus: 'published',
+        status: 'adopted',
         easyTrain: false,
         energyLevel: 'light',
         moltingAmount: 'light',
@@ -164,7 +159,7 @@ describe('Api animals routes testing', () => {
         updatedAt: expect.any(String),
         adoptedBy: null,
         createdBy: expect.any(String),
-        cityId: 7,
+        cityId: 4,
       });
     });
   });
@@ -206,6 +201,9 @@ describe('Api animals routes testing', () => {
       expect(body).toEqual({
         currentPage: 1,
         maxPages: 1,
+        awaitingHome: 0,
+        fostered: 0,
+        adopted: 2,
         limit: 10,
         total: 2,
         next: null,
@@ -214,26 +212,34 @@ describe('Api animals routes testing', () => {
           {
             id: expect.any(String),
             slug: expect.any(String),
-            name: 'Nero',
+            name: 'nero',
             age: 14,
             gender: 'male',
             size: 'medium',
+            description: 'Cold as Hell',
+            publishStatus: 'published',
+            status: 'adopted',
+            userFavs: expect.any(Array),
             numFavs: 0,
             type: expect.any(String),
-            city: 'Málaga',
+            city: 'Granada',
             images: expect.any(Array),
             shelter: expect.any(Object),
           },
           {
             id: expect.any(String),
             slug: expect.any(String),
-            name: 'Nero',
+            name: 'nero',
             age: 14,
             gender: 'male',
             size: 'medium',
+            description: 'Cold as Hell',
+            publishStatus: 'published',
+            status: 'adopted',
+            userFavs: expect.any(Array),
             numFavs: 0,
             type: expect.any(String),
-            city: 'Málaga',
+            city: 'Granada',
             images: expect.any(Array),
             shelter: expect.any(Object),
           },

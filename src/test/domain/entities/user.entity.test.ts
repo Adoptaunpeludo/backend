@@ -19,14 +19,13 @@ describe('user.entity.ts', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       verifiedAt: null,
-      avatar: 'avatar.jpg',
+      avatar: ['avatar.jpg'],
       isOnline: true,
       shelter: null,
       admin: null,
       contactInfo: {
         id: '1',
         phoneNumber: '1234567890',
-        address: '123 Main St',
         cityId: 1,
         city: {
           id: 1,
@@ -47,10 +46,9 @@ describe('user.entity.ts', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       verifiedAt: null,
-      avatar: 'avatar.jpg',
+      avatar: ['avatar.jpg'],
       isOnline: true,
       phoneNumber: '1234567890',
-      address: '123 Main St',
       city: 'New York',
       description: undefined,
       cif: undefined,
@@ -83,7 +81,7 @@ describe('user.entity.ts', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       verifiedAt: null,
-      avatar: 'avatar.jpg',
+      avatar: ['avatar.jpg'],
       isOnline: true,
       shelter: {
         id: '1',
@@ -91,7 +89,7 @@ describe('user.entity.ts', () => {
         cif: '12345678B',
         legalForms: 'association',
         veterinaryFacilities: true,
-        facilities: 'foster_homes',
+        facilities: ['foster_homes'],
         ownVet: true,
         images: ['image1.jpg', 'image2.jpg'],
         socialMedia: [
@@ -103,7 +101,6 @@ describe('user.entity.ts', () => {
       contactInfo: {
         id: '1',
         phoneNumber: '1234567890',
-        address: '123 Main St',
         cityId: 1,
         city: {
           id: 1,
@@ -124,16 +121,15 @@ describe('user.entity.ts', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       verifiedAt: null,
-      avatar: 'avatar.jpg',
+      avatar: ['avatar.jpg'],
       isOnline: true,
       phoneNumber: '1234567890',
-      address: '123 Main St',
       city: 'New York',
       description: 'Shelter description',
       cif: '12345678B',
       legalForms: 'association',
       veterinaryFacilities: true,
-      facilities: 'foster_homes',
+      facilities: ['foster_homes'],
       ownVet: true,
       images: ['image1.jpg', 'image2.jpg'],
       socialMedia: [
@@ -162,7 +158,7 @@ describe('user.entity.ts', () => {
       createdAt: new Date(),
       updatedAt: new Date(),
       verifiedAt: null,
-      avatar: 'avatar.jpg',
+      avatar: ['avatar.jpg'],
       isOnline: true,
       shelter: {
         id: '1',
@@ -170,7 +166,7 @@ describe('user.entity.ts', () => {
         cif: '12345678B',
         legalForms: 'association',
         veterinaryFacilities: true,
-        facilities: 'foster_homes',
+        facilities: ['foster_homes'],
         ownVet: true,
         images: ['image1.jpg', 'image2.jpg'],
         socialMedia: [
@@ -185,7 +181,6 @@ describe('user.entity.ts', () => {
       contactInfo: {
         id: '1',
         phoneNumber: '1234567890',
-        address: '123 Main St',
         cityId: 1,
         city: {
           id: 1,
@@ -206,10 +201,9 @@ describe('user.entity.ts', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       verifiedAt: null,
-      avatar: 'avatar.jpg',
+      avatar: ['avatar.jpg'],
       isOnline: true,
       phoneNumber: '1234567890',
-      address: '123 Main St',
       city: 'New York',
       name: 'admin',
     };

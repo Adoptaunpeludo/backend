@@ -1,7 +1,8 @@
 import 'reflect-metadata';
-import { S3Service } from '../../../presentation/services';
+
 import { S3Client } from '@aws-sdk/client-s3';
 import { NextFunction, Request, Response } from 'express';
+import { S3Service } from '../../../presentation/shared/services';
 
 describe('s3.service.ts', () => {
   test('should create an instance of S3Service with valid credentials', () => {

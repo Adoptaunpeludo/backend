@@ -15,13 +15,7 @@ export interface TestUser {
   email: string;
   password: string;
   username: string;
-  firstName: string;
-  lastName: string;
-  dni: string;
   role: UserRoles;
-  phoneNumber: string;
-  address: string;
-  cityId: number;
 }
 
 describe('Api auth routes testing', () => {
@@ -37,15 +31,9 @@ describe('Api auth routes testing', () => {
     email: 'test@test.com',
     password: 'testtest',
     role: 'shelter',
-    dni: '22222222',
-    firstName: 'test',
-    lastName: 'test',
-    phoneNumber: '2222222',
-    address: '13 rue del percebe',
-    cityId: 7,
   };
 
-  const { phoneNumber, address, cityId, ...rest } = user;
+  const { ...rest } = user;
 
   beforeAll(async () => {
     prisma.$connect();
@@ -187,10 +175,10 @@ describe('Api auth routes testing', () => {
         .expect(200);
 
       expect(response.headers['set-cookie'].at(-2)?.split(';').at(0)).toEqual(
-        'refreshToken=logout'
+        'refreshToken=s%3Alogout.eKYOqxJ5ugYbHiqYOYYa1c4bbviCHMDRDkkF042aXzs'
       );
       expect(response.headers['set-cookie'].at(-1)?.split(';').at(0)).toEqual(
-        'accessToken=logout'
+        'accessToken=s%3Alogout.eKYOqxJ5ugYbHiqYOYYa1c4bbviCHMDRDkkF042aXzs'
       );
     });
   });

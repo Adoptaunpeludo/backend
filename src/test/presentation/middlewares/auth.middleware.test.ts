@@ -51,6 +51,7 @@ describe('auth.middleware.ts', () => {
       email: 'test@example.com',
       name: 'Test User',
       role: 'adopter',
+      wsToken: 'validAccessToken',
     });
     expect(next).toHaveBeenCalled();
   });

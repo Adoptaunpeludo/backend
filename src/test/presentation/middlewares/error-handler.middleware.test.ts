@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { NextFunction, Request, Response } from 'express';
 import { ErrorHandlerMiddleware } from '../../../presentation/middlewares/error-handler.middleware';
 import { HttpCodes } from '../../../config';
@@ -12,7 +13,8 @@ describe('error-handler.middleware.ts', () => {
     } as unknown as Response;
     const next = jest.fn() as NextFunction;
 
-    ErrorHandlerMiddleware.handle(err, req, res, next);
+    const errorHandlerMiddleware = new ErrorHandlerMiddleware();
+    errorHandlerMiddleware.handle(err, req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(HttpCodes.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({
@@ -30,7 +32,8 @@ describe('error-handler.middleware.ts', () => {
     } as unknown as Response;
     const next = jest.fn() as NextFunction;
 
-    ErrorHandlerMiddleware.handle(err, req, res, next);
+    const errorHandlerMiddleware = new ErrorHandlerMiddleware();
+    errorHandlerMiddleware.handle(err, req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(HttpCodes.INTERNAL_SERVER_ERROR);
     expect(res.json).toHaveBeenCalledWith({
