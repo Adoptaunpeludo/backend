@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import path from 'path';
 import cors from 'cors';
 import morgan from 'morgan';
+import swaggerUI from 'swagger-ui-express';
+import YAML from 'yamljs';
 
 import { ErrorHandlerMiddleware, NotFoundMiddleware } from './middlewares';
 import { envs } from '../config';
@@ -47,10 +49,7 @@ export class Server {
     this.app.use(cookieParser(envs.JWT_SEED));
     this.app.use(morgan('tiny'));
 
-    const corsOptions = {
-      origin: 'http://localhost:5173',
-      credentials: true,
-    };
+    const swaggerDocument = YAML.load('./swagger.yml');
 
     this.app.use(
       cors({
@@ -69,6 +68,12 @@ export class Server {
     this.app.get('/', (_req: Request, res: Response) => {
       res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
     });
+    this.app.use(
+      '/api/docs',
+      cors({ origin: '*' }),
+      swaggerUI.serve,
+      swaggerUI.setup(swaggerDocument)
+    );
 
     //* NotFound Middleware
     this.app.use(NotFoundMiddleware.init);

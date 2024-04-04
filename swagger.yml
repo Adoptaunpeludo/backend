@@ -1,0 +1,750 @@
+openapi: 3.0.0
+info:
+  title: Adoptaunpeludo
+  contact: {}
+  version: '1.0'
+servers:
+  - url: https://backend.adoptaunpeludo.com/api
+    variables: {}
+paths:
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      operationId: Login
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            encoding: {}
+            schema:
+              required:
+                - email
+                - password
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: test@test.com
+                password:
+                  type: string
+                  example: secret
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register
+      operationId: Register
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            encoding: {}
+            schema:
+              required:
+                - username
+                - email
+                - password
+                - role
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: yusep
+                email:
+                  type: string
+                  example: test@test.com
+                password:
+                  type: string
+                  example: secret
+                role:
+                  type: string
+                  example: shelter
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /auth/verify-email/{token}:
+    parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+        description: The JWT Token with user Payload
+    post:
+      tags:
+        - Auth
+      summary: Verify Email
+      operationId: VerifyEmail
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: Forgot Password
+      operationId: ForgotPassword
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            encoding: {}
+            schema:
+              required:
+                - email
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: test@test.com
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /auth/reset-password/{token}:
+    parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+        description: The JWT Token with user Payload
+    post:
+      tags:
+        - Auth
+      summary: Reset Password
+      operationId: ResetPassword
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            encoding: {}
+            schema:
+              required:
+                - password
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: secret
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /auth/logout:
+    delete:
+      tags:
+        - Auth
+      summary: Logout
+      operationId: Logout
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /auth/resend-validation-email/{email}:
+    parameters:
+      - in: path
+        name: email
+        schema:
+          type: string
+        required: true
+        description: The user email to resend the validation link
+    post:
+      tags:
+        - Auth
+      summary: Resend Validation Email
+      operationId: ResendValidationEmail
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/me:
+    get:
+      tags:
+        - User
+      summary: Me
+      operationId: Me
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+    put:
+      tags:
+        - User
+      summary: Update User
+      operationId: UpdateUser
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            encoding: {}
+            schema:
+              required:
+                - username
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: Jose
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+    delete:
+      tags:
+        - User
+      summary: Delete user
+      operationId: Deleteuser
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/{term}:
+    parameters:
+      - in: path
+        name: term
+        schema:
+          type: string
+        required: true
+        description: User ID or username
+    get:
+      tags:
+        - User
+      summary: Single User
+      operationId: SingleUser
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users:
+    get:
+      tags:
+        - User
+      summary: All Users
+      operationId: AllUsers
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/me/animals:
+    get:
+      tags:
+        - User
+      summary: User Animals
+      operationId: UserAnimals
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/me/favorites:
+    get:
+      tags:
+        - User
+      summary: Favorites
+      operationId: Favorites
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/me/notifications:
+    get:
+      tags:
+        - User
+      summary: User Notifications
+      operationId: UserNotifications
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/me/notifications/read/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The notification id
+    put:
+      tags:
+        - User
+      summary: Read Notifications
+      operationId: ReadNotifications
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/me/change-password:
+    put:
+      tags:
+        - User
+      summary: Change Password
+      operationId: ChangePassword
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            encoding: {}
+            schema:
+              required:
+                - oldPassword
+                - newPassword
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                  example: secret
+                newPassword:
+                  type: string
+                  example: secrets
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/me/update-social-media:
+    put:
+      tags:
+        - User
+      summary: Update Social Media
+      operationId: UpdateSocialMedia
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UpdateSocialMediaRequest'
+                - example:
+                    socialMedia:
+                      - name: facebook
+                        url: http://yusepah.facebook.com
+                      - name: instagram
+                        url: http://yusep.instagram.com
+                      - name: xtweet
+                        url: http://yusep.x.com
+            example:
+              socialMedia:
+                - name: facebook
+                  url: http://yusepah.facebook.com
+                - name: instagram
+                  url: http://yusep.instagram.com
+                - name: xtweet
+                  url: http://yusep.x.com
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /users/upload-images:
+    post:
+      tags:
+        - User
+      summary: Upload Images
+      operationId: UploadImages
+      parameters: []
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding: {}
+            schema:
+              required:
+                - images
+              type: object
+              properties:
+                images:
+                  type: string
+                  format: binary
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /animals:
+    get:
+      tags:
+        - Animal
+      summary: All Animals
+      operationId: AllAnimals
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /animals/{term}:
+    parameters:
+      - in: path
+        name: term
+        schema:
+          type: string
+        required: true
+        description: The animal id or slug
+    get:
+      tags:
+        - Animal
+      summary: Single Animal
+      operationId: SingleAnimal
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+    put:
+      tags:
+        - Animal
+      summary: Update Animal
+      operationId: UpdateAnimal
+      parameters: []
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            encoding: {}
+            schema:
+              required:
+                - name
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Pepito
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+    delete:
+      tags:
+        - Animal
+      summary: Delete Animal
+      operationId: DeleteAnimal
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /animals/cat:
+    post:
+      tags:
+        - Animal
+      summary: Create Animal
+      operationId: CreateAnimal
+      parameters: []
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/CreateAnimalRequest'
+                - example:
+                    type: cat
+                    name: Nera
+                    age: 12
+                    description: Negro azabache
+                    breed: negrata
+                    size: medium
+                    energyLevel: moderate
+                    moltingAmount: light
+                    gender: male
+                    easyTrain: true
+                    cityId: 7
+                    playLevel: none
+                    kidsFriendly: false
+                    toiletTrained: false
+                    scratchPotential: excessive
+            example:
+              type: cat
+              name: Nera
+              age: 12
+              description: Negro azabache
+              breed: negrata
+              size: medium
+              energyLevel: moderate
+              moltingAmount: light
+              gender: male
+              easyTrain: true
+              cityId: 7
+              playLevel: none
+              kidsFriendly: false
+              toiletTrained: false
+              scratchPotential: excessive
+        required: true
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /animals/upload-images/{term}:
+    parameters:
+      - in: path
+        name: term
+        schema:
+          type: string
+        required: true
+        description: The animal id or slug
+    post:
+      tags:
+        - Animal
+      summary: Upload Images
+      operationId: PostUploadImages
+      parameters: []
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding: {}
+            schema:
+              required:
+                - images
+              type: object
+              properties:
+                images:
+                  type: string
+                  format: binary
+        required: false
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /animals/add-vaforite/{term}:
+    parameters:
+      - in: path
+        name: term
+        schema:
+          type: string
+        required: true
+        description: The animal id or slug
+    post:
+      tags:
+        - Animal
+      summary: Add Favorite
+      operationId: AddFavorite
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /animals/remove-favorite/{term}:
+    parameters:
+      - in: path
+        name: term
+        schema:
+          type: string
+        required: true
+        description: The animal id or slug
+    delete:
+      tags:
+        - Animal
+      summary: Remove favorite
+      operationId: Removefavorite
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /chats:
+    get:
+      tags:
+        - Chats
+      summary: Get Chats
+      operationId: GetChats
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /chats/{slug}:
+    parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+        description: Chat unique slug
+    get:
+      tags:
+        - Chats
+      summary: Get Single Chat
+      operationId: GetSingleChat
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+  /chats/history/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: Chat id
+    get:
+      tags:
+        - Chats
+      summary: Get Chat History
+      operationId: GetChatHistory
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      deprecated: false
+components:
+  schemas:
+    UpdateSocialMediaRequest:
+      title: UpdateSocialMediaRequest
+      required:
+        - socialMedia
+      type: object
+      properties:
+        socialMedia:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialMedium'
+          description: ''
+      example:
+        socialMedia:
+          - name: facebook
+            url: http://yusepah.facebook.com
+          - name: instagram
+            url: http://yusep.instagram.com
+          - name: xtweet
+            url: http://yusep.x.com
+    SocialMedium:
+      title: SocialMedium
+      required:
+        - name
+        - url
+      type: object
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+      example:
+        name: facebook
+        url: http://yusepah.facebook.com
+    CreateAnimalRequest:
+      title: CreateAnimalRequest
+      required:
+        - type
+        - name
+        - age
+        - description
+        - breed
+        - size
+        - energyLevel
+        - moltingAmount
+        - gender
+        - easyTrain
+        - cityId
+        - playLevel
+        - kidsFriendly
+        - toiletTrained
+        - scratchPotential
+      type: object
+      properties:
+        type:
+          type: string
+        name:
+          type: string
+        age:
+          type: integer
+          format: int32
+        description:
+          type: string
+        breed:
+          type: string
+        size:
+          type: string
+        energyLevel:
+          type: string
+        moltingAmount:
+          type: string
+        gender:
+          type: string
+        easyTrain:
+          type: boolean
+        cityId:
+          type: integer
+          format: int32
+        playLevel:
+          type: string
+        kidsFriendly:
+          type: boolean
+        toiletTrained:
+          type: boolean
+        scratchPotential:
+          type: string
+      example:
+        type: cat
+        name: Nera
+        age: 12
+        description: Negro azabache
+        breed: negrata
+        size: medium
+        energyLevel: moderate
+        moltingAmount: light
+        gender: male
+        easyTrain: true
+        cityId: 7
+        playLevel: none
+        kidsFriendly: false
+        toiletTrained: false
+        scratchPotential: excessive
+security:
+  - {}
+tags:
+  - name: Auth
+  - name: User
+  - name: Animal
+  - name: Chats
