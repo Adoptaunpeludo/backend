@@ -71,12 +71,13 @@ services:
       - aup-backend
     container_name: assistant-service
     environment:
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_PRIVATE_KEY=${SUPABASE_PRIVATE_KEY}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - MONGO_DB_URL=${MONGO_DB_URL}
-      - PORT=${ASSISTANT_PORT}
-      - JWT_SEED=${JWT_SEED}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_PRIVATE_KEY: ${SUPABASE_PRIVATE_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      MONGO_DB_URL: ${MONGO_DB_URL}
+      PORT: ${ASSISTANT_PORT}
+      JWT_SEED: ${JWT_SEED}
+      RABBITMQ_URL: ${DOCK_RABBITMQ_URL}
     ports:
       - ${ASSISTANT_PORT}:${ASSISTANT_PORT}
 
