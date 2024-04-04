@@ -1,7 +1,7 @@
 
 # Adoptaunpeludo
 
-## Doucmentación:
+## Documentación:
 https://backend.adoptaunpeludo.com/api/docs
 
 ## Instalacion
