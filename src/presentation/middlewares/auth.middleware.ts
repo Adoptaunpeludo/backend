@@ -35,7 +35,8 @@ export class AuthMiddleware {
       const payload = this.jwt.validateToken(accessToken);
       if (!payload) throw new UnauthorizedError('Invalid token validation');
       req.user = payload.user;
-      req.user.wsToken = accessToken;
+      const wsToken = this.jwt.generateToken({ user: payload.user }, '1d');
+      req.user.wsToken = wsToken;
       return next();
     }
 
