@@ -258,6 +258,14 @@ export class AnimalService {
       },
     });
 
+    this.notificationService.addMessageToQueue(
+      {
+        createdBy: username,
+        action: 'create-delete-animal',
+      },
+      'animal-created-deleted'
+    );
+
     return animal;
   }
 
@@ -300,6 +308,14 @@ export class AnimalService {
         },
       },
     });
+
+    this.notificationService.addMessageToQueue(
+      {
+        createdBy: username,
+        action: 'create-delete-animal',
+      },
+      'animal-created-deleted'
+    );
 
     return animal;
   }
@@ -517,6 +533,14 @@ export class AnimalService {
 
     if (imagesToDelete.length > 0)
       await this.s3Service.deleteFiles(imagesToDelete);
+
+    this.notificationService.addMessageToQueue(
+      {
+        createdBy: user.name,
+        action: 'create-delete-animal',
+      },
+      'animal-created-deleted'
+    );
 
     // this.notificationService.addMessageToQueue(
     //   {
