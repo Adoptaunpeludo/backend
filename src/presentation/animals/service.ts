@@ -429,7 +429,7 @@ export class AnimalService {
         data: {
           type: 'animal-changed',
           message,
-          link: `animals/${animalType}s/${animalSlug}`,
+          link: `/animals/${animalType}s/${animalSlug}`,
           userId,
           queue: 'animal-changed-push-notification',
           data: {
@@ -450,7 +450,7 @@ export class AnimalService {
 
       if (!isOnline)
         this.emailService.addMessageToQueue(
-          { link: `/animals/${animalType}s/${animalSlug}`, email },
+          { link: `animals/${animalType}s/${animalSlug}`, email },
           'animal-changed-notification'
         );
     });
