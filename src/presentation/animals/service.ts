@@ -429,7 +429,7 @@ export class AnimalService {
         data: {
           type: 'animal-changed',
           message,
-          link: `/animals/${animalType}s/${animalSlug}`,
+          link: `animals/${animalType}s/${animalSlug}`,
           userId,
           queue: 'animal-changed-push-notification',
           data: {
