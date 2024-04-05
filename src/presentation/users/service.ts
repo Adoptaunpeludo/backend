@@ -741,6 +741,9 @@ export class UserService {
         where: {
           userId: id,
         },
+        orderBy: {
+          createdAt: 'desc',
+        },
       }),
     ]);
 
