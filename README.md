@@ -25,8 +25,6 @@ El backend de adoptaunpeludo.com se compone de un a API y varios micro servicios
 
 **NOTA:** Más información acerca de cada servicio en el link a su propio repositorio.
 
-
-
 ## Instalacion
 
 1. Clonar el repo, movernos al directorio e instalar las depencencias:
@@ -40,19 +38,44 @@ npm i
 2. Copiar o renombrar el archivo .env.template y configurar con datos propios
 
 ```
-NODE_ENV=development
+NODE_ENV=<development o production>
 
-PORT=3000
+PORT=<puerto del backend>
 
-DB_PASSWORD=1234
-DB_NAME=AUP-db
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
+DB_PASSWORD=<password de la base de datos postgres>
+DB_NAME=<nombre de la base de datos>
+DB_HOST=<host de la base de datos>
+DB_PORT=<puerto donde está arrancada la base de datos>
+DB_USERNAME=<nombre de usuario para acceder a la base de datos>
+DATABASE_URL=postgresql:<url a la base de datos para desarrollo local>
+DOCK_DATABASE_URL=<url a la base de datos en produccion lanzada con Docker>
 
-JWT_SEED=secret
+JWT_SEED=<seed para los tokens JWT>
 
-DATABASE_URL="postgresql://postgres:1234@localhost:5432/AUP-db"
+MAIL_SERVICE=gmail
+MAILER_EMAIL=<direccion de correo desde donde se mandarán los emails>
+MAILER_SECRET_KEY=<key de gmail asociada al email desde donde se mandarán los emails>
+
+WEBSERVICE_URL=<url a la web en produccion para la generación de links en los emails>
+
+RABBITMQ_USER=<usuario de rabbitmq>
+RABBITMQ_PASS=<password de rabbitmq>
+DOCK_RABBITMQ_URL=amqp:<url de rabbitmq>
+RABBITMQ_URL=<url para conectar a rabbitmq>
+
+AWS_ACCESS_KEY_ID=<id de aws para el servicio de bucket>
+AWS_SECRET_ACCESS_KEY=<key de aws para el servicio de bucket>
+AWS_REGION=<region de aws donde está el bucket>
+AWS_BUCKET=<nombre del bucket>
+AWS_BUCKET_URL=<url del bucket>
+
+WS_SERVER_PORT=<puerto del servidor de websocket (notification-service)>
+
+ASSISTANT_PORT=<puerto del asistente de IA>
+SUPABASE_URL=<url a la base de datos de supabase>
+SUPABASE_PRIVATE_KEY=<key privada de supabase>
+OPENAI_API_KEY=<key de la API de OpenAI>
+MONGO_DB_URL=<url a la base de datos de mongodb atlas donde se almacenará el historial de conversaciones con el asistente>
 ```
 
 3. Levantar base de datos postgresql con docker si es necesario
