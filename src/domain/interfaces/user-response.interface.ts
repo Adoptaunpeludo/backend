@@ -24,7 +24,7 @@ export interface PartialUserResponse
 export interface UserResponse {
   id: string;
   email: string;
-  password: string;
+  password: string | null;
   username: string;
   firstName: string | null;
   lastName: string | null;

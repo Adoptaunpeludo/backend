@@ -261,7 +261,8 @@ export class AnimalService {
     this.notificationService.addMessageToQueue(
       {
         createdBy: username,
-        action: 'create-delete-animal',
+        slug: animal.slug,
+        action: 'create-animal',
       },
       'animal-created-deleted'
     );
@@ -312,7 +313,8 @@ export class AnimalService {
     this.notificationService.addMessageToQueue(
       {
         createdBy: username,
-        action: 'create-delete-animal',
+        slug: animal.slug,
+        action: 'create-animal',
       },
       'animal-created-deleted'
     );
@@ -537,7 +539,8 @@ export class AnimalService {
     this.notificationService.addMessageToQueue(
       {
         createdBy: user.name,
-        action: 'create-delete-animal',
+        slug: animal.slug,
+        action: 'delete-animal',
       },
       'animal-created-deleted'
     );

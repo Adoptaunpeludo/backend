@@ -13,8 +13,13 @@ import {
   UnauthenticatedError,
 } from '../../domain/errors';
 import { CryptoAdapter } from '../../config/crypto.adapter';
-import { QueueService } from '../shared/services';
-import { PartialUserResponse, SocialMedia } from '../../domain/interfaces';
+import { QueueService, S3Service } from '../shared/services';
+import {
+  PartialUserResponse,
+  SocialMedia,
+  UserRoles,
+} from '../../domain/interfaces';
+import { OAuth2Client } from 'google-auth-library';
 
 interface Options {
   userAgent: string;
@@ -31,7 +36,9 @@ type TokenType = 'passwordToken' | 'verificationToken';
 export class AuthService {
   constructor(
     private readonly jwt: JWTAdapter,
-    private readonly emailService: QueueService
+    private readonly emailService: QueueService,
+    private readonly client: OAuth2Client,
+    private readonly s3Service: S3Service
   ) {}
 
   /**
@@ -174,6 +181,89 @@ export class AuthService {
     });
   }
 
+  public async uploadPictureToS3(userId: string, pictureUrl: string) {
+    // Fetch the picture from the URL
+    const response = await fetch(pictureUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch picture from URL: ${pictureUrl}`);
+    }
+
+    // Convert response body to ArrayBuffer
+    const arrayBuffer = await response.arrayBuffer();
+
+    // Convert ArrayBuffer to Buffer
+    const buffer = Buffer.from(arrayBuffer);
+
+    const key = `users/${userId}/googleAvatar.jpg`;
+
+    // Upload the picture to S3
+    await this.s3Service.uploadFile(key, buffer);
+
+    // Assuming your S3Service returns the public URL of the uploaded file,
+    // you can return it here to store it in your user model or use it elsewhere
+    return key;
+  }
+
+  public async googleAuthRegister(
+    credential: string,
+    clientId: string,
+    role: UserRoles
+  ) {
+    const ticket = await this.client.verifyIdToken({
+      idToken: credential,
+      audience: clientId,
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) throw new InternalServerError('No payload from Google Auth');
+
+    await this.registerUser(
+      {
+        email: payload.email!,
+        role,
+        username: payload.name || '',
+      },
+      'googleAuth',
+      payload.picture || ''
+    );
+  }
+
+  public async googleAuthLogin(
+    credential: string,
+    clientId: string,
+    options: Options
+  ) {
+    const { ip, userAgent } = options;
+    const ticket = await this.client.verifyIdToken({
+      idToken: credential,
+      audience: clientId,
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) throw new InternalServerError('No payload from Google Auth');
+
+    const userExist = await prisma.user.findUnique({
+      where: {
+        email: payload.email,
+      },
+    });
+
+    if (!userExist)
+      throw new BadRequestError(
+        'Usuario no encontrado, registate primero con Google como Adoptante o Refugio por favor'
+      );
+
+    const { accessToken, refreshToken } = await this.generateCookies(
+      userExist,
+      ip,
+      userAgent
+    );
+
+    return { accessToken, refreshToken };
+  }
+
   /**
    * Registers a new user.
    * @param registerUserDto - DTO containing user registration data.
@@ -181,7 +271,11 @@ export class AuthService {
    * @throws BadRequestError if the email provided already exists.
    * @throws InternalServerError if there's an issue with JWT token generation.
    */
-  public async registerUser(registerUserDto: RegisterUserDto) {
+  public async registerUser(
+    registerUserDto: RegisterUserDto,
+    type: string = 'self',
+    avatar: string = ''
+  ) {
     const { email, username } = registerUserDto;
 
     //* Check if the user already exists
@@ -203,39 +297,65 @@ export class AuthService {
         `Username ${registerUserDto.username} already exists, try another one`
       );
 
-    //* Hash password and generate email verificationToken
-    const hashedPassword = prisma.user.hashPassword(registerUserDto.password);
+    let createdUser;
+    if (type !== 'googleAuth') {
+      //* Hash password and generate email verificationToken
+      const hashedPassword = prisma.user.hashPassword(
+        registerUserDto.password!
+      );
 
-    const verificationToken = this.jwt.generateToken(
-      { user: { email } },
-      '15m'
-    );
+      const verificationToken = this.jwt.generateToken(
+        { user: { email } },
+        '15m'
+      );
 
-    if (!verificationToken)
-      throw new InternalServerError('JWT token error, check server logs');
+      if (!verificationToken)
+        throw new InternalServerError('JWT token error, check server logs');
 
-    //* Build query for user creation and create user
-    const data = this.buildQuery(
-      registerUserDto,
-      hashedPassword,
-      verificationToken
-    );
+      //* Build query for user creation and create user
+      const data = this.buildQuery(
+        registerUserDto,
+        hashedPassword,
+        verificationToken
+      );
 
-    const createdUser = await prisma.user.create({
-      data,
-    });
+      createdUser = await prisma.user.create({
+        data,
+      });
+
+      await this.emailService.addMessageToQueue(
+        {
+          email: createdUser.email,
+          verificationToken,
+          type: 'email',
+        },
+        'verify-email'
+      );
+    } else {
+      createdUser = await prisma.user.create({
+        data: {
+          email: registerUserDto.email,
+          role: registerUserDto.role,
+          username: registerUserDto.username,
+          emailValidated: true,
+          accountType: 'google',
+        },
+      });
+      const avatarUrl = await this.uploadPictureToS3(createdUser.id, avatar);
+
+      await prisma.user.update({
+        where: {
+          id: createdUser.id,
+        },
+        data: {
+          avatar: [avatarUrl],
+        },
+      });
+    }
 
     await this.createEmptySocialMedia(createdUser);
 
     //* Send an verification email to queue
-    await this.emailService.addMessageToQueue(
-      {
-        email: createdUser.email,
-        verificationToken,
-        type: 'email',
-      },
-      'verify-email'
-    );
 
     return createdUser;
   }
@@ -298,6 +418,11 @@ export class AuthService {
     });
 
     if (!user) throw new UnauthorizedError('Incorrect email or password');
+
+    if (user.accountType === 'google')
+      throw new BadRequestError(
+        'Registrado con una cuenta de Google, haz login con tu cuenta de Google por favor.'
+      );
 
     const isMatch = prisma.user.validatePassword({
       password: loginUserDto.password,
@@ -376,6 +501,11 @@ export class AuthService {
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (!user) throw new BadRequestError(`User with email: ${email} not found`);
+
+    if (user.accountType === 'google')
+      throw new BadRequestError(
+        'No se puede recuperar un password de una cuenta de Google'
+      );
 
     const passwordToken = this.jwt.generateToken(
       { user: { email, id: user.id, name: user.username, role: user.role } },

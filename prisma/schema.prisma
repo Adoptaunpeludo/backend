@@ -10,7 +10,7 @@ datasource db {
 model User {
   id                String         @id @default(uuid())
   email             String         @unique
-  password          String
+  password          String?
   username          String         @unique
   emailValidated    Boolean        @default(false)
   createdAt         DateTime       @default(now())
@@ -18,6 +18,7 @@ model User {
   role              user_roles
   verificationToken String         @default("")
   passwordToken     String         @default("")
+  accountType       String         @default("self")
   dni               String?
   firstName         String?
   isOnline          Boolean        @default(false)

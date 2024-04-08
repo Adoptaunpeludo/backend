@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { AuthController } from './controller';
 import { AuthMiddleware, ValidationMiddleware } from '../middlewares';
-import { QueueService } from '../shared/services';
+import { QueueService, S3Service } from '../shared/services';
 import { AuthService } from './service';
 import { JWTAdapter, envs } from '../../config';
 import {
@@ -11,6 +11,7 @@ import {
   ForgotPasswordDto,
   ResetPasswordDto,
 } from '../../domain';
+import { OAuth2Client } from 'google-auth-library';
 
 export class AuthRoutes {
   static get routes() {
@@ -20,9 +21,20 @@ export class AuthRoutes {
 
     const emailService = new QueueService(envs.RABBITMQ_URL, 'email-request');
 
-    const authService = new AuthService(jwt, emailService);
+    const client = new OAuth2Client();
+    const s3Service = new S3Service(
+      envs.AWS_REGION,
+      envs.AWS_ACCESS_KEY_ID,
+      envs.AWS_SECRET_ACCESS_KEY,
+      envs.AWS_BUCKET
+    );
+
+    const authService = new AuthService(jwt, emailService, client, s3Service);
     const authController = new AuthController(authService);
     const authMiddleware = new AuthMiddleware(jwt);
+
+    router.post('/google-auth-login', authController.googleAuthLogin);
+    router.post('/google-auth-register', authController.googleAuthRegister);
 
     router.post(
       '/login',
