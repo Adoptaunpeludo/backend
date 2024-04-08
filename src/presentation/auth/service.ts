@@ -188,19 +188,14 @@ export class AuthService {
       throw new Error(`Failed to fetch picture from URL: ${pictureUrl}`);
     }
 
-    // Convert response body to ArrayBuffer
     const arrayBuffer = await response.arrayBuffer();
 
-    // Convert ArrayBuffer to Buffer
     const buffer = Buffer.from(arrayBuffer);
 
     const key = `users/${userId}/googleAvatar.jpg`;
 
-    // Upload the picture to S3
     await this.s3Service.uploadFile(key, buffer);
 
-    // Assuming your S3Service returns the public URL of the uploaded file,
-    // you can return it here to store it in your user model or use it elsewhere
     return key;
   }
 
