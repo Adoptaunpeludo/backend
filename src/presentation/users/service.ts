@@ -128,13 +128,15 @@ export class UserService {
       legalForms,
       ownVet,
       veterinaryFacilities,
+      username,
     } = updateUserDto;
 
-    const updateQuery: any = {
+    const updateQuery = {
       updatedAt,
       firstName,
       lastName,
       dni,
+      username,
       shelter: {
         update: {
           description,
