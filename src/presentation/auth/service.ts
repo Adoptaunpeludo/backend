@@ -207,8 +207,10 @@ export class AuthService {
   public async googleAuthRegister(
     credential: string,
     clientId: string,
-    role: UserRoles
+    role: UserRoles,
+    options: Options
   ) {
+    const { ip, userAgent } = options;
     const ticket = await this.client.verifyIdToken({
       idToken: credential,
       audience: clientId,
@@ -218,7 +220,7 @@ export class AuthService {
 
     if (!payload) throw new InternalServerError('No payload from Google Auth');
 
-    await this.registerUser(
+    const user = await this.registerUser(
       {
         email: payload.email!,
         role,
@@ -227,6 +229,14 @@ export class AuthService {
       'googleAuth',
       payload.picture || ''
     );
+
+    const { accessToken, refreshToken } = await this.generateCookies(
+      user,
+      ip,
+      userAgent
+    );
+
+    return { accessToken, refreshToken };
   }
 
   public async googleAuthLogin(

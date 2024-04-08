@@ -16,9 +16,18 @@ export class AuthController {
 
   googleAuthRegister = async (req: Request, res: Response) => {
     const { credential, clientId, role } = req.body;
+    const userAgent = req.headers['user-agent'] || '';
+    const ip = req.ip || '';
 
-    await this.authService.googleAuthRegister(credential, clientId, role);
-    res.status(HttpCodes.OK).send('Ok');
+    const { accessToken, refreshToken } =
+      await this.authService.googleAuthRegister(credential, clientId, role, {
+        userAgent,
+        ip,
+      });
+
+    AttachCookiesToResponse.attach({ res, accessToken, refreshToken });
+
+    res.status(HttpCodes.OK).send({ message: 'User successfully logged in.' });
   };
 
   googleAuthLogin = async (req: Request, res: Response) => {
