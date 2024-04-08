@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
   MinLength,
 } from 'class-validator';
@@ -29,9 +30,10 @@ export class RegisterUserDto {
   @Trim()
   email!: string;
 
+  @IsOptional()
   @IsString()
   @MinLength(8, { message: 'password should be minimum of 8 characters' })
-  password!: string;
+  password?: string;
 
   @IsString()
   @IsEnum(UserTypes)

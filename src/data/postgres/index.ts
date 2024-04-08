@@ -19,10 +19,10 @@ const passwordExtension = Prisma.defineExtension({
         password,
         hash,
       }: {
-        hash: string;
-        password: string;
+        hash: string | null;
+        password: string | null;
       }) => {
-        return BcryptAdapter.compare(password, hash);
+        if (password && hash) return BcryptAdapter.compare(password, hash);
       },
     },
   },

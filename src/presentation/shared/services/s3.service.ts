@@ -1,6 +1,7 @@
 import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
+  PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Request } from 'express';
@@ -35,6 +36,26 @@ export class S3Service {
         secretAccessKey: this.secretAccessKey,
       },
     });
+  }
+
+  public async uploadFile(key: string, buffer: Buffer): Promise<string> {
+    const params = {
+      Bucket: this.bucket,
+      Key: key,
+      Body: buffer,
+      ContentType: 'image/jpeg', // Adjust the content type as needed
+    };
+
+    try {
+      const command = new PutObjectCommand({ ...params, ACL: 'public-read' });
+      const uploadResult = await this.s3.send(command);
+      const fileUrl = `https://${this.bucket}.s3.amazonaws.com/${key}`; // Assuming your bucket is publicly accessible
+
+      return fileUrl;
+    } catch (error) {
+      console.error('Error uploading file to S3:', error);
+      throw error;
+    }
   }
 
   /**
