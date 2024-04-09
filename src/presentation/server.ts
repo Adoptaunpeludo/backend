@@ -64,10 +64,12 @@ export class Server {
     //* Routes
     this.app.use(this.routes);
 
-    //* CI/CD Test
-    this.app.get('/', (_req: Request, res: Response) => {
-      res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-    });
+    // CI/CD Test
+    // this.app.get('/', (_req: Request, res: Response) => {
+    //   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+    // });
+
+    //* Documentation
     this.app.use(
       '/api/docs',
       cors({ origin: '*' }),
@@ -79,9 +81,7 @@ export class Server {
     this.app.use(NotFoundMiddleware.init);
 
     //* Error Handler Middleware
-
     const errorHandlerMiddleware = new ErrorHandlerMiddleware();
-
     this.app.use(errorHandlerMiddleware.handle);
 
     //* Start the server and connect to the database
@@ -97,6 +97,10 @@ export class Server {
     });
   }
 
+  /**
+   * Stops the server.
+   * @returns A promise that resolves when the server is stopped successfully.
+   */
   public stop() {
     return new Promise((resolve, reject) => {
       this.serverListener.close((error: Error | undefined) => {
