@@ -7,6 +7,11 @@ import { QueueService } from '../shared/services';
 export class ChatService {
   constructor(private readonly notificationService: QueueService) {}
 
+  /**
+   * Extracts data from the chat room string.
+   * @param room - The chat room string.
+   * @returns Object containing usernames and animal slug.
+   */
   private getDataFromRoom(room: string) {
     const parts = room.split('-');
     const shelterUsername = parts.at(0)!;
@@ -16,6 +21,13 @@ export class ChatService {
     return { shelterUsername, adopterUsername, animalSlug };
   }
 
+  /**
+   * Creates a new chat or returns an existing one.
+   * @param user - The user initiating the chat.
+   * @param room - The chat room.
+   * @returns The created or existing chat.
+   * @throws NotFoundError if any user involved in the chat is not found.
+   */
   createChat = async (user: PayloadUser, { room }: CreateChatDto) => {
     const chatExist = await prisma.adoptionChat.findUnique({
       where: {
@@ -98,6 +110,11 @@ export class ChatService {
     return newAdoptionChat;
   };
 
+  /**
+   * Retrieves the chat history.
+   * @param chat - The chat slug.
+   * @returns The chat history.
+   */
   chatHistory = async (chat: string) => {
     const history = await prisma.chatMessage.findMany({
       where: {
@@ -111,6 +128,11 @@ export class ChatService {
     return history;
   };
 
+  /**
+   * Retrieves the chats of a user.
+   * @param user - The user.
+   * @returns The user's chats.
+   */
   userChats = async (user: PayloadUser) => {
     const chats = await prisma.adoptionChat.findMany({
       where: {
@@ -148,6 +170,12 @@ export class ChatService {
     return chats;
   };
 
+  /**
+   * Retrieves a chat.
+   * @param user - The user.
+   * @param slug - The chat slug.
+   * @returns The chat.
+   */
   getChat = async (user: PayloadUser, slug: string) => {
     const chat = await prisma.adoptionChat.findUnique({
       where: {
