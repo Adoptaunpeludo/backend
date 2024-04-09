@@ -31,6 +31,7 @@ export class UserEntity {
           facilities: shelter?.facilities,
           ownVet: shelter?.ownVet,
           images: shelter?.images,
+
           socialMedia:
             shelter?.socialMedia.map((media) => ({
               name: media.name,

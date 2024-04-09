@@ -29,6 +29,7 @@ export interface UserResponse {
   firstName: string | null;
   lastName: string | null;
   dni: string | null;
+  accountType: string;
   emailValidated: boolean;
   verificationToken: string;
   passwordToken: string;

@@ -375,6 +375,16 @@ export class AuthService {
           username: registerUserDto.username,
           emailValidated: true,
           accountType: 'google',
+          shelter:
+            registerUserDto.role === 'shelter'
+              ? {
+                  create: {
+                    cif: '',
+                    description: '',
+                    images: [],
+                  },
+                }
+              : undefined,
         },
       });
       const avatarUrl = await this.uploadPictureToS3(createdUser.id, avatar);
