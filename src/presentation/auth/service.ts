@@ -155,9 +155,14 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  /**
+   * Creates empty social media entries for a shelter user.
+   * @param createdUser - The user object created in the system.
+   */
   private async createEmptySocialMedia(createdUser: any) {
     if (createdUser.role !== 'shelter') return;
 
+    // Define social media objects with default values
     const socialMedia: SocialMedia[] = [
       {
         shelterId: createdUser.id,
@@ -181,6 +186,13 @@ export class AuthService {
     });
   }
 
+  /**
+   * Uploads a user's picture to Amazon S3 storage.
+   * @param userId - The ID of the user.
+   * @param pictureUrl - The URL of the picture to be uploaded.
+   * @returns The S3 key where the picture is stored.
+   * @throws Error if failed to fetch the picture from the URL.
+   */
   public async uploadPictureToS3(userId: string, pictureUrl: string) {
     // Fetch the picture from the URL
     const response = await fetch(pictureUrl);
@@ -199,6 +211,15 @@ export class AuthService {
     return key;
   }
 
+  /**
+   * Registers a user using Google authentication.
+   * @param credential - The authentication credential received from Google.
+   * @param clientId - The client ID for Google authentication.
+   * @param role - The role of the user.
+   * @param options - Additional options including IP and user agent.
+   * @returns An object containing access and refresh tokens.
+   * @throws InternalServerError if no payload is received from Google Auth.
+   */
   public async googleAuthRegister(
     credential: string,
     clientId: string,
@@ -234,6 +255,15 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
+  /**
+   * Logs in a user using Google authentication.
+   * @param credential - The authentication credential received from Google.
+   * @param clientId - The client ID for Google authentication.
+   * @param options - Additional options including IP and user agent.
+   * @returns An object containing access and refresh tokens.
+   * @throws InternalServerError if no payload is received from Google Auth.
+   * @throws BadRequestError if the user is not found in the system.
+   */
   public async googleAuthLogin(
     credential: string,
     clientId: string,
@@ -283,7 +313,7 @@ export class AuthService {
   ) {
     const { email, username } = registerUserDto;
 
-    //* Check if the user already exists
+    // Check if the user already exists
     const userEmail = await prisma.user.findUnique({
       where: { email },
     });
@@ -328,6 +358,7 @@ export class AuthService {
         data,
       });
 
+      //* Send an verification email to queue
       await this.emailService.addMessageToQueue(
         {
           email: createdUser.email,
@@ -359,8 +390,6 @@ export class AuthService {
     }
 
     await this.createEmptySocialMedia(createdUser);
-
-    //* Send an verification email to queue
 
     return createdUser;
   }

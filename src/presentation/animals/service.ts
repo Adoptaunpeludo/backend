@@ -407,7 +407,6 @@ export class AnimalService {
     };
   }
 
-  //* TODO: Strong Type Query
   /**
    * Sends notifications for an updated animal.
    * @param animalId - ID of the updated animal.
@@ -417,8 +416,7 @@ export class AnimalService {
     message: string,
     animalId: string,
     animalSlug: string,
-    animalType: string,
-    query: any = {}
+    animalType: string
   ) {
     const favs = await prisma.animal.findUnique({
       where: { id: animalId },
@@ -503,8 +501,7 @@ export class AnimalService {
       `El animal ${updatedAnimal.name.toUpperCase()} de tus favoritos ha cambiado`,
       updatedAnimal.id,
       updatedAnimal.slug,
-      updatedAnimal.type,
-      updateQuery
+      updatedAnimal.type
     );
 
     return updatedAnimal;
@@ -544,15 +541,6 @@ export class AnimalService {
       },
       'animal-created-deleted'
     );
-
-    // this.notificationService.addMessageToQueue(
-    //   {
-    //     message: `Animal with id: ${animal.id} and name: ${animal.name} was deleted`,
-    //     userId: user.id,
-    //     animalSlug: animal.slug,
-    //   },
-    //   'animal-changed-push-notification'
-    // );
   }
 
   /**
