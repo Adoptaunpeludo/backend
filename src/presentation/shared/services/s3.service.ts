@@ -38,23 +38,35 @@ export class S3Service {
     });
   }
 
+  /**
+   * Uploads a file to Amazon S3.
+   * @param key - The key under which to store the file in S3.
+   * @param buffer - The file content as a Buffer.
+   * @returns The URL of the uploaded file.
+   * @throws Error if there's an issue uploading the file to S3.
+   */
   public async uploadFile(key: string, buffer: Buffer): Promise<string> {
     const params = {
       Bucket: this.bucket,
       Key: key,
       Body: buffer,
-      ContentType: 'image/jpeg', // Adjust the content type as needed
+      ContentType: 'image/jpeg',
     };
 
     try {
+      // Create a PutObjectCommand to upload the file with public-read ACL
       const command = new PutObjectCommand({ ...params, ACL: 'public-read' });
-      const uploadResult = await this.s3.send(command);
-      const fileUrl = `https://${this.bucket}.s3.amazonaws.com/${key}`; // Assuming your bucket is publicly accessible
 
-      return fileUrl;
+      // Send the command to upload the file to S3
+      const uploadResult = await this.s3.send(command);
+
+      // Generate the file URL assuming the bucket is publicly accessible
+      const fileUrl = `https://${this.bucket}.s3.amazonaws.com/${key}`;
+
+      return fileUrl; // Return the URL of the uploaded file
     } catch (error) {
       console.error('Error uploading file to S3:', error);
-      throw error;
+      throw error; // Throw an error if there's an issue uploading the file
     }
   }
 
