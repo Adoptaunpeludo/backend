@@ -78,6 +78,7 @@ services:
       PORT: ${ASSISTANT_PORT}
       JWT_SEED: ${JWT_SEED}
       RABBITMQ_URL: ${DOCK_RABBITMQ_URL}
+      NODE_ENV: ${NODE_ENV}
     ports:
       - ${ASSISTANT_PORT}:${ASSISTANT_PORT}
 
