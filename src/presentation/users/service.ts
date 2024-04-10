@@ -368,6 +368,7 @@ export class UserService {
       prisma.user.findUnique({
         where: { email: user.email },
         include: {
+          userFav: true,
           shelter: {
             select: {
               images: true,
@@ -397,6 +398,25 @@ export class UserService {
 
     if (imagesToDelete.length > 0)
       await this.s3Service.deleteFiles(imagesToDelete);
+
+    userToDelete.userFav.map(async (animal) => {
+      console.log({ animal: animal.name });
+      await prisma.animal.update({
+        where: { id: animal.id },
+        data: {
+          numFavs: { decrement: 1 },
+        },
+      });
+    });
+
+    this.notificationService.addMessageToQueue(
+      {
+        action: 'user-deleted',
+        username: userToDelete.username,
+        role: userToDelete.role,
+      },
+      'user-deleted-notification'
+    );
 
     await prisma.user.delete({ where: { email: userToDelete.email } });
   }

@@ -264,7 +264,7 @@ export class AnimalService {
         slug: animal.slug,
         action: 'create-animal',
       },
-      'animal-created-deleted'
+      'animal-created-deleted-notification'
     );
 
     return animal;
@@ -316,7 +316,7 @@ export class AnimalService {
         slug: animal.slug,
         action: 'create-animal',
       },
-      'animal-created-deleted'
+      'animal-created-deleted-notification'
     );
 
     return animal;
@@ -539,7 +539,7 @@ export class AnimalService {
         slug: animal.slug,
         action: 'delete-animal',
       },
-      'animal-created-deleted'
+      'animal-created-deleted-notification'
     );
   }
 
