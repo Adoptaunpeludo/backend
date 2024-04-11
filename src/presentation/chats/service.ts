@@ -150,6 +150,7 @@ export class ChatService {
           select: {
             messages: {
               where: {
+                username: { not: user.name },
                 isRead: false,
               },
             },
