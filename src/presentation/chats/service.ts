@@ -156,7 +156,6 @@ export class ChatService {
             },
           },
         },
-        messages: true,
         users: {
           where: {
             role: {
