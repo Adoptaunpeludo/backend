@@ -29,7 +29,18 @@ export class AuthRoutes {
       envs.AWS_BUCKET
     );
 
-    const authService = new AuthService(jwt, emailService, client, s3Service);
+    const notificationService = new QueueService(
+      envs.RABBITMQ_URL,
+      'notification-request'
+    );
+
+    const authService = new AuthService(
+      jwt,
+      emailService,
+      client,
+      s3Service,
+      notificationService
+    );
     const authController = new AuthController(authService);
     const authMiddleware = new AuthMiddleware(jwt);
 

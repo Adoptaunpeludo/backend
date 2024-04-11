@@ -11,7 +11,12 @@ import {
 import { ShelterFilterDto } from '../../domain/dtos/users/filter-user.dto';
 import { UpdateSocialMediaDto } from '../../domain/dtos/users/update-social-media.dto';
 import { AnimalEntity } from '../../domain/entities/animals.entity';
-import { AnimalResponse, PayloadUser } from '../../domain/interfaces';
+import {
+  AnimalResponse,
+  PayloadUser,
+  UserResponse,
+  UserRoles,
+} from '../../domain/interfaces';
 import { CheckPermissions } from '../../utils';
 import { QueueService, S3Service } from '../shared/services';
 
@@ -54,6 +59,17 @@ export class UserService {
     );
 
     return resultImages;
+  }
+
+  private notifyUserChanged(username: string, role: UserRoles, action: string) {
+    this.notificationService.addMessageToQueue(
+      {
+        action,
+        username,
+        role,
+      },
+      'user-changed-notification'
+    );
   }
 
   /**
@@ -409,13 +425,10 @@ export class UserService {
       });
     });
 
-    this.notificationService.addMessageToQueue(
-      {
-        action: 'user-deleted',
-        username: userToDelete.username,
-        role: userToDelete.role,
-      },
-      'user-deleted-notification'
+    this.notifyUserChanged(
+      userToDelete.username,
+      userToDelete.role,
+      'user-deleted'
     );
 
     await prisma.user.delete({ where: { email: userToDelete.email } });
@@ -556,6 +569,13 @@ export class UserService {
         animals: true,
       },
     });
+
+    if (updatedUser.role === 'shelter')
+      this.notifyUserChanged(
+        userToUpdate.username,
+        updatedUser.role,
+        'user-updated'
+      );
 
     const userEntity = UserEntity.fromObject(updatedUser);
 

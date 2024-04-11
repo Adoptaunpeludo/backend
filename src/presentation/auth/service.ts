@@ -38,7 +38,8 @@ export class AuthService {
     private readonly jwt: JWTAdapter,
     private readonly emailService: QueueService,
     private readonly client: OAuth2Client,
-    private readonly s3Service: S3Service
+    private readonly s3Service: S3Service,
+    private readonly notificationService: QueueService
   ) {}
 
   /**
@@ -333,6 +334,8 @@ export class AuthService {
       );
 
     let createdUser;
+
+    // Traditional register
     if (type !== 'googleAuth') {
       //* Hash password and generate email verificationToken
       const hashedPassword = prisma.user.hashPassword(
@@ -367,6 +370,8 @@ export class AuthService {
         },
         'verify-email'
       );
+
+      // OAuth Google Register
     } else {
       createdUser = await prisma.user.create({
         data: {
@@ -400,6 +405,17 @@ export class AuthService {
     }
 
     await this.createEmptySocialMedia(createdUser);
+
+    // Notify that a new shelter had been created
+    if (createdUser.role === 'shelter')
+      this.notificationService.addMessageToQueue(
+        {
+          action: 'user-created',
+          username: createdUser.username,
+          role: createdUser.role,
+        },
+        'user-changed-notification'
+      );
 
     return createdUser;
   }
