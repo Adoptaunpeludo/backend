@@ -146,6 +146,15 @@ export class ChatService {
         ],
       },
       include: {
+        _count: {
+          select: {
+            messages: {
+              where: {
+                isRead: false,
+              },
+            },
+          },
+        },
         messages: true,
         users: {
           where: {
