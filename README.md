@@ -1,7 +1,8 @@
 
 # Adoptaunpeludo
 
-## Documentación:
+## Documentación API Swagger:
+
 https://backend.adoptaunpeludo.com/api/docs
 
 ## Descripción
