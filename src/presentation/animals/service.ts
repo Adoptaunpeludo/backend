@@ -357,7 +357,9 @@ export class AnimalService {
         prisma.animal.count({ where: { ...filters, status: 'adopted' } }),
         prisma.animal.count({ where: { ...filters, status: 'fostered' } }),
         prisma.animal.count({ where: { ...filters, status: 'awaiting_home' } }),
-        prisma.animal.count({ where: filters }),
+        prisma.animal.count({
+          where: { AND: { ...filters, status: { not: 'adopted' } } },
+        }),
         prisma.animal.findMany({
           skip: (page - 1) * limit,
           take: limit,
