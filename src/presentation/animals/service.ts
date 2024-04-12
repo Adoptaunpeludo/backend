@@ -361,7 +361,7 @@ export class AnimalService {
         prisma.animal.findMany({
           skip: (page - 1) * limit,
           take: limit,
-          where: { ...filters },
+          where: { AND: { ...filters, status: { not: 'adopted' } } },
           include: {
             shelter: {
               include: {
