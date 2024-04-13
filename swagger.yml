@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: Adoptaunpeludo
   contact: {}
-  version: '1.0'
+  version: '2.0'
 servers:
   - url: https://backend.adoptaunpeludo.com/api
     variables: {}
@@ -26,10 +26,10 @@ paths:
               properties:
                 email:
                   type: string
-                  example: test@test.com
+                  example: shelter1@example.com
                 password:
                   type: string
-                  example: secret
+                  example: shelter1password
         required: false
       responses:
         '200':
@@ -86,6 +86,7 @@ paths:
         - Auth
       summary: Verify Email
       operationId: VerifyEmail
+      parameters: []
       responses:
         '200':
           description: ''
@@ -129,6 +130,7 @@ paths:
         - Auth
       summary: Reset Password
       operationId: ResetPassword
+      parameters: []
       requestBody:
         content:
           application/x-www-form-urlencoded:
@@ -172,6 +174,7 @@ paths:
         - Auth
       summary: Resend Validation Email
       operationId: ResendValidationEmail
+      parameters: []
       responses:
         '200':
           description: ''
@@ -249,7 +252,44 @@ paths:
         - User
       summary: All Users
       operationId: AllUsers
-      parameters: []
+      parameters:
+        - name: role
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: city
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: username
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: ''
@@ -261,7 +301,86 @@ paths:
         - User
       summary: User Animals
       operationId: UserAnimals
-      parameters: []
+      parameters:
+        - name: shelterName
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: gender
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: age
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: slug
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: city
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: ''
@@ -273,7 +392,86 @@ paths:
         - User
       summary: Favorites
       operationId: Favorites
-      parameters: []
+      parameters:
+        - name: shelterName
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: gender
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: age
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: slug
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: city
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: ''
@@ -285,7 +483,23 @@ paths:
         - User
       summary: User Notifications
       operationId: UserNotifications
-      parameters: []
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: ''
@@ -406,7 +620,86 @@ paths:
         - Animal
       summary: All Animals
       operationId: AllAnimals
-      parameters: []
+      parameters:
+        - name: shelterName
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: name
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: gender
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: age
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: slug
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: id
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: city
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
+        - name: limit
+          in: query
+          description: ''
+          style: form
+          explode: true
+          schema:
+            type: integer
+            format: int32
       responses:
         '200':
           description: ''
@@ -741,8 +1034,6 @@ components:
         kidsFriendly: false
         toiletTrained: false
         scratchPotential: excessive
-security:
-  - {}
 tags:
   - name: Auth
   - name: User
