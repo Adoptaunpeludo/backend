@@ -492,8 +492,6 @@ export class AnimalService {
 
     const updateQuery = await this.buildQuery(updateAnimalDto);
 
-    console.log({ updateQuery });
-
     const updatedAnimal = await prisma.animal.update({
       where: { id: animal.id },
       data: updateQuery,
@@ -504,6 +502,15 @@ export class AnimalService {
       updatedAnimal.id,
       updatedAnimal.slug,
       updatedAnimal.type
+    );
+
+    this.notificationService.addMessageToQueue(
+      {
+        createdBy: user.name,
+        slug: animal.slug,
+        action: 'update-animal',
+      },
+      'animal-changed-notification'
     );
 
     return updatedAnimal;

@@ -409,12 +409,25 @@ export class UserService {
 
     await this.notifyDeletedAnimalsToUsers(animalsCreated);
 
+    // Delete user AdoptionChats
+    await prisma.adoptionChat.deleteMany({
+      where: {
+        users: {
+          some: {
+            id: userToDelete.id,
+          },
+        },
+      },
+    });
+
+    // Delete user images
     const imagesToDelete =
       userToDelete.shelter?.images.map((image: string) => image) || [];
 
     if (imagesToDelete.length > 0)
       await this.s3Service.deleteFiles(imagesToDelete);
 
+    // Decrement numFavs in user favs
     userToDelete.userFav.map(async (animal) => {
       console.log({ animal: animal.name });
       await prisma.animal.update({
