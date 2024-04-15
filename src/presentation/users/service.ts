@@ -866,4 +866,24 @@ export class UserService {
 
     return true;
   }
+
+  public async deleteNotification(user: PayloadUser, id: string) {
+    const notification = await prisma.notification.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!notification) throw new NotFoundError('Notification not found');
+
+    CheckPermissions.check(user, notification.userId);
+
+    await prisma.notification.delete({
+      where: {
+        id,
+      },
+    });
+
+    return true;
+  }
 }

@@ -178,6 +178,13 @@ export class UserController {
 
     await this.userService.readNotification(user, id);
 
-    res.status(HttpCodes.OK).json({ message: 'Notification marked as read' });
+    res.status(HttpCodes.OK).json({ message: 'Notificación leida' });
+  };
+
+  deleteNotification = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = req.user;
+    await this.userService.deleteNotification(user, id);
+    res.status(HttpCodes.OK).json({ message: 'Notificación borrada' });
   };
 }

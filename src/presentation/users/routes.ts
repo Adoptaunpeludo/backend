@@ -59,6 +59,12 @@ export class UserRoutes {
       userController.readNotification
     );
 
+    router.delete(
+      '/me/notifications/:id',
+      authMiddleware.authenticateUser,
+      userController.deleteNotification
+    );
+
     // Animals
     router.get(
       '/me/animals/',
