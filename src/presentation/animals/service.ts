@@ -535,6 +535,17 @@ export class AnimalService {
       animal.type
     );
 
+    // Delete animal AdoptionChats
+    await prisma.adoptionChat.deleteMany({
+      where: {
+        animal: {
+          some: {
+            id: animal.id,
+          },
+        },
+      },
+    });
+
     await prisma.animal.delete({ where: { id: animal.id } });
 
     const imagesToDelete = animal.images.map((image) => image) || [];
