@@ -829,7 +829,7 @@ export class UserService {
    * @param id - ID of the notification to mark as read or 'all' to mark all notifications as read
    */
   public async readNotification(user: PayloadUser, id: string) {
-    if (id === 'all')
+    if (id === 'all') {
       await prisma.notification.updateMany({
         where: {
           userId: user.id,
@@ -839,6 +839,8 @@ export class UserService {
           isReadAt: new Date(),
         },
       });
+      return true;
+    }
 
     const notification = await prisma.notification.findUnique({
       where: {
