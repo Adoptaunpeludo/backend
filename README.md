@@ -13,6 +13,7 @@ Este repositorio contiene el backend para Adoptaunpeludo, una plataforma dedicad
 La API proporciona endpoints para:
 - **Autenticación:** Registro, inicio de sesión y recuperación de contraseñas para usuarios.
 - **Gestión de animales:** CRUD de animales, incluyendo la posibilidad de subir imágenes y buscar animales por diferentes criterios.
+- **Gestión de usuarios:** CRUD de usuarios, incluyendo la posibilidad de subir imágenes y buscar usuarios por diferentes criterios.
 - **Chat en tiempo real:** Envío y recepción de mensajes en los chats de adopción entre adoptantes y refugios.
 - **Notificaciones:** Gestión de notificaciones, incluyendo la marcación como leídas y la eliminación.
 
