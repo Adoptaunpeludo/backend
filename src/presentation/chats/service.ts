@@ -55,9 +55,9 @@ export class ChatService {
       }),
     ]);
 
-    if (!adopter || !shelter)
+    if (!adopter || !shelter || !animal || animalSlug !== 'chat')
       throw new NotFoundError(
-        `User ${adopterUsername} or user ${shelterUsername}not found`
+        `No se puede crear el chat, Adoptante ${adopterUsername}, refugio ${shelterUsername} o animal no encontrados`
       );
 
     const newAdoptionChat = await prisma.adoptionChat.create({
@@ -201,6 +201,8 @@ export class ChatService {
         },
       },
     });
+
+    if (!chat) throw new NotFoundError(`Chat ${slug} no encontrado`);
 
     return chat;
   };
