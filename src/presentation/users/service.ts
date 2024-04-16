@@ -212,7 +212,9 @@ export class UserService {
       if (city) {
         filters.cityId = city.id;
       } else {
-        throw new NotFoundError(`City ${shelterFilterDto.city} not found`);
+        throw new NotFoundError(
+          `Ciudad ${shelterFilterDto.city} no encontrada`
+        );
       }
     }
 
@@ -309,7 +311,7 @@ export class UserService {
       },
     });
 
-    if (!user) throw new NotFoundError('User not found');
+    if (!user) throw new NotFoundError('Usuario no encontrado');
 
     const userEntity = UserEntity.fromObject(user);
 
@@ -371,7 +373,7 @@ export class UserService {
   public async getSingleUser(term: string) {
     const user = await this.getUserFromTerm(term);
 
-    if (!user) throw new NotFoundError('User not found');
+    if (!user) throw new NotFoundError('Usuario no encontrado');
 
     const userEntity = UserEntity.fromObject(user);
 
@@ -407,7 +409,7 @@ export class UserService {
       }),
     ]);
 
-    if (!userToDelete) throw new NotFoundError('User not found');
+    if (!userToDelete) throw new NotFoundError('Usuario no encontrado');
 
     CheckPermissions.check(user, userToDelete.id);
 
@@ -465,14 +467,14 @@ export class UserService {
   ) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
 
-    if (!user) throw new NotFoundError('User not found');
+    if (!user) throw new NotFoundError('Usuario no encontrado');
 
     if (user) {
       const isValid = prisma.user.validatePassword({
         password: oldPassword,
         hash: user.password,
       });
-      if (!isValid) throw new BadRequestError('Invalid password');
+      if (!isValid) throw new BadRequestError('Password no valido');
       const hashPassword = prisma.user.hashPassword(newPassword);
       await prisma.user.update({
         where: { id: userId },
@@ -495,7 +497,7 @@ export class UserService {
       where: { email: user.email },
     });
 
-    if (!userFound) throw new NotFoundError('User or shelter not found');
+    if (!userFound) throw new NotFoundError('Usuaro o refugio no encontrados');
 
     CheckPermissions.check(user, userFound.id);
 
@@ -539,7 +541,7 @@ export class UserService {
       where: { email: user.email },
     });
 
-    if (!userToUpdate) throw new NotFoundError('User not found');
+    if (!userToUpdate) throw new NotFoundError('Usuario no encontrado');
 
     CheckPermissions.check(user, userToUpdate.id);
 
@@ -624,7 +626,7 @@ export class UserService {
       },
     });
 
-    if (!userToUpdate) throw new NotFoundError('User not found');
+    if (!userToUpdate) throw new NotFoundError('Usuario no encontrado');
 
     let updateQuery: {
       avatar?: string[];
@@ -633,7 +635,7 @@ export class UserService {
 
     if (userToUpdate.role === 'shelter') {
       if (!userToUpdate.shelter)
-        throw new NotFoundError('Shelter not found for user');
+        throw new NotFoundError('El usuario no es un refugio');
 
       const images = userToUpdate.shelter.images;
       const resultImages = await this.buildImages(images, deleteImages, files);
@@ -852,9 +854,9 @@ export class UserService {
       },
     });
 
-    if (!notification) throw new NotFoundError('Notification not found');
+    if (!notification) throw new NotFoundError('Notificacion no encontrada');
     if (notification.isRead)
-      throw new BadRequestError('Notification is already read');
+      throw new BadRequestError('La notificacion ya ha sido leida');
 
     CheckPermissions.check(user, notification.userId);
 
@@ -878,7 +880,7 @@ export class UserService {
       },
     });
 
-    if (!notification) throw new NotFoundError('Notification not found');
+    if (!notification) throw new NotFoundError('Notificacion no encontrada');
 
     CheckPermissions.check(user, notification.userId);
 

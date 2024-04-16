@@ -33,7 +33,7 @@ export class ErrorHandlerMiddleware {
     // Handle jwt expired errors
     if (err?.name && err?.name === 'TokenExpiredError') {
       statusCode = 401;
-      message = 'JWT token expired';
+      message = 'Sin autentificar';
     }
 
     // Handle CustomAPIError

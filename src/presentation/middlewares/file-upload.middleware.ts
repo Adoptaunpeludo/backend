@@ -70,7 +70,7 @@ export class FileUploadMiddleware {
             include: { shelter: { select: { images: true } } },
           });
 
-          if (!user) throw new NotFoundError('User not found');
+          if (!user) throw new NotFoundError('Usuario no encontrado');
 
           name = user.username;
           id = user.id;
@@ -89,7 +89,7 @@ export class FileUploadMiddleware {
               name: true,
             },
           });
-          if (!animal) throw new NotFoundError('Animal not found');
+          if (!animal) throw new NotFoundError('Animal no encontrado');
           name = animal.name;
           id = animal.createdBy;
           resourceId = animal.id;
@@ -97,7 +97,7 @@ export class FileUploadMiddleware {
 
         default:
           throw new BadRequestError(
-            `Invalid resource: ${resource}, valid ones: users, animals`
+            `Recurso invalido: ${resource}, validos: users, animals`
           );
       }
 

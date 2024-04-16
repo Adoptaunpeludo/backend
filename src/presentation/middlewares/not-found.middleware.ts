@@ -9,6 +9,6 @@ export class NotFoundMiddleware {
   static init(req: Request, res: Response) {
     res
       .status(HttpCodes.NOT_FOUND)
-      .json({ message: `Route ${req.url} not found` });
+      .json({ message: `Ruta ${req.url} no encontrada` });
   }
 }

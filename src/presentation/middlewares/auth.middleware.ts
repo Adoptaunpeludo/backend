@@ -28,12 +28,12 @@ export class AuthMiddleware {
 
     // Check if refresh token and access token are present
     if (!refreshToken && !accessToken)
-      throw new UnauthenticatedError('Please first login');
+      throw new UnauthenticatedError('Por favor loguea con tu cuenta');
 
     if (accessToken) {
       // Validate access token
       const payload = this.jwt.validateToken(accessToken);
-      if (!payload) throw new UnauthorizedError('Invalid token validation');
+      if (!payload) throw new UnauthorizedError('Token JWT inválido');
       req.user = payload.user;
       const wsToken = this.jwt.generateToken({ user: payload.user }, '1d');
       req.user.wsToken = wsToken;
@@ -42,7 +42,7 @@ export class AuthMiddleware {
 
     // Validate refresh token
     const payload = this.jwt.validateToken(refreshToken);
-    if (!payload) throw new UnauthorizedError('Invalid token validation');
+    if (!payload) throw new UnauthorizedError('Token JWT inválido');
 
     const existingToken = await prisma.token.findUnique({
       where: { userId: payload.user.id, refreshToken: payload.refreshToken },
@@ -50,7 +50,7 @@ export class AuthMiddleware {
 
     // Check if existing token is valid
     if (!existingToken || !existingToken?.isValid)
-      throw new UnauthenticatedError('Authentication Invalid');
+      throw new UnauthenticatedError('No autentificado');
 
     const { user } = payload;
 
@@ -84,7 +84,9 @@ export class AuthMiddleware {
       if (role === 'admin') return next();
 
       if (!roles.includes(role!))
-        throw new UnauthorizedError('Unauthorized to access this resource');
+        throw new UnauthorizedError(
+          'No estás autorizado para acceder a este recurso'
+        );
 
       next();
     };
