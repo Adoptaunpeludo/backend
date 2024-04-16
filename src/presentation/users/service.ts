@@ -234,7 +234,9 @@ export class UserService {
     const [total, users] = await prisma.$transaction([
       prisma.user.count({
         where: {
-          username: filters.username,
+          username: filters.username
+            ? { contains: filters.username }
+            : undefined,
           role: filters.role,
           contactInfo: { cityId: filters.cityId },
         },
@@ -243,7 +245,9 @@ export class UserService {
         skip: (page - 1) * limit,
         take: limit,
         where: {
-          username: filters.username,
+          username: filters.username
+            ? { contains: filters.username }
+            : undefined,
           role: filters.role,
           contactInfo: { cityId: filters.cityId },
         },
