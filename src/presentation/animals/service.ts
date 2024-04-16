@@ -302,6 +302,7 @@ export class AnimalService {
     const animal = await prisma.animal.create({
       data: {
         ...rest,
+        name: rest.name.toLowerCase(),
         createdBy: userId,
         slug,
         cityId: cityData.id,

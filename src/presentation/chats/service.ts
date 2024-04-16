@@ -55,7 +55,11 @@ export class ChatService {
       }),
     ]);
 
-    if (!adopter || !shelter || !animal || animalSlug !== 'chat')
+    if (
+      !adopter ||
+      !shelter ||
+      (!animal && animalSlug !== `${shelterUsername}-chat`)
+    )
       throw new NotFoundError(
         `No se puede crear el chat, Adoptante ${adopterUsername}, refugio ${shelterUsername} o animal no encontrados`
       );
