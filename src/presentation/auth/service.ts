@@ -53,13 +53,13 @@ export class AuthService {
   private async verifyToken(token: string, type: TokenType) {
     const payload = this.jwt.validateToken(token);
 
-    if (!payload) throw new UnauthorizedError('Invalid token validation');
+    if (!payload) throw new UnauthorizedError('Validación de token fallida');
 
     const { email } = payload.user;
 
     if (!email)
       throw new InternalServerError(
-        'Wrong email from JWT token, check server logs'
+        'Email incorrecto en el JWT token, contacte con soporte'
       );
 
     const verifyUserToken = await prisma.user.findUnique({
@@ -67,7 +67,7 @@ export class AuthService {
     });
 
     if (verifyUserToken?.[type] !== token)
-      throw new UnauthenticatedError('Invalid token check');
+      throw new UnauthenticatedError('Validación de token fallida');
 
     return email;
   }
@@ -124,7 +124,7 @@ export class AuthService {
 
     if (tokenExist) {
       const { isValid } = tokenExist;
-      if (!isValid) throw new UnauthenticatedError('Invalid Credentials');
+      if (!isValid) throw new UnauthenticatedError('Credenciales inválidas');
       token = tokenExist.refreshToken;
     } else {
       token = CryptoAdapter.randomBytes(40, 'hex');
@@ -149,7 +149,7 @@ export class AuthService {
     if (!accessToken || !refreshToken)
       throw new CustomAPIError(
         'Internal Server',
-        'JWT token error, check server logs',
+        'Error al generar el Token JWT, contacte con soporte',
         500
       );
 
@@ -235,7 +235,8 @@ export class AuthService {
 
     const payload = ticket.getPayload();
 
-    if (!payload) throw new InternalServerError('No payload from Google Auth');
+    if (!payload)
+      throw new InternalServerError('Error de OAuth, consulte con soporte');
 
     const user = await this.registerUser(
       {
@@ -278,7 +279,8 @@ export class AuthService {
 
     const payload = ticket.getPayload();
 
-    if (!payload) throw new InternalServerError('No payload from Google Auth');
+    if (!payload)
+      throw new InternalServerError('Error de OAuth, consulte con soporte');
 
     const userExist = await prisma.user.findUnique({
       where: {
@@ -321,7 +323,7 @@ export class AuthService {
 
     if (userEmail)
       throw new BadRequestError(
-        `Email ${registerUserDto.email} already exists, try another one`
+        `El email ${registerUserDto.email} ya existe, pruebe con otro`
       );
 
     const userUsername = await prisma.user.findUnique({
@@ -330,7 +332,7 @@ export class AuthService {
 
     if (userUsername)
       throw new BadRequestError(
-        `Username ${registerUserDto.username} already exists, try another one`
+        `El nombre de usuario ${registerUserDto.username} está siendo utilizado, pruebe con otro`
       );
 
     let createdUser;
@@ -433,10 +435,10 @@ export class AuthService {
       where: { email },
     });
 
-    if (!user) throw new NotFoundError('User not found');
+    if (!user) throw new NotFoundError('Usuario no encontrado');
 
     if (user.emailValidated)
-      throw new BadRequestError('Email already validated');
+      throw new BadRequestError('El email ya ha sido validado');
 
     const verificationToken = this.jwt.generateToken(
       { user: { email } },
@@ -444,7 +446,9 @@ export class AuthService {
     );
 
     if (!verificationToken)
-      throw new InternalServerError('JWT token error, check server logs');
+      throw new InternalServerError(
+        'Error al generar el Token JWT, contacte con soporte'
+      );
 
     await prisma.user.update({
       where: { email },
@@ -477,7 +481,7 @@ export class AuthService {
       where: { email: loginUserDto.email },
     });
 
-    if (!user) throw new UnauthorizedError('Incorrect email or password');
+    if (!user) throw new UnauthorizedError('Email o password incorrectos');
 
     if (user.accountType === 'google')
       throw new BadRequestError(
@@ -489,10 +493,10 @@ export class AuthService {
       hash: user.password,
     });
 
-    if (!isMatch) throw new UnauthorizedError('Incorrect email or password');
+    if (!isMatch) throw new UnauthorizedError('Email o password incorrectos');
 
     if (!user.emailValidated)
-      throw new UnauthenticatedError('Please first verify your email');
+      throw new UnauthenticatedError('Por favor, primero verifica tu email');
 
     return user;
   }
@@ -546,7 +550,7 @@ export class AuthService {
 
     if (!user)
       throw new InternalServerError(
-        'Email not exist from JWT payload, check server logs'
+        'Error al extraer los datos de usuario del Token JWT, contacte con soporte'
       );
   }
 
@@ -560,7 +564,8 @@ export class AuthService {
   public async forgotPassword(email: string) {
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user) throw new BadRequestError(`User with email: ${email} not found`);
+    if (!user)
+      throw new BadRequestError(`Usuario con el email: ${email} no encontrado`);
 
     if (user.accountType === 'google')
       throw new BadRequestError(
@@ -575,7 +580,7 @@ export class AuthService {
     if (!passwordToken)
       throw new CustomAPIError(
         'Internal Server',
-        'JWT token error, check server logs',
+        'Error generando Token JWT, contacte con soporte',
         500
       );
 
@@ -611,7 +616,7 @@ export class AuthService {
 
     if (!user)
       throw new InternalServerError(
-        'Email not exist from JWT payload, check server logs'
+        'Error al extraer datos del Token JWT, contacte con soporte'
       );
   }
 }

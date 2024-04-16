@@ -89,7 +89,7 @@ export class AnimalService {
         },
       });
     }
-    if (!animal) throw new NotFoundError('Animal not found');
+    if (!animal) throw new NotFoundError('Animal no encontrado');
 
     return animal;
   }
@@ -124,7 +124,7 @@ export class AnimalService {
         },
       });
 
-      if (!shelter) throw new NotFoundError('Shelter not found');
+      if (!shelter) throw new NotFoundError('Refugio no encontrado');
       filters.createdBy = shelter.id;
       delete filters.shelterName;
     }
@@ -138,7 +138,9 @@ export class AnimalService {
         filters.cityId = city.id;
       } else {
         // Manejo si la ciudad no se encuentra
-        throw new NotFoundError(`City '${animalFilterDto.city}' not found`);
+        throw new NotFoundError(
+          `Ciudad '${animalFilterDto.city}' no encontrada`
+        );
       }
     }
 
@@ -203,7 +205,7 @@ export class AnimalService {
         query.cityId = cityObj.id;
       } else {
         // Manejo si la ciudad no se encuentra
-        throw new Error(`City '${city}' not found`);
+        throw new Error(`Ciudad '${city}' no encontrada`);
       }
     }
 
@@ -236,7 +238,7 @@ export class AnimalService {
     });
 
     if (!cityData) {
-      throw new BadRequestError(`City '${city}' not found`);
+      throw new BadRequestError(`Ciudad '${city}' no encontrada`);
     }
 
     const slug = await prisma.animal.generateUniqueSlug({
@@ -289,7 +291,7 @@ export class AnimalService {
     });
 
     if (!cityData) {
-      throw new BadRequestError(`City '${city}' not found`);
+      throw new BadRequestError(`Ciudad '${city}' no encontrada`);
     }
 
     const slug = await prisma.animal.generateUniqueSlug({
@@ -331,7 +333,7 @@ export class AnimalService {
   public async getSingle(term: string) {
     const animal = await this.getAnimalFromTerm(term);
 
-    if (!animal) throw new NotFoundError('Animal not found');
+    if (!animal) throw new NotFoundError('Animal no encontrado');
 
     const animalDetail = AnimalEntity.fromObjectDetail(animal);
 
@@ -524,7 +526,7 @@ export class AnimalService {
   public async delete(user: PayloadUser, term: string) {
     const animal = await this.getAnimalFromTerm(term);
 
-    if (!animal) throw new NotFoundError(`Animal not found`);
+    if (!animal) throw new NotFoundError(`Animal no encontrado`);
 
     CheckPermissions.check(user, animal.createdBy);
 
@@ -599,10 +601,12 @@ export class AnimalService {
   public async addFavorite(userId: string, animalId: string) {
     const animal = await prisma.animal.findUnique({ where: { id: animalId } });
 
-    if (!animal) throw new NotFoundError('Animal not found');
+    if (!animal) throw new NotFoundError('Animal no encontrado');
 
     if (animal.createdBy === userId)
-      throw new BadRequestError('Cant add own animal to favorites');
+      throw new BadRequestError(
+        'No puedes añadir un animal propio a favoritos'
+      );
 
     const alreadyFav = await prisma.animal.findUnique({
       where: { id: animalId },
@@ -614,7 +618,7 @@ export class AnimalService {
     });
 
     if (alreadyFav && alreadyFav.userFav.length > 0)
-      throw new BadRequestError('Already in favorites');
+      throw new BadRequestError('Ya en favoritos');
 
     //* TODO: Prisma transition
     await prisma.animal.update({
@@ -643,7 +647,7 @@ export class AnimalService {
   public async removeFavorite(userId: string, animalId: string) {
     const animal = await prisma.animal.findUnique({ where: { id: animalId } });
 
-    if (!animal) throw new NotFoundError('Animal not found');
+    if (!animal) throw new NotFoundError('Animal no encontrado');
 
     const notFav = await prisma.animal.findUnique({
       where: { id: animalId },
@@ -655,7 +659,7 @@ export class AnimalService {
     });
 
     if (notFav && notFav.userFav.length === 0)
-      throw new BadRequestError('Not in favorites yet');
+      throw new BadRequestError('Aun no está en favoritos');
 
     //* TODO: Prisma transition
 
