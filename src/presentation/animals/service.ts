@@ -356,16 +356,46 @@ export class AnimalService {
 
     const [adopted, fostered, awaitingHome, total, animals] =
       await prisma.$transaction([
-        prisma.animal.count({ where: { ...filters, status: 'adopted' } }),
-        prisma.animal.count({ where: { ...filters, status: 'fostered' } }),
-        prisma.animal.count({ where: { ...filters, status: 'awaiting_home' } }),
         prisma.animal.count({
-          where: { AND: { ...filters, status: { not: 'adopted' } } },
+          where: {
+            ...filters,
+            name: filters.name ? { contains: filters.name } : undefined,
+            status: 'adopted',
+          },
+        }),
+        prisma.animal.count({
+          where: {
+            ...filters,
+            name: filters.name ? { contains: filters.name } : undefined,
+            status: 'fostered',
+          },
+        }),
+        prisma.animal.count({
+          where: {
+            ...filters,
+            name: filters.name ? { contains: filters.name } : undefined,
+            status: 'awaiting_home',
+          },
+        }),
+        prisma.animal.count({
+          where: {
+            AND: {
+              ...filters,
+              name: filters.name ? { contains: filters.name } : undefined,
+              status: { not: 'adopted' },
+            },
+          },
         }),
         prisma.animal.findMany({
           skip: (page - 1) * limit,
           take: limit,
-          where: { AND: { ...filters, status: { not: 'adopted' } } },
+          where: {
+            AND: {
+              ...filters,
+              name: filters.name ? { contains: filters.name } : undefined,
+              status: { not: 'adopted' },
+            },
+          },
           include: {
             shelter: {
               include: {
