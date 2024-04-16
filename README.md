@@ -25,6 +25,9 @@ La API proporciona endpoints para:
 [**Chatbot-service**](https://github.com/Adoptaunpeludo/chatbot-service):
 - Servicio encargado de la funcionalidad de Asistente de la web, utiliza un agente creado con LangChain que hace busquedas vectoriales en una Base de datos almacenada en Supabase y que previamente ha sido poblada con embeddings con la documentación de la Web para que así el Asistente pueda responder preguntas acerca de ella.
 
+[**NOC-service**](https://github.com/Adoptaunpeludo/noc-service):
+- Servicio de monitorización y gestion de errores.
+
 **NOTA:** Más información acerca de cada servicio en el link a su propio repositorio.
 
 ## Funcionalidades
