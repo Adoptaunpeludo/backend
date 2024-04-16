@@ -129,9 +129,9 @@ DOCK_DATABASE_URL=<url a la base de datos en produccion lanzada con Docker>
 JWT_SEED=<seed para los tokens JWT>
 
 # EMAIL
-MAIL_SERVICE=gmail
+MAIL_SERVICE=<servicio de email>
 MAILER_EMAIL=<direccion de correo desde donde se mandarán los emails>
-MAILER_SECRET_KEY=<key de gmail asociada al email desde donde se mandarán los emails>
+MAILER_SECRET_KEY=<key o password asociada al email desde donde se mandarán los emails>
 
 # Web Service
 WEBSERVICE_URL=<url a la web en produccion para la generación de links en los emails>
