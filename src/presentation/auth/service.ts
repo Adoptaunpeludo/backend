@@ -242,7 +242,7 @@ export class AuthService {
       {
         email: payload.email!,
         role,
-        username: payload.name || '',
+        username: payload.name?.toLowerCase() || '',
       },
       'googleAuth',
       payload.picture || ''
