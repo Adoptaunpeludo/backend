@@ -13,6 +13,7 @@ Este repositorio contiene el backend para Adoptaunpeludo, una plataforma dedicad
 La API proporciona endpoints para:
 - **Autenticación:** Registro, inicio de sesión y recuperación de contraseñas para usuarios.
 - **Gestión de animales:** CRUD de animales, incluyendo la posibilidad de subir imágenes y buscar animales por diferentes criterios.
+- **Gestión de usuarios:** CRUD de usuarios, incluyendo la posibilidad de subir imágenes y buscar usuarios por diferentes criterios.
 - **Chat en tiempo real:** Envío y recepción de mensajes en los chats de adopción entre adoptantes y refugios.
 - **Notificaciones:** Gestión de notificaciones, incluyendo la marcación como leídas y la eliminación.
 
@@ -24,6 +25,9 @@ La API proporciona endpoints para:
 
 [**Chatbot-service**](https://github.com/Adoptaunpeludo/chatbot-service):
 - Servicio encargado de la funcionalidad de Asistente de la web, utiliza un agente creado con LangChain que hace busquedas vectoriales en una Base de datos almacenada en Supabase y que previamente ha sido poblada con embeddings con la documentación de la Web para que así el Asistente pueda responder preguntas acerca de ella.
+
+[**NOC-service**](https://github.com/Adoptaunpeludo/noc-service):
+- Servicio de monitorización y gestion de errores.
 
 **NOTA:** Más información acerca de cada servicio en el link a su propio repositorio.
 
