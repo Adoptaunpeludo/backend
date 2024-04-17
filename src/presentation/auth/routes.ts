@@ -59,7 +59,7 @@ export class AuthRoutes {
 
     router.post(
       '/login',
-      apiLimiter,
+      // apiLimiter,
       ValidationMiddleware.validate(LoginUserDto),
       authController.login
     );
