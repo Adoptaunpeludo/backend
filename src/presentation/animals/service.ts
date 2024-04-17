@@ -260,17 +260,14 @@ export class AnimalService {
       },
     });
 
-    // Give time for images to be uploaded
-    setTimeout(() => {
-      this.notificationService.addMessageToQueue(
-        {
-          createdBy: username,
-          slug: animal.slug,
-          action: 'create-animal',
-        },
-        'animal-changed-notification'
-      );
-    }, 4000);
+    this.notificationService.addMessageToQueue(
+      {
+        createdBy: username,
+        slug: animal.slug,
+        action: 'create-animal',
+      },
+      'animal-changed-notification'
+    );
 
     return animal;
   }
@@ -317,16 +314,15 @@ export class AnimalService {
     });
 
     // Give time for images to be uploaded
-    setTimeout(() => {
-      this.notificationService.addMessageToQueue(
-        {
-          createdBy: username,
-          slug: animal.slug,
-          action: 'create-animal',
-        },
-        'animal-changed-notification'
-      );
-    }, 4000);
+
+    this.notificationService.addMessageToQueue(
+      {
+        createdBy: username,
+        slug: animal.slug,
+        action: 'create-animal',
+      },
+      'animal-changed-notification'
+    );
 
     return animal;
   }
@@ -627,6 +623,15 @@ export class AnimalService {
       where: { id: animal.id },
       data: { images: resultImages },
     });
+
+    this.notificationService.addMessageToQueue(
+      {
+        createdBy: animal.createdBy,
+        slug: animal.slug,
+        action: 'create-animal',
+      },
+      'animal-changed-notification'
+    );
   }
 
   /**
