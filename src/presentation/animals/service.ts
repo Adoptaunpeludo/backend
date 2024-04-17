@@ -260,6 +260,7 @@ export class AnimalService {
       },
     });
 
+    // Give time for images to be uploaded
     setTimeout(() => {
       this.notificationService.addMessageToQueue(
         {
@@ -269,7 +270,7 @@ export class AnimalService {
         },
         'animal-changed-notification'
       );
-    }, 1000);
+    }, 4000);
 
     return animal;
   }
@@ -315,6 +316,7 @@ export class AnimalService {
       },
     });
 
+    // Give time for images to be uploaded
     setTimeout(() => {
       this.notificationService.addMessageToQueue(
         {
@@ -324,7 +326,7 @@ export class AnimalService {
         },
         'animal-changed-notification'
       );
-    }, 1000);
+    }, 4000);
 
     return animal;
   }
