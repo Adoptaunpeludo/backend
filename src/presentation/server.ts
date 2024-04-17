@@ -58,6 +58,7 @@ export class Server {
           imgSrc: [
             'self',
             'https://aup-s3images.s3.eu-west-3.amazonaws.com',
+            'https://app.eraser.io',
             'data:',
           ],
         },
