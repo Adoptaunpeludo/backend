@@ -260,14 +260,16 @@ export class AnimalService {
       },
     });
 
-    this.notificationService.addMessageToQueue(
-      {
-        createdBy: username,
-        slug: animal.slug,
-        action: 'create-animal',
-      },
-      'animal-changed-notification'
-    );
+    setTimeout(() => {
+      this.notificationService.addMessageToQueue(
+        {
+          createdBy: username,
+          slug: animal.slug,
+          action: 'create-animal',
+        },
+        'animal-changed-notification'
+      );
+    }, 1000);
 
     return animal;
   }
