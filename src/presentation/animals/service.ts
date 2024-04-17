@@ -502,7 +502,7 @@ export class AnimalService {
       if (!isOnline)
         this.emailService.addMessageToQueue(
           { link: `animals/${animalType}s/${animalSlug}`, email },
-          'animal-changed-notification'
+          'animal-changed'
         );
     });
   }
