@@ -12,10 +12,20 @@ import {
   ResetPasswordDto,
 } from '../../domain';
 import { OAuth2Client } from 'google-auth-library';
+import rateLimiter from 'express-rate-limit';
 
 export class AuthRoutes {
   static get routes() {
     const router = Router();
+
+    // Rate limiter middleware to limit the number of requests from an IP address
+    const apiLimiter = rateLimiter({
+      windowMs: 15 * 60 * 1000, // 15 minutes window
+      max: 10, // Limit each IP to 10 requests per windowMs
+      message: {
+        msg: 'Máximo de peticiones alcanzado, reintentalo tras 15 minutos',
+      },
+    });
 
     const jwt = new JWTAdapter(envs.JWT_SEED);
 
@@ -49,6 +59,7 @@ export class AuthRoutes {
 
     router.post(
       '/login',
+      apiLimiter,
       ValidationMiddleware.validate(LoginUserDto),
       authController.login
     );

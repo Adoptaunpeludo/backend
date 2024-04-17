@@ -628,7 +628,7 @@ export class AnimalService {
       {
         createdBy: animal.createdBy,
         slug: animal.slug,
-        action: 'create-animal',
+        action: 'update-animal',
       },
       'animal-changed-notification'
     );
