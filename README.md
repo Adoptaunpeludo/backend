@@ -8,6 +8,23 @@ https://backend.adoptaunpeludo.com/api/docs
 ## Descripción
 
 Este repositorio contiene el backend para Adoptaunpeludo, una plataforma dedicada a la adopción de mascotas. El backend proporciona la lógica de negocio, la gestión de bases de datos y la interacción con servicios externos necesarios para el funcionamiento de la plataforma.
+La API viene precargada con mínimo 110 animales (10 animales unicos, 5 perros y 5 gatos) y 4 usuarios, 2 adopter y 2 shelters con las siguientes credenciales:
+
+```text
+email: shelter1@example.com
+pass: shelter1password
+
+email: shelter2@example.com
+pass: shelter2password
+
+email: adopter1@example.com
+pass: adopter1password
+
+email: adopter2@example.com
+pass: adopter2password
+```
+
+**NOTA**: Hay que tener en cuenta que como hay 10 animales unicos y el resto son repeticiones las imagenes en el Bucket de S3 se repiten, de tal manera que si se borra un animal o sus duplicados se borraran las imagenes asociadas al animal y sus duplicados y estas dejarán de verse en la web.
 
 [**API**](https://github.com/Adoptaunpeludo/backend):
 La API proporciona endpoints para:
@@ -167,8 +184,31 @@ MONGO_DB_URL=<url a la base de datos de mongodb atlas donde se almacenará el hi
 3-a. Para iniciar la API y todos los microservicios todas las variables de entorno anteriores son necesarias, solo es necesario ejecutar el siguiente comando:
 ( Esto descargará las últimas imagenes de cada servicio y arrancará los contenedores necesarios para que la aplicación funcione)
 
-```
+```bash
   docker compose up -d
+```
+
+4-a. Para ejecutar la seed y poblar la base de datos ejecutamos el siguiente comando y cuando pregunte responderemos yes o y:
+
+```bash
+docker exec -it aup-backend node dist/data/seed/seed.js
+Are you sure do you want to wipe and repopulate the database? (yes/no): y
+```
+
+Esto poblará la base de datos con 110 animales para poder probar la paginación (10 animales únicos, 5 gatos, 5 perros y el resto duplicados de estos animales) y 4 usuarios, dos adopter y dos shelter con las siguientes credenciales:
+
+```text
+email: shelter1@example.com
+pass: shelter1password
+
+email: shelter2@example.com
+pass: shelter2password
+
+email: adopter1@example.com
+pass: adopter1password
+
+email: adopter2@example.com
+pass: adopter2password
 ```
 
 3-b. Si solo se quisiera iniciar la API sin los distintos servicios es necesario sincronizar las migraciones de prisma con la base de datos postgresql y luego arrancar la API:
