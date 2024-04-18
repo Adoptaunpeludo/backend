@@ -215,6 +215,37 @@ pass: adopter2password
 **NOTA**: El docker-compose.yml está configurado para arrancar la API junto con un contenedor de RabbitMQ, las bases de datos y los microservicios necesarios
 si solo se quiere arrancar la API es necesario **minimo** una base de datos postgresql con la configuración del archivo .env asociada a la misma
 
+En este caso se necesitarian estas variables de entorno mínimo:
+
+```
+NODE_ENV=<development o production>
+
+PORT=<puerto del backend>
+
+# Postrgresql DB
+DB_PASSWORD=<password de la base de datos postgres>
+DB_NAME=<nombre de la base de datos>
+DB_HOST=<host de la base de datos>
+DB_PORT=<puerto donde está arrancada la base de datos>
+DB_USERNAME=<nombre de usuario para acceder a la base de datos>
+DATABASE_URL=postgresql:<url a la base de datos para desarrollo local>
+
+# JWT
+JWT_SEED=<seed para los tokens JWT
+
+# RabbitMQ
+RABBITMQ_USER=<usuario de rabbitmq>
+RABBITMQ_PASS=<password de rabbitmq>
+RABBITMQ_URL=<url para conectar a rabbitmq>
+
+# AWS Config
+AWS_ACCESS_KEY_ID=<id de aws para el servicio de bucket>
+AWS_SECRET_ACCESS_KEY=<key de aws para el servicio de bucket>
+AWS_REGION=<region de aws donde está el bucket>
+AWS_BUCKET=<nombre del bucket>
+AWS_BUCKET_URL=<url del bucket>
+```
+
 ```
 npx prisma migrate dev
 npm run dev
