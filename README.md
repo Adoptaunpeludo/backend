@@ -215,7 +215,7 @@ pass: adopter2password
 **NOTA**: El docker-compose.yml está configurado para arrancar la API junto con un contenedor de RabbitMQ, las bases de datos y los microservicios necesarios
 si solo se quiere arrancar la API es necesario **minimo** una base de datos postgresql con la configuración del archivo .env asociada a la misma
 
-En este caso se necesitarian estas variables de entorno mínimo:
+En este caso se necesitarian estas variables de entorno:
 
 ```
 NODE_ENV=<development o production>
@@ -245,6 +245,14 @@ AWS_REGION=<region de aws donde está el bucket>
 AWS_BUCKET=<nombre del bucket>
 AWS_BUCKET_URL=<url del bucket>
 ```
+
+Los contenedores de la base de datos PostgreSQL y RabbitMQ se pueden levantar ejecutando el comando:
+
+```bash
+docker compose -f docker-compose-api.yml up -d
+```
+
+Luego ejecutar:
 
 ```
 npx prisma migrate dev
